@@ -24,9 +24,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ChildVaccineSystem.Common\ChildVaccineSystem.Common.csproj" />
-    <ProjectReference Include="..\ChildVaccineSystem.ServiceContract\ChildVaccineSystem.ServiceContract.csproj" />
-  </ItemGroup>
-
 </Project>
