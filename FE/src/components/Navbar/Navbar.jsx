@@ -1,29 +1,181 @@
-import React from "react";
-import SearchIcon from '@mui/icons-material/Search';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import SearchIcon from "@mui/icons-material/Search";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CloseIcon from "@mui/icons-material/Close";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export default function Navbar() {
-  return (
-    <div className="">
-      {/* Navigation */}
-      <nav className="bg-gray-100 py-3  items-center">
-        <div className="mx-auto px-10 flex justify-between">
-        <div className="max-w-screen-xl flex items-center space-x-6 px-4">
-          <a href="#" className="text-gray-700">TRANG CHỦ</a>
-          <a href="#" className="text-gray-700">GIỚI THIỆU</a>
-          <a href="#" className="text-gray-700">VẮC XIN TRẺ EM</a>
-          <a href="#" className="text-gray-700">VẮC XIN NGƯỜI LỚN</a>
-          <a href="#" className="text-gray-700">GÓI VẮC XIN</a>
-          <a href="#" className="text-gray-700">CẨM NANG</a>
-          <a href="#" className="text-gray-700">BẢNG GIÁ</a>
-          <a href="#" className="text-gray-700">BỆNH HỌC</a>
-          <a href="#" className="text-gray-700">TIN TỨC</a>
-        </div>
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+  const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const dropdownRef = useRef(null);
 
-        <div className="flex items-center space-x-4">
-          <SearchIcon className="text-blue-600" />
-        </div>
+  const searchSuggestions = ["Vắc xin Qdenga (Sản xuất tại Đức)", "Vắc xin Shingrix (Bỉ)", "Vắc xin Pneumovax 23 (Mỹ)", "Vắc xin Bexsero (Ý)"];
+
+  // Sticky Navbar + Hiển thị nút cuộn lên đầu trang
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 80);
+      setIsScrollTopVisible(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // Đóng dropdown khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Cuộn lên đầu trang khi bấm nút 🔝
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Xử lý khi chọn gợi ý tìm kiếm
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setIsSearchOpen(false);
+    handleSearch(suggestion);
+  };
+
+  // Giả lập chức năng tìm kiếm
+  const handleSearch = (query) => {
+    console.log("Tìm kiếm:", query);
+    // Ở đây có thể điều hướng đến trang kết quả tìm kiếm hoặc thực hiện fetch API
+  };
+
+  return (
+    <>
+      <nav className={`transition-all duration-500 ${isSticky ? "fixed top-0 left-0 w-full z-50 bg-white shadow-xl" : "bg-white shadow-md py-3"}`}>
+        <div className="mx-auto px-10 flex justify-between items-center">
+          
+          {/* Menu chính */}
+          <div className="flex items-center space-x-6">
+            {["TRANG CHỦ", "GIỚI THIỆU", "VẮC XIN TRẺ EM", "VẮC XIN NGƯỜI LỚN", "GÓI VẮC XIN", "CẨM NANG", "BẢNG GIÁ", "BỆNH HỌC"].map((item, index) => (
+              <a
+                key={index}
+                href="#"
+                className="text-gray-700 font-medium relative transition-all duration-300 before:absolute before:-bottom-1 before:left-0 before:w-0 before:h-0.5 before:bg-gradient-to-r before:from-[#2A388F] before:to-[#1F2B75] hover:before:w-full before:transition-all before:duration-500"
+              >
+                {item}
+              </a>
+            ))}
+
+            {/* Dropdown "TIN TỨC" */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                className="flex items-center text-gray-700 font-medium hover:text-[#2A388F] transition-all duration-300"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                TIN TỨC <ExpandMoreIcon className="ml-1" />
+              </button>
+
+              {/* Danh sách dropdown */}
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="absolute bg-[#2A388F] text-white w-56 mt-2 shadow-lg rounded-md z-50 overflow-hidden"
+                  >
+                    {[
+                      "Tin tức sức khỏe",
+                      "Tin tức hoạt động",
+                      "Ưu Đãi",
+                      "Khai trương",
+                      "Lớp tư vấn sức khỏe cộng đồng",
+                      "Trực tuyến",
+                      "Cuộc thi",
+                      "Hợp tác"
+                    ].map((subItem, idx) => (
+                      <motion.a
+                        key={idx}
+                        href="#"
+                        whileHover={{ scale: 1.05 }}
+                        className="block px-4 py-2 hover:bg-[#1F2B75] transition-all duration-300"
+                      >
+                        {subItem}
+                      </motion.a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Khu vực phải - Tìm kiếm */}
+          <div className="flex items-center space-x-4">
+            {/* Nút tìm kiếm */}
+            <button
+              className="text-[#2A388F] hover:text-[#1F2B75] transition-all duration-300"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <SearchIcon fontSize="large" />
+            </button>
+
+            {/* Ô tìm kiếm mở rộng */}
+            <AnimatePresence>
+              {isSearchOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute top-16 right-10 bg-white p-3 rounded-lg shadow-md w-80 flex flex-col space-y-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Tìm kiếm..."
+                      className="w-full outline-none border-b-2 border-[#2A388F] p-2"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button
+                      className="text-gray-500 hover:text-gray-700 transition-all duration-300"
+                      onClick={() => setIsSearchOpen(false)}
+                    >
+                      <CloseIcon />
+                    </button>
+                  </div>
+                  {/* Gợi ý tìm kiếm */}
+                  {searchQuery === "" && (
+                    <div className="border-t pt-2 text-gray-500">
+                      <p className="text-sm font-semibold">Gợi ý:</p>
+                      {searchSuggestions.map((suggestion, index) => (
+                        <p
+                          key={index}
+                          className="text-sm hover:text-[#2A388F] cursor-pointer transition-all duration-300"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          {suggestion}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </nav>
-    </div>
+    </>
   );
 }

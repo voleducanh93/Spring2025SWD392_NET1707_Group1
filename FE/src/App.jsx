@@ -10,9 +10,9 @@ function App() {
   return (
     <div className="">
     
-    {/* <Header/> */}
-    {/* <AdminPage/> */}
-    <ManagerPage/>
+    <Header/>
+    <AdminPage/>
+    {/* <ManagerPage/> */}
     {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
