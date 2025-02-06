@@ -1,5 +1,6 @@
 import Header from "./components/Header/Header"
 import AdminPage from "./pages/AdminPage/AdminPage"
+import ManagerPage from "./pages/ManagerPage/ManagerPage"
 
 
 function App() {
@@ -9,8 +10,8 @@ function App() {
     <div className="">
     
     {/* <Header/> */}
-    <AdminPage/>
-    
+    {/* <AdminPage/> */}
+    <ManagerPage/>
     {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
