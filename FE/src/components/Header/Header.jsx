@@ -4,7 +4,7 @@ import Topbar from '../Topbar/Topbar'
 
 export default function Header() {
   return (
-    <div>
+    <div className=''>
         <Topbar/>
         <Navbar/>
     </div>

@@ -1,3 +1,4 @@
+import Cards from "./components/Cards/Cards"
 import Header from "./components/Header/Header"
 import AdminPage from "./pages/AdminPage/AdminPage"
 import ManagerPage from "./pages/ManagerPage/ManagerPage"
