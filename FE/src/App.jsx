@@ -1,16 +1,17 @@
 import Header from "./components/Header/Header"
+import AdminPage from "./pages/AdminPage/AdminPage"
 
 
 function App() {
   
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="">
     
-    <Header/>
+    {/* <Header/> */}
+    <AdminPage/>
     
-    
-    {/* Main Content */}
+    {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
         <h2 className="text-center text-xl font-semibold mb-4">Đăng ký</h2>
@@ -38,7 +39,7 @@ function App() {
           Bạn đã có tài khoản? <a href="#" className="text-blue-600">Đăng nhập</a>
         </p>
       </div>
-    </main>
+    </main> */}
   </div>
   )
 }
