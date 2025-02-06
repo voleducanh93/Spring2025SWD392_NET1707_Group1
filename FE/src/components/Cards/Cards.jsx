@@ -44,7 +44,7 @@ const cardsData = [
   }
 ];
 
-export default function CardsList() {
+export default function Cards() {
   return (
     <Container sx={{ mt: 5 }}>
       <Grid container spacing={4}>
