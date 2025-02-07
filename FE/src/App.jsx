@@ -1,11 +1,11 @@
 import Cards from "./components/Cards/Cards"
 import Header from "./components/Header/Header"
 import AdminPage from "./pages/AdminPage/AdminPage"
-<<<<<<< Updated upstream
+
 import ManagerPage from "./pages/ManagerPage/ManagerPage"
-=======
+
 import HomePage from "./pages/HomePage/HomePage"
->>>>>>> Stashed changes
+
 
 
 function App() {
@@ -13,16 +13,13 @@ function App() {
 
   return (
     <div className="">
-<<<<<<< Updated upstream
     
     {/* <Header/> */}
     {/* <AdminPage/> */}
-    <ManagerPage/>
-=======
-    <HomePage/>
+    {/* <ManagerPage/> */}
+    {/* <HomePage/> */}
     {/* <AdminPage/> */}
     
->>>>>>> Stashed changes
     {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">

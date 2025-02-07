@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
+import  {Button } from "../../components/ui/button";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../components/ui/table";
 import { Plus, Trash, Edit } from "lucide-react";
+
+import AddIcon from "@mui/icons-material/Add";
 
 const initialVaccines = [
   { id: 1, name: "Pfizer", description: "COVID-19 Vaccine", manufacturer: "Pfizer Inc.", sideEffect: "Mild fever", diseasePrevented: "COVID-19", price: 20, status: "Available", injectionSite: "Arm", preserve: "Cold storage", notes: "Store at -70C" },
@@ -27,15 +29,23 @@ export default function ManagerPage() {
   };
 
   return (
+    
     <div className="p-8 space-y-8 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800">Vaccine Management</h1>
       
+      <h1 className="text-3xl font-bold text-gray-800">Vaccine Management</h1>
+      <Button  variant="contained" startIcon={<AddIcon />}>
+  Add User
+</Button>
       {/* Vaccine List */}
+     
       <Card className="shadow-lg bg-white">
+     
         <CardHeader>
           <CardTitle>Vaccines</CardTitle>
+         
         </CardHeader>
         <CardContent>
+          
           <Table>
             <TableHeader>
               <TableRow>
