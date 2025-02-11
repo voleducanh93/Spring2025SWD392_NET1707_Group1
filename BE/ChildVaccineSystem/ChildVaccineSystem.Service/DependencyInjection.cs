@@ -1,6 +1,7 @@
 ﻿using ChildVaccineSystem.Common.Helper;
 using ChildVaccineSystem.Service.Services;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using ChildVaccineSystem.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ChildVaccineSystem.Service
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddTransient<IVaccineService, VaccineService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<APIResponse>();
             services.AddTransient<IAuthService, AuthService>();

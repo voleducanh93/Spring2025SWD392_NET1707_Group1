@@ -25,6 +25,9 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true)) 
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            // Vaccine Mapping
+            CreateMap<Vaccine, VaccineDTO>().ReverseMap();
         }
     }
 }

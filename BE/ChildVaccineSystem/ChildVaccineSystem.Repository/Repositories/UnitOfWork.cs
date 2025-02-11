@@ -1,17 +1,30 @@
-﻿using ChildVaccineSystem.RepositoryContract.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using ChildVaccineSystem.Data.Models;
+using ChildVaccineSystem.RepositoryContract.Interfaces;
 
 namespace ChildVaccineSystem.Repository.Repositories
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
+        private readonly ChildVaccineSystemDBContext _context;
+
+        public IVaccineRepository Vaccines { get; }
+
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository)
+        {
+            _context = context;
+            Vaccines = vaccineRepository;
+        }
+
+        public async Task<int> CompleteAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _context.Dispose();
         }
     }
 }
