@@ -1,0 +1,157 @@
+﻿using AutoMapper;
+using ChildVaccineSystem.Data.DTO;
+using ChildVaccineSystem.Data.Entities;
+using ChildVaccineSystem.ServiceContract.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ChildVaccineSystem.Service.Services
+{
+    public class AuthService : IAuthService
+    {
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
+
+        public AuthService(
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration,
+            IMapper mapper,
+            IEmailService emailService)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _configuration = configuration;
+            _mapper = mapper;
+            _emailService = emailService;
+        }
+
+        public async Task<User> RegisterAsync(UserRegisterDTO dto)
+        {
+            // Validate if email is null or empty
+            if (string.IsNullOrWhiteSpace(dto.Email) || !dto.Email.Contains("@"))
+                throw new Exception("Invalid email address.");
+
+            // Validate if username is null or empty
+            if (string.IsNullOrWhiteSpace(dto.UserName))
+                throw new Exception("Username cannot be empty.");
+
+            // Validate phone number format
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber) || !IsValidPhoneNumber(dto.PhoneNumber))
+                throw new Exception("Invalid phone number format. Phone number must start with 0 and be at most 10 digits long.");
+
+            // Check if email already exists
+            var userExists = await _userManager.FindByEmailAsync(dto.Email);
+            if (userExists != null)
+                throw new Exception("Email already exists.");
+
+            // Check if username already exists
+            var usernameExists = await _userManager.FindByNameAsync(dto.UserName);
+            if (usernameExists != null)
+                throw new Exception("Username already exists.");
+
+            // Validate password complexity (at least 6 characters as an example)
+            if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 6)
+                throw new Exception("Password must be at least 6 characters long, including at least 1 uppercase letter, 1 lowercase letter, 1 special character, and 1 numeric character");
+
+            // Validate role
+            var validRoles = new[] { "Admin", "Customer", "Staff", "Manager" }; // List of valid roles
+            if (!validRoles.Contains(dto.Role))
+                throw new Exception("Invalid role. Allowed roles are: Admin, Customer, Staff, Manager.");
+
+            // Map DTO to User entity
+            var user = _mapper.Map<User>(dto);
+
+            // Attempt to create the user
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new Exception($"User registration failed: {errors}");
+            }
+
+            // Check if role exists, if not, create it
+            if (!await _roleManager.RoleExistsAsync(dto.Role))
+            {
+                var roleResult = await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+                if (!roleResult.Succeeded)
+                {
+                    var roleErrors = string.Join("; ", roleResult.Errors.Select(e => e.Description));
+                    throw new Exception($"Role creation failed: {roleErrors}");
+                }
+            }
+
+            // Assign role to the user
+            await _userManager.AddToRoleAsync(user, dto.Role);
+
+            // Generate confirmation email token and send email
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmLink = $"{_configuration["AppSettings:FrontendUrl"]}/confirm-email?email={user.Email}&token={token}";
+            _emailService.SendEmailConfirmation(user.Email, confirmLink);
+
+            return user;
+        }
+
+        // Method to validate phone number
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            // Phone number must start with '0' and be at most 10 digits long
+            return phoneNumber.Length <= 10 && phoneNumber.StartsWith("0") && phoneNumber.All(char.IsDigit);
+        }
+
+
+
+        public async Task<bool> ConfirmEmailAsync(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded;
+        }
+
+        private string GenerateJwtToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+
+            var roles = _userManager.GetRolesAsync(user).Result;
+            foreach (var role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+    }
+}
