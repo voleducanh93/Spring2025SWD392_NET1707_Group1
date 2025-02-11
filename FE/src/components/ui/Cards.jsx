@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion"; // Ensure motion is imported from framer-motion
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -59,7 +58,14 @@ export default function Cards() {
   return (
     <Container sx={{ mt: 5, position: "relative" }}>
       {/* Title Section with underline */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
         <Typography
           variant="h5"
           sx={{
