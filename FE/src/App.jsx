@@ -1,55 +1,19 @@
 import Cards from "./components/Cards/Cards"
 import Header from "./components/Header/Header"
 import AdminPage from "./pages/AdminPage/AdminPage"
-
 import ManagerPage from "./pages/ManagerPage/ManagerPage"
-
 import HomePage from "./pages/HomePage/HomePage"
 
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import AuthPage from "./pages/AuthPage/AuthPage"
-import UploadForm from "./pages/HomePage/upload"
-import AuthPageTest from "./pages/AuthPage/TestGG"
-
-
-// function App() {
+function App() {
   
 
-//   return (
-    // <div className="">
-    
-    // {/* <Header/> */}
-    // {/* <AdminPage/> */}
-    // {/* <ManagerPage/> */}
-    // {/* <HomePage/> */}
-    // {/* <AdminPage/> */}
-    // {/* {AuthPage} */}
-    // <AuthPage/>
-   
-
-function App() {
   return (
-    // <div style={{ padding: 20 }}>
-    //   <h2>Upload Pet Image</h2>
-    //   <UploadForm onUploadSuccess={(url) => console.log("Image URL:", url)} />
-    // </div>
-    <Router>
-    <Routes>
-      {/* Route Trang Đăng Nhập */}
-      <Route path="/" element={<AuthPageTest />} />
-
-      {/* Route Trang Upload Ảnh */}
-      <Route path="/upload" element={<UploadForm />} />
-
-      {/* Route Mặc Định (Home) */}
-      
-      {/* <Route path="/" element={AuthPageTest} /> */}
-    </Routes>
-  </Router>
-  );
-}
-    
+    <div className="">  
+    <HomePage/>
+    {/* <AdminPage/> */}
+    {/* <ManagerPage/>
+    <HomePage/> */}
     {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-3xl">
