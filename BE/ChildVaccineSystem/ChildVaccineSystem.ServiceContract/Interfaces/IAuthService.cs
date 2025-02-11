@@ -14,5 +14,8 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task<bool> ConfirmEmailAsync(string email, string token);
         Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginRequestDTO);
         Task LogoutAsync(string refreshToken);
+        Task<LoginResponseDTO> RefreshTokenAsync(string refreshToken);
+        Task<bool> ForgetPasswordAsync(string email);
+        Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword);
     }
 }
