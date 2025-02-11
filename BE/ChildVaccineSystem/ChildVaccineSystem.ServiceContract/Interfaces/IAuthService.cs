@@ -12,5 +12,7 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
     {
         Task<User> RegisterAsync(UserRegisterDTO dto);
         Task<bool> ConfirmEmailAsync(string email, string token);
+        Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginRequestDTO);
+        Task LogoutAsync(string refreshToken);
     }
 }

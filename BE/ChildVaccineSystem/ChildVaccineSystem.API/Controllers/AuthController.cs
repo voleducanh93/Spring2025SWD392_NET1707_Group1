@@ -47,5 +47,20 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        {
+            try
+            {
+                var result = await _authService.LoginAsync(loginRequestDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { Error = ex.Message });
+            }
+        }
+
     }
 }

@@ -38,6 +38,27 @@ namespace ChildVaccineSystem.Service.Services
             _emailService = emailService;
         }
 
+        public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginRequestDTO)
+        {
+            var user = await _userManager.FindByEmailAsync(loginRequestDTO.Username);
+            if (user == null)
+            {
+                user = await _userManager.FindByNameAsync(loginRequestDTO.Username);
+            }
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password))
+                throw new Exception("Invalid username or password!");
+
+            if (!user.EmailConfirmed)
+                throw new Exception("Email is not confirmed. Please confirm your email to login.");
+
+            var token = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
+            return new LoginResponseDTO
+            {
+                Token = token,
+            };
+        }
         public async Task<User> RegisterAsync(UserRegisterDTO dto)
         {
             // Validate if email is null or empty
@@ -152,6 +173,10 @@ namespace ChildVaccineSystem.Service.Services
         private string GenerateRefreshToken()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+        public Task LogoutAsync(string refreshToken)
+        {
+            return Task.CompletedTask;
         }
     }
 }
