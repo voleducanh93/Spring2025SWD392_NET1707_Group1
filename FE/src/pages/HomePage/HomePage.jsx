@@ -1,10 +1,8 @@
-import Header from "../../components/Header/Header";
-import Cards from "../../components/Cards/Cards";
+import Cards from "../../components/ui/Cards";
 
 export default function HomePage() {
   return (
     <div>
-      <Header />
       <Cards />
     </div>
   );
