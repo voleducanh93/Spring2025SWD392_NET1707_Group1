@@ -105,17 +105,17 @@ export default function Cards() {
         {cardsData.map((card, index) => (
           <Grid item key={index} xs={12} sm={6} md={4}>
             <motion.div
-              whileHover={{ scale: 1.05 }} // Slight scaling effect on hover
-              transition={{ type: "spring", stiffness: 300 }}
+              whileHover={{ scale: 1.02 }} // Reduced scale effect on hover
+              transition={{ type: "spring", stiffness: 150 }} // Reduced stiffness for more subtle effect
             >
               <Card
                 sx={{
                   maxWidth: 345,
                   transition: "all 0.3s ease-in-out",
-                  boxShadow: 5,
+                  boxShadow: 3, // Reduced initial box shadow
                   "&:hover": {
-                    boxShadow: 15, // More prominent shadow on hover
-                    transform: "translateY(-10px)", // Lift effect
+                    boxShadow: 8, // Subtler shadow on hover
+                    transform: "translateY(-5px)", // Smaller lift effect
                   },
                   borderRadius: "12px", // Rounded corners for modern look
                   backgroundColor: "#f9f9f9", // Light background color for cards
@@ -163,7 +163,7 @@ export default function Cards() {
                       "&:hover": {
                         backgroundColor: "#FF7043",
                         color: "white",
-                        transform: "scale(1.1)",
+                        transform: "scale(1.05)", // Reduced scale effect for buttons
                       },
                     }}
                   >
@@ -175,7 +175,7 @@ export default function Cards() {
                       "&:hover": {
                         backgroundColor: "#0288D1",
                         color: "white",
-                        transform: "scale(1.1)",
+                        transform: "scale(1.05)", // Reduced scale effect for buttons
                       },
                     }}
                   >
