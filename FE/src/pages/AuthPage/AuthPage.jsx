@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Form, Input, Modal, Select } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import styles from "./AuthForm.module.css"; 
+import styles from "../../components/Auth/AuthForm.module.css"; 
 
 
 import { toast } from "react-toastify";
