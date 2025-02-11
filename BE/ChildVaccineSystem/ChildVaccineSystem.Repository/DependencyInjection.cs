@@ -13,10 +13,13 @@ namespace ChildVaccineSystem.Repository
     {
         public static IServiceCollection AddRepository(this IServiceCollection services)
         {
+            services.AddTransient<IVaccineRepository, VaccineRepository>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient<IEmailRepository, EmailRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             //DI Unit Of Work
-            services.AddTransient<UnitOfWork, UnitOfWork>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             return services;
 
 
