@@ -178,5 +178,55 @@ namespace ChildVaccineSystem.Service.Services
         {
             return Task.CompletedTask;
         }
+        public async Task<LoginResponseDTO> RefreshTokenAsync(string refreshToken)
+        {
+            // Mock logic to validate the refresh token
+            var user = await _userManager.FindByIdAsync(refreshToken); // Ensure to change this as per your storage logic
+            if (user == null)
+                throw new Exception("Invalid refresh token.");
+
+            var newToken = GenerateJwtToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            return new LoginResponseDTO
+            {
+                Token = newToken,
+            };
+        }
+
+        public async Task<bool> ForgetPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"{_configuration["AppSettings:FrontendUrl"]}/reset-password?email={email}&token={token}";
+
+            await _emailService.SendEmailForgotPassword(email, resetLink);
+
+            return true;
+        }
+
+
+        public async Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return (false, "User not found.");
+            }
+
+            var resetResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!resetResult.Succeeded)
+            {
+                // Capture detailed error messages
+                var errors = string.Join("; ", resetResult.Errors.Select(e => e.Description));
+                return (false, $"Password reset failed: {errors}");
+            }
+
+            return (true, "Password has been reset successfully.");
+        }
     }
 }
