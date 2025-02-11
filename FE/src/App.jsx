@@ -1,14 +1,9 @@
-import Cards from "./components/Cards/Cards"
-import Header from "./components/Header/Header"
-import AdminPage from "./pages/AdminPage/AdminPage"
-import ManagerPage from "./pages/ManagerPage/ManagerPage"
-import HomePage from "./pages/HomePage/HomePage"
-
-
+import { Provider } from "react-redux";
+import { RouterProvider } from "react-router-dom";
+import Routers from "./routers/Routers";
 function App() {
-  
-
   return (
+<<<<<<< Updated upstream
     <div className="">  
     <HomePage/>
     {/* <AdminPage/> */}
@@ -46,5 +41,12 @@ function App() {
 //   </div>
 //   )
 // }
+=======
+    <Provider>
+      <RouterProvider router={<Routers />} fallbackElement={<></>} />
+    </Provider>
+  );
+}
+>>>>>>> Stashed changes
 
-export default App
+export default App;
