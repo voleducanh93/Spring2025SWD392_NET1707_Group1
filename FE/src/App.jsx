@@ -1,14 +1,16 @@
-import Cards from "./components/Cards/Cards"
-import Header from "./components/Header/Header"
-import AdminPage from "./pages/AdminPage/AdminPage"
-import ManagerPage from "./pages/ManagerPage/ManagerPage"
-import HomePage from "./pages/HomePage/HomePage"
-
-
+import { Provider } from "react-redux";
+import { RouterProvider } from "react-router-dom";
+import Routers from "./routers/Routers";
 function App() {
-  
-
   return (
+<<<<<<< HEAD
+
+    <Provider>
+      <RouterProvider router={<Routers />} fallbackElement={<></>} />
+    </Provider>
+  );
+}
+=======
     <div className="">  
     <HomePage/>
     {/* <AdminPage/> */}
@@ -46,5 +48,6 @@ function App() {
 //   </div>
 //   )
 // }
+>>>>>>> parent of 8845640 (git fetch)
 
-export default App
+export default App;
