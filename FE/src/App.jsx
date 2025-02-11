@@ -7,18 +7,48 @@ import ManagerPage from "./pages/ManagerPage/ManagerPage"
 import HomePage from "./pages/HomePage/HomePage"
 
 
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AuthPage from "./pages/AuthPage/AuthPage"
+import UploadForm from "./pages/HomePage/upload"
+import AuthPageTest from "./pages/AuthPage/TestGG"
 
-function App() {
+
+// function App() {
   
 
-  return (
-    <div className="">
+//   return (
+    // <div className="">
     
-    {/* <Header/> */}
-    {/* <AdminPage/> */}
-    {/* <ManagerPage/> */}
-    {/* <HomePage/> */}
-    {/* <AdminPage/> */}
+    // {/* <Header/> */}
+    // {/* <AdminPage/> */}
+    // {/* <ManagerPage/> */}
+    // {/* <HomePage/> */}
+    // {/* <AdminPage/> */}
+    // {/* {AuthPage} */}
+    // <AuthPage/>
+   
+
+function App() {
+  return (
+    // <div style={{ padding: 20 }}>
+    //   <h2>Upload Pet Image</h2>
+    //   <UploadForm onUploadSuccess={(url) => console.log("Image URL:", url)} />
+    // </div>
+    <Router>
+    <Routes>
+      {/* Route Trang Đăng Nhập */}
+      <Route path="/" element={<AuthPageTest />} />
+
+      {/* Route Trang Upload Ảnh */}
+      <Route path="/upload" element={<UploadForm />} />
+
+      {/* Route Mặc Định (Home) */}
+      
+      {/* <Route path="/" element={AuthPageTest} /> */}
+    </Routes>
+  </Router>
+  );
+}
     
     {/* Main Content
     <main className="flex-grow flex items-center justify-center bg-gray-100 p-4 w-full">
@@ -49,8 +79,8 @@ function App() {
         </p>
       </div>
     </main> */}
-  </div>
-  )
-}
+//   </div>
+//   )
+// }
 
 export default App
