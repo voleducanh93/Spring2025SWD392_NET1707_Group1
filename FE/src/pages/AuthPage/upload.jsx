@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Form, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { uploadFile } from "../../config/firebase"; // Import đúng từ Firebase
