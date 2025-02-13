@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ChildVaccineSystem.Data.DTO
 {
-    public class LoginResponseDTO
+    public class ConfirmEmailRequest
     {
+        public string Email { get; set; }
         public string Token { get; set; }
-        public string RefeshToken { get; set; }
     }
 }
