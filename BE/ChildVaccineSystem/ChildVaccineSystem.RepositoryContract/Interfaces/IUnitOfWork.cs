@@ -8,7 +8,8 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IVaccineRepository Vaccines { get; }
         IComboVaccineRepository ComboVaccines { get; }
         IComboDetailRepository ComboDetails { get; }
+		IVaccinationScheduleRepository VaccinationSchedules { get; }
 
-        Task<int> CompleteAsync();
+		Task<int> CompleteAsync();
     }
 }
