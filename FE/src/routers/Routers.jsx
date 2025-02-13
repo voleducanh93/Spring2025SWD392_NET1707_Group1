@@ -5,6 +5,7 @@ import MainLayout from "../pages/MainLayout/MainLayout";
 import AuthPage from "../pages/AuthPage/AuthPage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
 
+
 export const router = createBrowserRouter([
   {
     path: PATH_NAME.HOME,
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
     children: [
       // index: true
       { index: true, element: <HomePage /> },
+      {path:"/auth", element: <AuthPage/>}
     ],
   },
   {
