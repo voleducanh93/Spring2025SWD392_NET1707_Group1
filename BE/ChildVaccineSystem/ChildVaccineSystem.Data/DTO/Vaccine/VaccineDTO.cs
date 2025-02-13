@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChildVaccineSystem.Data.Entities
+namespace ChildVaccineSystem.Data.DTO.Vaccine
 {
-    public class Vaccine
+    public class VaccineDTO
     {
-        [Key]
         public int VaccineId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -28,9 +25,6 @@ namespace ChildVaccineSystem.Data.Entities
         public string Preserve { get; set; }
         public int InjectionsCount { get; set; }
         public double Distance { get; set; }
-
-        [ForeignKey("Schedule")]
         public int? ScheduleId { get; set; }
-        public VaccinationSchedule? Schedule { get; set; }
     }
 }
