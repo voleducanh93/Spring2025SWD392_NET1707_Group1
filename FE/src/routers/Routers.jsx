@@ -19,10 +19,10 @@ export const router = createBrowserRouter([
       {path:"/auth", element: <AuthPage/>}
     ],
   },
-  // {
-  //   path: PATH_NAME.LOGIN,
-  //   element: <LoginPage />,
-  // },
+  {
+    path: PATH_NAME.LOGIN,
+    element: <AuthPage />,
+  },
   // {
   //   path: "*",
   //   element: <ErrorPage />,
