@@ -10,11 +10,15 @@ namespace ChildVaccineSystem.Repository.Repositories
         private readonly ChildVaccineSystemDBContext _context;
 
         public IVaccineRepository Vaccines { get; }
+        public IComboVaccineRepository ComboVaccines { get; }
+        public IComboDetailRepository ComboDetails { get; }
 
-        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository)
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails)
         {
             _context = context;
             Vaccines = vaccineRepository;
+            ComboVaccines = comboVaccines;
+            ComboDetails = comboDetails;
         }
 
         public async Task<int> CompleteAsync()
