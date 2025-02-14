@@ -1,8 +1,10 @@
 import { Form, Input, Button } from "antd";
 import { Link } from "react-router-dom";
-import styles from "../../components/Auth/AuthForm.module.css"; 
+import styles from "../../components/Auth/AuthForm.module.css";
 
-const SignInForm = ({ onFinish }) => {
+const SignInForm = ({ onFinish, isLoading }) => {
+  console.log("fff"+isLoading);
+  
   return (
     <Form
       labelCol={{ span: 24 }}
@@ -47,7 +49,13 @@ const SignInForm = ({ onFinish }) => {
         />
       </Form.Item>
 
-      <Button type="primary" htmlType="submit" className="w-full mt-4">
+      <Button
+        type="primary"
+        htmlType="submit"
+        className="w-full mt-4"
+        loading={isLoading} // Use the 'loading' prop to show the spinner
+        disabled={isLoading} // Disable the button while loading
+      >
         Đăng nhập
       </Button>
 
