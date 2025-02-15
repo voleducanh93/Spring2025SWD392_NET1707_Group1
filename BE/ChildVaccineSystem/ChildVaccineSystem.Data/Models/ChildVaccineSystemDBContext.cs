@@ -30,7 +30,9 @@ namespace ChildVaccineSystem.Data.Models
         public DbSet<ComboDetail> ComboDetail { get; set; }
 
         public DbSet<ComboVaccine> ComboVaccines { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		public DbSet<Staff> Staff { get; set; }
+		public DbSet<StaffSchedule> StaffSchedules { get; set; }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -175,6 +177,24 @@ namespace ChildVaccineSystem.Data.Models
                 .WithMany()
                 .HasForeignKey(r => r.VaccinationRecordId)
                 .OnDelete(DeleteBehavior.Restrict);
-        }
-    }
+			modelBuilder.Entity<Staff>()
+				.HasOne(n => n.User)
+				.WithMany()
+				.HasForeignKey(n => n.UserId)
+				.HasPrincipalKey(u => u.Id)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<Staff>()
+				.HasOne(s => s.StaffSchedule)
+				.WithMany(ss => ss.Staff)
+				.HasForeignKey(s => s.StaffScheduleId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<StaffSchedule>()
+				.HasMany(ss => ss.Staff)
+				.WithOne(s => s.StaffSchedule)
+				.HasForeignKey(s => s.StaffScheduleId)
+				.OnDelete(DeleteBehavior.Restrict);
+		}
+	}
 }
