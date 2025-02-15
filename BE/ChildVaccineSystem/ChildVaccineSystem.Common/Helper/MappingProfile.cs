@@ -2,6 +2,7 @@
 using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
 using ChildVaccineSystem.Data.DTO.VaccinationSchedule;
+using ChildVaccineSystem.Data.DTO.Vaccine;
 using ChildVaccineSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
