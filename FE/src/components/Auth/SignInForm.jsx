@@ -1,10 +1,23 @@
-import { Form, Input, Button } from "antd";
+import { useState } from "react";
+import { Form, Input, Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
 
-const SignInForm = ({ onFinish, isLoading }) => {
-  console.log("fff"+isLoading);
-  
+const SignInForm = ({ onFinish, isLoading, handleSubmitForgot }) => {
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false); 
+  const [email, setEmail] = useState(""); // Để lưu giá trị email nhập vào
+
+  // Xử lý gửi email reset mật khẩu
+  const handleResetPassword = () => {
+    if (email) {
+      console.log(email);
+      
+      handleSubmitForgot(email); // Gọi hàm handleSubmitForgot từ AuthPage
+      setIsResetPasswordModalVisible(false); // Đóng modal sau khi gửi
+      setEmail(""); // Reset email field
+    }
+  };
+
   return (
     <Form
       labelCol={{ span: 24 }}
@@ -53,18 +66,21 @@ const SignInForm = ({ onFinish, isLoading }) => {
         type="primary"
         htmlType="submit"
         className="w-full mt-4"
-        loading={isLoading} // Use the 'loading' prop to show the spinner
-        disabled={isLoading} // Disable the button while loading
+        loading={isLoading}
+        disabled={isLoading}
       >
         Đăng nhập
       </Button>
 
-      <Link
-        to="#"
-        className="block text-center mt-4 text-blue-500 hover:text-blue-700 font-semibold transition duration-300"
-      >
-        Quên mật khẩu?
-      </Link>
+      <div className="block text-center mt-4">
+        <Link
+          to="#"
+          onClick={() => setIsResetPasswordModalVisible(true)} // Mở modal quên mật khẩu
+          className="text-blue-500 hover:text-blue-700 font-semibold transition duration-300"
+        >
+          Quên mật khẩu?
+        </Link>
+      </div>
 
       <p className="text-center mt-4">Hoặc đăng nhập bằng các nền tảng xã hội</p>
 
@@ -87,6 +103,41 @@ const SignInForm = ({ onFinish, isLoading }) => {
           Đăng nhập bằng Google
         </button>
       </div>
+
+      {/* Modal Quên Mật Khẩu */}
+      <Modal
+        title="Quên mật khẩu"
+        visible={isResetPasswordModalVisible}
+        onCancel={() => setIsResetPasswordModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsResetPasswordModalVisible(false)}>
+            Hủy
+          </Button>,
+          <Button
+            key="send"
+            type="primary"
+            onClick={handleResetPassword} // Gọi hàm xử lý reset mật khẩu
+            disabled={isLoading}
+          >
+            Gửi email đặt lại mật khẩu
+          </Button>
+        ]}
+      >
+        <Form>
+          <Form.Item
+            label="Nhập email của bạn"
+            name="email"
+            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+          >
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} // Cập nhật giá trị email khi nhập
+              placeholder="user@example.com"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Form>
   );
 };

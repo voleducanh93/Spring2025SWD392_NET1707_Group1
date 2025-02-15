@@ -19,7 +19,7 @@ export const useLocationData = () => {
       const data = await response.json();
       setProvinceList(data.data.data || []);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách tỉnh:", error);
+     // console.error("Lỗi khi lấy danh sách tỉnh:", error);
     }
   };
 
@@ -32,7 +32,7 @@ export const useLocationData = () => {
       const data = await response.json();
       setDistrictList(data.data.data || []);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách quận:", error);
+      //console.error("Lỗi khi lấy danh sách quận:", error);
       setDistrictList([]);
     }
   };
@@ -46,7 +46,7 @@ export const useLocationData = () => {
       const data = await response.json();
       setWardList(data.data.data || []);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách phường:", error);
+      //console.error("Lỗi khi lấy danh sách phường:", error);
       setWardList([]);
     }
   };

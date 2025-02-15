@@ -11,11 +11,11 @@ import { AppProvider } from './contexts/app.context.jsx';
 
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false
-    }
-  }
+  // defaultOptions: {
+  //   queries: {
+  //     refetchOnWindowFocus: false
+  //   }
+  // }
 });
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -25,8 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AppProvider>
       <App />
       </AppProvider>
-       
-             
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
    

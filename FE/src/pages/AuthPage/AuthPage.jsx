@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Button, Form, Modal, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
-import { useRegister, useLogin } from "../../hooks/useAuth";
+import { useRegister, useLogin, useForgotPassword } from "../../hooks/useAuth";
 import { useLocationData } from "./useLocationData";
 import SignInForm from "../../components/Auth/SignInForm";
 import SignUpForm from "../../components/Auth/SignUpForm";
 
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);  // Manage loading state manually
   const [isVerificationModalVisible, setIsVerificationModalVisible] = useState(false);
   const [verificationEmail] = useState("");
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -32,27 +33,44 @@ function AuthPage() {
     buildFullAddress,
   } = useLocationData();
 
-  // Hook xử lý đăng ký & đăng nhập
-  const { mutate: registerMutate, isLoading: isRegisterLoading } = useRegister();
-  const { mutate: loginMutate, isLoading: isLoginLoading } = useLogin();
+  // Hooks for registration and login
+  const { mutate: registerMutate, isSuccess: isRegisterSuccess, isError: isRegisterError } = useRegister();
+  const { mutate: loginMutate, isSuccess: isLoginSuccess, isError: isLoginError } = useLogin();
+  const { mutate: forgotPasswordMutate } = useForgotPassword();
 
-  // Combine loading states
-  const isRegistering = isRegisterLoading;
-  const isLoggingIn = isLoginLoading;
-  const isLoading = isRegistering || isLoggingIn;
+  // Handle registration and login logic
+  useEffect(() => {
+    if (isRegisterSuccess) {
+      setIsLoading(false);  // Stop loading spinner
+      form.resetFields();
+      navigate("/auth"); // Navigate to login page after successful registration
+    }
+
+    if (isRegisterError) {
+      setIsLoading(false);  // Stop loading spinner on error
+     // alert("Registration failed. Please try again.");
+    }
+  }, [isRegisterSuccess, isRegisterError, navigate, form]);
 
   useEffect(() => {
-    if (registerMutate.isSuccess) {
-      form.resetFields();
-      navigate("/"); // Navigate after registration
+    if (isLoginSuccess) {
+      setIsLoading(false);  // Stop loading spinner after successful login
+      navigate("/"); // Navigate to home page after successful login
     }
-  }, [registerMutate.isSuccess, navigate, form]);
+
+    if (isLoginError) {
+      setIsLoading(false);  // Stop loading spinner on error
+     // alert("Login failed. Please check your credentials and try again.");
+    }
+  }, [isLoginSuccess, isLoginError, navigate]);
 
   const handleOnFinish = (values) => {
+    setIsLoading(true);  // Start loading spinner
+
     if (isSignUpMode) {
       registerMutate({
         fullName: `${values["first-name"]} ${values["last-name"]}`,
-        userName: values.email.split("@")[0], // Default userName from email
+        userName: values.email.split("@")[0],
         email: values.email,
         phoneNumber: values["phone-number"] || "",
         address: buildFullAddress(),
@@ -67,6 +85,10 @@ function AuthPage() {
       });
     }
   };
+  const handleSubmitForgot = (email) => {
+    
+    forgotPasswordMutate({email: email});  // Call forgot password mutation
+  };
 
   return (
     <div className={`${styles.container} ${isSignUpMode ? styles.signUpMode : ""}`}>
@@ -78,9 +100,11 @@ function AuthPage() {
             </div>
           ) : (
             <>
-              {!isSignUpMode && <SignInForm onFinish={handleOnFinish} isLoading={isRegistering} />}
+              {/* Add key prop to force re-render when switching between forms */}
+              {!isSignUpMode && <SignInForm key="signInForm" onFinish={handleOnFinish} handleSubmitForgot={handleSubmitForgot} />}
               {isSignUpMode && (
                 <SignUpForm
+                  key="signUpForm"  // Force re-render when switching forms
                   form={form}
                   onFinish={handleOnFinish}
                   provinceList={provinceList}
@@ -94,7 +118,7 @@ function AuthPage() {
                   setSelectedDistrict={setSelectedDistrict}
                   setSelectedWard={setSelectedWard}
                   setSpecificAddress={setSpecificAddress}
-                  isLoading={isRegistering}
+                  isLoading={isLoading}
                 />
               )}
             </>
@@ -111,8 +135,8 @@ function AuthPage() {
               type="primary"
               className={styles.btn}
               onClick={() => setIsSignUpMode(true)}
-              isLoading={isRegistering}  // Ensure loading state here
-              disabled={isRegistering}   // Disable button during registration
+              loading={isLoading}
+              disabled={isLoading}
             >
               Đăng ký
             </Button>
@@ -126,8 +150,8 @@ function AuthPage() {
             <Button
               className={styles.btn}
               onClick={() => setIsSignUpMode(false)}
-              isLoading={isLoggingIn} // Ensure loading state here
-              disabled={isLoggingIn}   // Disable button during login
+              loading={isLoading}
+              disabled={isLoading}
             >
               Đăng nhập
             </Button>

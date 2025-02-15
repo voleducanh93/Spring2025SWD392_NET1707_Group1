@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
+
 import { clearLS, getAccessTokenFromLS, getRefreshTokenFromLS, setAccessTokenToLS, 
     setProfileToLS, setRefreshTokenToLS } from './auth';
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from '../api/auth.api';
@@ -34,12 +34,14 @@ class Http {
       (response) => {
         const { url } = response.config;
         if (url === URL_LOGIN ) {
-          // const data = response.data;
-          // this.accessToken = data.data.access_token;
-          // this.refreshToken = data.data.refresh_token;
-          // setAccessTokenToLS(this.accessToken);
-          // setRefreshTokenToLS(this.refreshToken);
-          // setProfileToLS(data.data.user);
+          const data = response.data;
+          console.log(data.token);
+          
+          this.accessToken = data.token;
+          this.refreshToken = data.refeshToken;
+          setAccessTokenToLS(this.accessToken);
+          setRefreshTokenToLS(this.refreshToken);
+          //setProfileToLS(data.data.user);
         } else if (url === URL_LOGOUT) {
           this.accessToken = '';
           this.refreshToken = '';
@@ -49,10 +51,10 @@ class Http {
       },
       async (error) => {
         const { response } = error;
-        const errorMessage = response?.data?.message || error.message;
+        //const errorMessage = response?.data?.message || error.message;
 
         if (![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(response?.status)) {
-          toast.error(errorMessage);
+         // toast.error(errorMessage);
         }
 
         if (isAxiosUnauthorizedError(error)) {
@@ -74,7 +76,7 @@ class Http {
           clearLS();
           this.accessToken = '';
           this.refreshToken = '';
-          toast.error(response?.data?.data?.message || response?.data?.message);
+          //toast.error(response?.data?.data?.error || response?.data?.error);
         }
 
         return Promise.reject(error);
