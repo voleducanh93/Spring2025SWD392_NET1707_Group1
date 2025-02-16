@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
+using ChildVaccineSystem.Data.DTO.StaffSchedule;
 using ChildVaccineSystem.Data.DTO.VaccinationSchedule;
+using ChildVaccineSystem.Data.DTO.Vaccine;
 using ChildVaccineSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -63,6 +65,18 @@ namespace ChildVaccineSystem.Common.Helper
 			CreateMap<UpdateVaccinationScheduleDTO, VaccinationSchedule>()
 				.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+			// StaffSchedule Mappings
+			CreateMap<StaffSchedule, StaffScheduleDTO>()
+				.ForMember(dest => dest.Staff, opt => opt.MapFrom(src => src.Staff));
+
+			CreateMap<CreateStaffScheduleDTO, StaffSchedule>()
+				.ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => true))
+				.ForMember(dest => dest.Staff, opt => opt.Ignore());
+
+			CreateMap<UpdateStaffScheduleDTO, StaffSchedule>()
+				.ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+				.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 		}
 	}
 }
