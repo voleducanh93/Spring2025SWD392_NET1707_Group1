@@ -147,12 +147,6 @@ namespace ChildVaccineSystem.Data.Models
                 .HasForeignKey(cd => cd.VaccineId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<ComboVaccine>()
-                .HasOne(cv => cv.Schedule)
-                .WithMany(s => s.ComboVaccines)
-                .HasForeignKey(cv => cv.ScheduleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<VaccineInventory>()
                 .HasOne(vi => vi.Vaccine)
                 .WithMany()
@@ -167,8 +161,8 @@ namespace ChildVaccineSystem.Data.Models
 
             modelBuilder.Entity<Vaccine>()
                 .HasOne(v => v.Schedule)
-                .WithMany()
-                .HasForeignKey(v => v.ScheduleId)
+			    .WithMany(s => s.Vaccines)
+				.HasForeignKey(v => v.ScheduleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // VaccinationRecord Relationships
