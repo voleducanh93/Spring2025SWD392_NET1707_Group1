@@ -2,6 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import authApi from "../api/auth.api";
 import { toast } from "react-toastify";
+import { useQueryString } from "../utils/utils";
 
 export const useRegister = () => {
   return useMutation({
@@ -31,10 +32,10 @@ export const useLogin = () => {
 
 
 
-// Hook cho quên mật khẩu
+
 export const useForgotPassword = () => {
   return useMutation({
-    mutationFn: (email) => authApi.forgotPassword(email),  // Gọi API quên mật khẩu
+    mutationFn: (email) => authApi.forgotPassword(email),
     onSuccess: (data) => {
       toast.success(data.message || "Đã gửi email đặt lại mật khẩu!");
     },
@@ -44,3 +45,27 @@ export const useForgotPassword = () => {
   });
 };
 
+
+export const useResetPassword = () => {
+  const queryParams = useQueryString(); 
+  console.log(queryParams.email + queryParams.token);
+  return useMutation({
+    
+    
+    mutationFn: (passwordData) =>
+      authApi.resetPassword({
+        email: queryParams.email, 
+        token: queryParams.token, 
+        newPassword: passwordData.newPassword, // Fix lỗi truyền tham số
+
+      }),
+
+    onSuccess: (data) => {
+      toast.success(data.message || "Mật khẩu đã được đặt lại thành công!");
+    },
+
+    onError: (error) => {
+      toast.error(error.response?.data?.error || "Có lỗi xảy ra!");
+    },
+  });
+};

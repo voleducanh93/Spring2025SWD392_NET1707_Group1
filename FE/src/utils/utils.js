@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import HttpStatusCode from '../constants/httpStatusCode.enum';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 
 // import userImage from 'src/assets/images/user.svg';
@@ -69,10 +69,17 @@ export const getIdFromNameId = (nameId) => {
 };
 
 export const useQueryString = () => {
-  const [searchParams] = useSearchParams()
-  const searchParamsObject = Object.fromEntries([...searchParams])
-  return searchParamsObject
-}
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  
+  // Trả về object với giá trị được giữ nguyên dấu `+`
+  const queryParams = {};
+  for (const [key, value] of params.entries()) {
+    queryParams[key] = value.replace(/ /g, "+"); // Chuyển lại khoảng trắng thành dấu `+`
+  }
+
+  return queryParams;
+};
 // // Lấy URL ảnh đại diện
 // export const getAvatarUrl = (avatarName) =>
 //   avatarName ? `${config.baseUrl}images/${avatarName}` : userImage;

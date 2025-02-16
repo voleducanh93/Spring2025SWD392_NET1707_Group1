@@ -3,6 +3,7 @@ import { PATH_NAME } from "../constants/pathName";
 import HomePage from "../pages/HomePage/HomePage";
 import MainLayout from "../pages/MainLayout/MainLayout";
 import AuthPage from "../pages/AuthPage/AuthPage";
+import ResetPassword from "../pages/AuthPage/resetPassword";
 
 
 
@@ -17,7 +18,8 @@ export const router = createBrowserRouter([
     children: [
       // index: true
       { index: true, element: <HomePage /> },
-      {path:"/auth", element: <AuthPage/>}
+      {path:"/auth", element: <AuthPage/>},
+      {path:"/reset-password", element: <ResetPassword/>},
     ],
   },
 
