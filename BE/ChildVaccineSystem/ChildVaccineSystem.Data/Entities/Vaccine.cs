@@ -29,8 +29,7 @@ namespace ChildVaccineSystem.Data.Entities
         public int InjectionsCount { get; set; }
         public double Distance { get; set; }
 
-        [ForeignKey("Schedule")]
-        public int? ScheduleId { get; set; }
-        public VaccinationSchedule? Schedule { get; set; }
-    }
+		public virtual ICollection<VaccineScheduleDetail> VaccineScheduleDetails { get; set; }
+
+	}
 }

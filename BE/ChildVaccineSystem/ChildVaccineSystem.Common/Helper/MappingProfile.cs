@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
+using ChildVaccineSystem.Data.DTO.InjectionSchedule;
 using ChildVaccineSystem.Data.DTO.StaffSchedule;
 using ChildVaccineSystem.Data.DTO.VaccinationSchedule;
 using ChildVaccineSystem.Data.DTO.Vaccine;
+using ChildVaccineSystem.Data.DTO.VaccineScheduleDetail;
 using ChildVaccineSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ChildVaccineSystem.Common.Helper
 {
-    public class MappingProfile : Profile
+	public class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -57,15 +59,24 @@ namespace ChildVaccineSystem.Common.Helper
                     opt => opt.MapFrom(src => DateTime.UtcNow));
 
 			// VaccinationSchedule Mappings
-			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>()
-				    .ForMember(dest => dest.VaccineNames, 
-                      opt => opt.MapFrom(src => src.Vaccines.Select(v => v.Name).ToList())).ReverseMap();
+			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>().ReverseMap();
 
-            CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>();
+			CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>();
 
-			CreateMap<UpdateVaccinationScheduleDTO, VaccinationSchedule>()
-                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
-				.ForMember(dest => dest.Vaccines, opt => opt.Ignore());
+			CreateMap<VaccineScheduleDetailDTO, Vaccine>();
+
+            CreateMap<UpdateVaccinationScheduleDTO, VaccinationSchedule>()
+                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore());
+
+			// VaccinationScheduleDetail Mappings
+			CreateMap<VaccineScheduleDetail, VaccineScheduleDetailDTO>()
+			.ForMember(dest => dest.VaccineName,
+					  opt => opt.MapFrom(src => src.Vaccine.Name));
+
+			CreateMap<CreateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
+
+			CreateMap<UpdateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
+
 
 			// StaffSchedule Mappings
 			CreateMap<StaffSchedule, StaffScheduleDTO>()
@@ -79,6 +90,14 @@ namespace ChildVaccineSystem.Common.Helper
 			CreateMap<UpdateStaffScheduleDTO, StaffSchedule>()
 				.ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
 				.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // InjectionSchedule Mappings
+            CreateMap<InjectionSchedule, InjectionScheduleDTO>();
+
+            CreateMap<CreateInjectionScheduleDTO, InjectionSchedule>()
+				.ForMember(dest => dest.VaccineScheduleDetailId,
+					  opt => opt.Ignore());
+			CreateMap<UpdateInjectionScheduleDTO, InjectionSchedule>();
 		}
 	}
 }

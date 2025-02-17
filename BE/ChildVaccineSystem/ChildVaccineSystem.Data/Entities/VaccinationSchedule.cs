@@ -27,7 +27,7 @@ namespace ChildVaccineSystem.Data.Entities
 
         public string Notes { get; set; }
 
-        public virtual ICollection<Vaccine> Vaccines { get; set; }
-    }
+		public virtual ICollection<VaccineScheduleDetail> VaccineScheduleDetails { get; set; }
+	}
 
 }
