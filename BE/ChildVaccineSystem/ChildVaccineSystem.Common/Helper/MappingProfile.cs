@@ -58,12 +58,14 @@ namespace ChildVaccineSystem.Common.Helper
 
 			// VaccinationSchedule Mappings
 			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>()
-				 .ForMember(dest => dest.Vaccines, opt => opt.MapFrom(src => src.Vaccines)).ReverseMap();
+				    .ForMember(dest => dest.VaccineNames, 
+                      opt => opt.MapFrom(src => src.Vaccines.Select(v => v.Name).ToList())).ReverseMap();
 
             CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>();
 
 			CreateMap<UpdateVaccinationScheduleDTO, VaccinationSchedule>()
-				.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+				.ForMember(dest => dest.Vaccines, opt => opt.Ignore());
 
 			// StaffSchedule Mappings
 			CreateMap<StaffSchedule, StaffScheduleDTO>()

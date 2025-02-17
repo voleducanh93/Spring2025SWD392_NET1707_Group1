@@ -14,6 +14,6 @@ namespace ChildVaccineSystem.Data.DTO.VaccinationSchedule
 		public int AgeRangeEnd { get; set; }
 		public int RecommendedDose { get; set; }
 		public string Notes { get; set; }
-		public List<VaccineDTO>? Vaccines { get; set; }
+		public List<string> VaccineNames { get; set; }
 	}
 }

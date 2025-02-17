@@ -19,5 +19,9 @@ namespace ChildVaccineSystem.Data.DTO.VaccinationSchedule
 		public int? RecommendedDose { get; set; }
 
 		public string? Notes { get; set; }
+
+		[Required(ErrorMessage = "At least one vaccine must be selected")]
+		[MinLength(1, ErrorMessage = "At least one vaccine must be selected")]
+		public List<int> VaccineIds { get; set; }
 	}
 }
