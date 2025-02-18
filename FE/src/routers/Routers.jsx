@@ -5,6 +5,7 @@ import MainLayout from "../pages/MainLayout/MainLayout";
 import AuthPage from "../pages/AuthPage/AuthPage";
 import ResetPassword from "../pages/AuthPage/resetPassword";
 import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
+import ManagerPage from "../pages/ManagerPage/ManagerPage";
 
 
 
@@ -21,7 +22,8 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       {path:"/auth", element: <AuthPage/>},
       {path:"/reset-password", element: <ResetPassword/>},
-      {path:"/vaccineSchedule", element: <VaccineByAge/>}
+      {path:"/vaccineSchedule", element: <VaccineByAge/>},
+      {path:"/manager-page", element: <ManagerPage/>},
     ],
   },
 
