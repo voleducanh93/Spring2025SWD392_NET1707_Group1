@@ -6,8 +6,7 @@ import AuthPage from "../pages/AuthPage/AuthPage";
 import ResetPassword from "../pages/AuthPage/resetPassword";
 import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
 import ManagerPage from "../pages/ManagerPage/ManagerPage";
-
-
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -20,11 +19,17 @@ export const router = createBrowserRouter([
     children: [
       // index: true
       { index: true, element: <HomePage /> },
-      {path:"/auth", element: <AuthPage/>},
-      {path:"/reset-password", element: <ResetPassword/>},
-      {path:"/vaccineSchedule", element: <VaccineByAge/>},
-      {path:"/manager-page", element: <ManagerPage/>},
+      { path: "/reset-password", element: <ResetPassword /> },
+      { path: "/vaccineSchedule", element: <VaccineByAge /> },
+      { path: "/manager-page", element: <ManagerPage /> },
     ],
   },
-
+  {
+    path: "/auth",
+    element: (
+      <PrivateRoute>
+        <AuthPage />
+      </PrivateRoute>
+    ),
+  },
 ]);
