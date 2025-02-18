@@ -1,6 +1,6 @@
 import React from 'react';
 
-const VaccineInventoryManagement = () => {
+const VaccineSchedule = () => {
   return (
     <div>
       <h2>Quản lý kho vaccine</h2>
@@ -10,4 +10,4 @@ const VaccineInventoryManagement = () => {
   );
 };
 
-export default VaccineInventoryManagement;
+export default VaccineSchedule;

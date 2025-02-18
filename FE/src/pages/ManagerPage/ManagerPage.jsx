@@ -1,7 +1,7 @@
 import React from 'react';
 import StaffManagement from './StaffManagement';
 import DoctorManagement from './DoctorManagement';
-import VaccineInventoryManagement from './VaccineInventoryManagement';
+import VaccineSchedule from './VaccineSchedule';
 import VaccineManagement from './VaccineManagement';
 
 const ManagerPage = () => {
@@ -11,7 +11,7 @@ const ManagerPage = () => {
       <div>
         <StaffManagement />
         <DoctorManagement />
-        <VaccineInventoryManagement />
+        <VaccineSchedule />
         <VaccineManagement />
       </div>
     </div>
