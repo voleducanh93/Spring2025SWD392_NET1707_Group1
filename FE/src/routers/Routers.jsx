@@ -12,17 +12,24 @@ export const router = createBrowserRouter([
   {
     path: PATH_NAME.HOME,
     element: (
-      <PrivateRoute>
-        <MainLayout />
-      </PrivateRoute>
+      // <PrivateRoute>
+      <MainLayout />
+      // </PrivateRoute>
     ),
     children: [
       // index: true
       { index: true, element: <HomePage /> },
-      { path: "/auth", element: <AuthPage /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
       { path: "/manager-page", element: <ManagerPage /> },
     ],
+  },
+  {
+    path: "/auth",
+    element: (
+      <PrivateRoute>
+        <AuthPage />
+      </PrivateRoute>
+    ),
   },
 ]);

@@ -7,7 +7,10 @@ import {
   setRefreshTokenToLS,
 } from "./auth";
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from "../api/auth.api";
-import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from "../utils/utils";
+import {
+  isAxiosExpiredTokenError,
+  isAxiosUnauthorizedError,
+} from "../utils/utils";
 import config from "../constants/config";
 import HttpStatusCode from "../constants/httpStatusCode.enum";
 
@@ -25,7 +28,6 @@ class Http {
       },
     });
 
-   
     this.instance.interceptors.request.use(
       (config) => {
         if (this.accessToken && config.headers) {
@@ -36,22 +38,19 @@ class Http {
       (error) => Promise.reject(error)
     );
 
-    
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config;
 
-        
         if (url === URL_LOGIN) {
           const data = response.data;
           this.accessToken = data.token;
-          this.refreshToken = data.refreshToken;
+          this.refreshToken = data.refeshToken;
 
           setAccessTokenToLS(this.accessToken);
           setRefreshTokenToLS(this.refreshToken);
         }
 
-        
         if (url === URL_LOGOUT) {
           this.accessToken = "";
           this.refreshToken = "";
@@ -63,24 +62,28 @@ class Http {
       async (error) => {
         const { response } = error;
 
-       
         if (!response) {
           console.error("Lỗi mạng hoặc server không phản hồi!");
           return Promise.reject(new Error("Lỗi mạng, vui lòng thử lại!"));
         }
 
-       
-        if (![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(response.status)) {
-          console.error("Lỗi API:", response.data?.message || "Lỗi không xác định");
+        if (
+          ![
+            HttpStatusCode.UnprocessableEntity,
+            HttpStatusCode.Unauthorized,
+          ].includes(response.status)
+        ) {
+          console.error(
+            "Lỗi API:",
+            response.data?.message || "Lỗi không xác định"
+          );
           return Promise.reject(error);
         }
 
-       
         if (isAxiosUnauthorizedError(error)) {
           const config = error.response?.config || { headers: {}, url: "" };
           const { url } = config;
 
-          
           if (isAxiosExpiredTokenError(error) && url !== URL_REFRESH_TOKEN) {
             if (!this.refreshTokenRequest) {
               this.refreshTokenRequest = this.handleRefreshToken()
@@ -97,12 +100,14 @@ class Http {
             return this.refreshTokenRequest.then((access_token) => {
               return this.instance({
                 ...config,
-                headers: { ...config.headers, Authorization: `Bearer ${access_token}` },
+                headers: {
+                  ...config.headers,
+                  Authorization: `Bearer ${access_token}`,
+                },
               });
             });
           }
 
-         
           clearLS();
           this.accessToken = "";
           this.refreshToken = "";
@@ -113,7 +118,6 @@ class Http {
     );
   }
 
-  
   async handleRefreshToken() {
     try {
       const response = await this.instance.post(URL_REFRESH_TOKEN, {

@@ -1,10 +1,35 @@
+import * as React from "react";
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import PersonIcon from "@mui/icons-material/Person";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../contexts/app.context";
+import { Avatar } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import PersonAdd from "@mui/icons-material/PersonAdd";
+import Settings from "@mui/icons-material/Settings";
+import Logout from "@mui/icons-material/Logout";
 
 export default function Topbar() {
+  const { isAuthenticated } = useContext(AppContext);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       {/* Header */}
@@ -63,19 +88,70 @@ export default function Topbar() {
                 028 7102 6595
               </a>
             </motion.span>
-            {/* Đăng nhập*/}
-            <div className="flex items-center mr-5">
-              {/* Đăng nhập */}
-              <Link to="/auth">
-                <motion.a
-                  transition={{ type: "spring", stiffness: 200 }}
-                  className=" flex items-center border-amber-500 gap-2 hover:text-blue-500 transition-all duration-300"
+            {/* Đăng nhập */}
+            {!isAuthenticated ? (
+              <div className="flex items-center mr-5">
+                {/* Đăng nhập */}
+                <Link to="/auth">
+                  <motion.a
+                    transition={{ type: "spring", stiffness: 200 }}
+                    className=" flex items-center border-amber-500 gap-2 hover:text-blue-500 transition-all duration-300"
+                  >
+                    <span>Đăng nhập</span>
+                  </motion.a>
+                </Link>
+              </div>
+            ) : (
+              <div>
+                <Tooltip title="Account settings">
+                  <IconButton
+                    onClick={handleClick}
+                    size="small"
+                    sx={{ ml: 2 }}
+                    aria-controls={open ? "account-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                  >
+                    <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                  </IconButton>
+                </Tooltip>
+                {/* Dropdown Menu */}
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "account-menu-button",
+                  }}
                 >
-                  <PersonIcon className="text-gray-500" />
-                  <span>Đăng nhập</span>
-                </motion.a>
-              </Link>
-            </div>
+                  <MenuItem onClick={handleClose}>
+                    <Avatar /> Tài Khoản Của Tôi
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <Avatar /> Đơn Mua
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <PersonAdd fontSize="small" />
+                    </ListItemIcon>
+                    Thêm tài khoản
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Cài đặt
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                      <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Đăng Xuất
+                  </MenuItem>
+                </Menu>
+              </div>
+            )}
           </div>
         </div>
       </motion.header>
