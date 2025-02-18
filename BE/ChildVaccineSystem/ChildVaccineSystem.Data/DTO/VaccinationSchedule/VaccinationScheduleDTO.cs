@@ -1,4 +1,5 @@
 ﻿using ChildVaccineSystem.Data.DTO.Vaccine;
+using ChildVaccineSystem.Data.DTO.VaccineScheduleDetail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,7 @@ namespace ChildVaccineSystem.Data.DTO.VaccinationSchedule
 		public int ScheduleId { get; set; }
 		public int AgeRangeStart { get; set; }
 		public int AgeRangeEnd { get; set; }
-		public int RecommendedDose { get; set; }
 		public string Notes { get; set; }
-		public List<VaccineDTO>? Vaccines { get; set; }
+		public List<VaccineScheduleDetailDTO> VaccineScheduleDetails { get; set; } = new List<VaccineScheduleDetailDTO>();
 	}
 }

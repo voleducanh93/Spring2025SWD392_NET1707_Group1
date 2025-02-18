@@ -21,13 +21,9 @@ namespace ChildVaccineSystem.Data.Entities
 		[Range(0, int.MaxValue)]
 		public int AgeRangeEnd { get; set; }
 
-		[Required]
-		[Range(1, int.MaxValue)]
-		public int RecommendedDose { get; set; }
-
         public string Notes { get; set; }
 
-        public virtual ICollection<Vaccine> Vaccines { get; set; }
-    }
+		public virtual ICollection<VaccineScheduleDetail> VaccineScheduleDetails { get; set; }
+	}
 
 }
