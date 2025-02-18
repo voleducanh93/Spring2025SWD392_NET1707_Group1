@@ -1,8 +1,8 @@
-import React from "react";
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
+import { Link } from "react-router-dom";
 
 export default function Topbar() {
   return (
@@ -12,7 +12,7 @@ export default function Topbar() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-white shadow-md p-4 flex justify-between items-center w-full"
+        className="bg-white flex justify-between items-center w-full"
       >
         <div className="flex flex-col mx-auto md:flex-row justify-between items-center w-full px-8 lg:px-16">
           {/* Logo Section */}
@@ -30,7 +30,6 @@ export default function Topbar() {
               VNVC
             </span>
           </motion.div>
-
           {/* Navigation and Contact Section */}
           <div className="flex flex-col md:flex-row items-center gap-6 mt-4 md:mt-0">
             {/* Find Center Link */}
@@ -43,7 +42,6 @@ export default function Topbar() {
               <LocationOnIcon className="text-blue-500" />
               <span className="font-medium">TÌM TRUNG TÂM VNVC</span>
             </motion.a>
-
             {/* Register Link */}
             <motion.a
               href="#"
@@ -54,7 +52,6 @@ export default function Topbar() {
               <CalendarMonthIcon className="text-blue-500" />
               <span className="font-medium">ĐĂNG KÝ TIÊM</span>
             </motion.a>
-
             {/* Hotline */}
             <motion.span
               whileHover={{ scale: 1.1 }}
@@ -66,29 +63,18 @@ export default function Topbar() {
                 028 7102 6595
               </a>
             </motion.span>
-
-            {/* Đăng nhập / Đăng ký */}
-            <div className="flex items-center space-x-4">
+            {/* Đăng nhập*/}
+            <div className="flex items-center mr-5">
               {/* Đăng nhập */}
-              <motion.a
-                href="/signin"
-                whileHover={{ scale: 1.1 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                className="text-gray-700 flex items-center gap-2 hover:text-blue-500 transition-all duration-300"
-              >
-                <PersonIcon className="text-gray-500" />
-                <span>Đăng nhập</span>
-              </motion.a>
-
-              {/* Đăng ký */}
-              <motion.a
-                href="/signup"
-                whileHover={{ scale: 1.1 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300"
-              >
-                Đăng ký
-              </motion.a>
+              <Link to="/auth">
+                <motion.a
+                  transition={{ type: "spring", stiffness: 200 }}
+                  className=" flex items-center border-amber-500 gap-2 hover:text-blue-500 transition-all duration-300"
+                >
+                  <PersonIcon className="text-gray-500" />
+                  <span>Đăng nhập</span>
+                </motion.a>
+              </Link>
             </div>
           </div>
         </div>
