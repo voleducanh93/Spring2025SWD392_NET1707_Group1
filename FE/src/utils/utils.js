@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import HttpStatusCode from '../constants/httpStatusCode.enum';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 
 // import userImage from 'src/assets/images/user.svg';

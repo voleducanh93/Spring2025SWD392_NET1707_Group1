@@ -6,9 +6,8 @@ export const useVaccineSchedule = () => {
 
   // ✅ Fetch danh sách vaccine
   const { data: vaccines, isLoading, isError, error } = useQuery({
-    queryKey: ["vaccines"],
+    queryKey: ["vaccineSchedule"],
     queryFn: getVaccines, 
-    
     refetchOnWindowFocus: false,
   });
 

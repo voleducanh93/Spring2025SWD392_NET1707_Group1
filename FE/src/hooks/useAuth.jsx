@@ -40,7 +40,6 @@ export const useForgotPassword = () => {
   return useMutation({
     mutationFn: (email) => authApi.forgotPassword(email),
     onSuccess: (data) => {
-      
       toast.success(data.message || "Đã gửi email đặt lại mật khẩu!");
     },
     onError: (error) => {
