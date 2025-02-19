@@ -8,6 +8,8 @@ import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
 import ManagerPage from "../pages/ManagerPage/ManagerPage";
 import PrivateRoute from "./PrivateRoute";
 
+import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
+
 export const router = createBrowserRouter([
   {
     path: PATH_NAME.HOME,
@@ -22,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
       { path: "/manager-page", element: <ManagerPage /> },
+      { path: "/vaccine", element: <VaccineManagement /> },
     ],
   },
   {
