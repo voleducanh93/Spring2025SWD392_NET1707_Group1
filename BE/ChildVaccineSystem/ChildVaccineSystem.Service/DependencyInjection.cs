@@ -23,7 +23,7 @@ namespace ChildVaccineSystem.Service
 			services.AddTransient<IVaccinationScheduleService, VaccinationScheduleService>();
 			services.AddScoped<IStaffScheduleService, StaffScheduleService>();
             services.AddTransient<IChildrenService, ChildrenService>();
-
+            services.AddTransient<IUserService, UserService>();
             return services;
         }
     }

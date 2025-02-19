@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChildVaccineSystem.Data.DTO;
+using ChildVaccineSystem.Data.DTO.Auth;
 using ChildVaccineSystem.Data.DTO.Children;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
 using ChildVaccineSystem.Data.DTO.InjectionSchedule;
