@@ -5,6 +5,8 @@ const BASE_URL = "/VaccinationSchedule";
 // Lấy danh sách vaccine
 export const getVaccines = async () => {
   const response = await http.get(BASE_URL);
+  console.log(response);
+  
   return response.data.result;
 };
 

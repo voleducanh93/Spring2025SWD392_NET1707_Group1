@@ -24,7 +24,7 @@ export const useLogin = () => {
   const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
   return useMutation({
     mutationFn: (userData) => authApi.login(userData),
-    onSuccess: (data) => {
+    onSuccess: () => {
       setIsAuthenticated(true);
       console.log(isAuthenticated);
 
@@ -40,6 +40,7 @@ export const useForgotPassword = () => {
   return useMutation({
     mutationFn: (email) => authApi.forgotPassword(email),
     onSuccess: (data) => {
+      
       toast.success(data.message || "Đã gửi email đặt lại mật khẩu!");
     },
     onError: (error) => {

@@ -7,11 +7,12 @@ export const useVaccineSchedule = () => {
   // ✅ Fetch danh sách vaccine
   const { data: vaccines, isLoading, isError, error } = useQuery({
     queryKey: ["vaccines"],
-    queryFn: getVaccines, // Không cần `try/catch` vì React Query tự xử lý
+    queryFn: getVaccines, 
+    
     refetchOnWindowFocus: false,
   });
 
-  // ✅ Thêm vaccine mới
+
   const addVaccine = useMutation({
     mutationFn: createVaccine,
     onSuccess: () => {
@@ -22,7 +23,7 @@ export const useVaccineSchedule = () => {
     },
   });
 
-  // ✅ Sửa vaccine
+ 
   const editVaccine = useMutation({
     mutationFn: ({ id, data }) => updateVaccine(id, data),
     onSuccess: () => {
@@ -32,8 +33,6 @@ export const useVaccineSchedule = () => {
       console.error("❌ Lỗi khi cập nhật vaccine:", error);
     },
   });
-
-  // ✅ Xóa vaccine
   const removeVaccine = useMutation({
     mutationFn: deleteVaccine,
     onSuccess: () => {

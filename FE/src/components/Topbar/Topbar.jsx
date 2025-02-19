@@ -16,9 +16,11 @@ import Tooltip from "@mui/material/Tooltip";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
+import { clearLS } from "../../utils/auth";
+import { toast } from "react-toastify";
 
 export default function Topbar() {
-  const { isAuthenticated } = useContext(AppContext);
+  const {  setIsAuthenticated,isAuthenticated } = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -29,6 +31,12 @@ export default function Topbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleLogout = () => {
+    toast.success("Đăng xuất thành công!");
+    handleClose();
+    clearLS();
+    setIsAuthenticated(false);
+  }
 
   return (
     <>
@@ -143,7 +151,7 @@ export default function Topbar() {
                     </ListItemIcon>
                     Cài đặt
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>
