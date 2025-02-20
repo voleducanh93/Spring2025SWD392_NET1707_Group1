@@ -1,26 +1,40 @@
 import * as React from "react";
 import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../contexts/app.context";
+import {
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
-import { Avatar } from "@mui/material";
+import { Avatar, Container } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
+import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
+import PersonIcon from "@mui/icons-material/Person";
 
 export default function Topbar() {
-  const {  setIsAuthenticated,isAuthenticated } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -31,28 +45,31 @@ export default function Topbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleLogout = () => {
     toast.success("Đăng xuất thành công!");
     handleClose();
     clearLS();
     setIsAuthenticated(false);
-  }
+    navigate("/auth");
+  };
 
   return (
-    <>
+    <Container>
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-white flex justify-between items-center w-full"
+        className=" w-full"
       >
-        <div className="flex flex-col mx-auto md:flex-row justify-between items-center w-full px-8 lg:px-16">
+        <div className="flex flex-col mx-auto md:flex-row justify-around items-center w-full lg:px-16">
           {/* Logo Section */}
           <motion.div
             whileHover={{ scale: 1.1, rotate: 3 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="flex items-center space-x-4 cursor-pointer"
+            className="flex items-center !space-x-3 cursor-pointer"
+            onClick={() => navigate("/")}
           >
             <img
               src="src/assets/logo-vnvc-tet-nguyen-dan.png"
@@ -63,95 +80,117 @@ export default function Topbar() {
               VNVC
             </span>
           </motion.div>
-          {/* Navigation and Contact Section */}
+
+          {/* Navigation */}
           <div className="flex flex-col md:flex-row items-center gap-6 mt-4 md:mt-0">
-            {/* Find Center Link */}
             <motion.a
               href="#"
               whileHover={{ scale: 1.1, x: 5 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-blue-700 flex items-center gap-2 hover:text-blue-900 transition-all duration-300"
+              className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <LocationOnIcon className="text-blue-500" />
+              <LocationOnIcon />
               <span className="font-medium">TÌM TRUNG TÂM VNVC</span>
             </motion.a>
-            {/* Register Link */}
+
             <motion.a
               href="#"
               whileHover={{ scale: 1.1, x: 5 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-blue-700 flex items-center gap-2 hover:text-blue-900 transition-all duration-300"
+              className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <CalendarMonthIcon className="text-blue-500" />
+              <CalendarMonthIcon />
               <span className="font-medium">ĐĂNG KÝ TIÊM</span>
             </motion.a>
-            {/* Hotline */}
+
             <motion.span
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-orange-500 font-bold text-lg md:text-base bg-orange-100 px-4 py-2 rounded-lg shadow-md hover:bg-orange-200 transition-all duration-300 cursor-pointer"
+              className="text-orange-500 font-bold text-lg md:text-base bg-orange-100 !px-4 !py-2 rounded-lg shadow-md hover:bg-orange-200 transition-all duration-300 cursor-pointer"
             >
               Hotline:{" "}
               <a href="tel:02871026595" className="hover:underline">
                 028 7102 6595
               </a>
             </motion.span>
-            {/* Đăng nhập */}
+
+            {/* Đăng nhập / Tài khoản */}
             {!isAuthenticated ? (
               <div className="flex items-center mr-5">
-                {/* Đăng nhập */}
                 <Link to="/auth">
                   <motion.a
                     transition={{ type: "spring", stiffness: 200 }}
-                    className=" flex items-center border-amber-500 gap-2 hover:text-blue-500 transition-all duration-300"
+                    className=" flex items-center text-[#F9BC31] gap-2 hover:opacity-80 transition-all duration-200"
                   >
                     <span>Đăng nhập</span>
+                    <PersonIcon />
                   </motion.a>
                 </Link>
               </div>
             ) : (
               <div>
-                <Tooltip title="Account settings">
-                  <IconButton
-                    onClick={handleClick}
-                    size="small"
-                    sx={{ ml: 2 }}
-                    aria-controls={open ? "account-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                  >
+                <Tooltip title="Tài khoản">
+                  <IconButton onClick={handleClick} size="small">
                     <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
                   </IconButton>
                 </Tooltip>
+
                 {/* Dropdown Menu */}
                 <Menu
                   anchorEl={anchorEl}
                   open={open}
                   onClose={handleClose}
-                  MenuListProps={{
-                    "aria-labelledby": "account-menu-button",
+                  PaperProps={{
+                    sx: {
+                      borderRadius: "8px",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
+                    },
                   }}
                 >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem
+                    onClick={handleClose}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <Avatar /> Tài Khoản Của Tôi
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Đơn Mua
+
+                  {/* Hồ sơ trẻ em */}
+                  <MenuItem
+                    onClick={() => navigate("/child-profile")}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
+                    <ListItemIcon>
+                      <ChildCareIcon fontSize="small" />
+                    </ListItemIcon>
+                    Hồ sơ trẻ em
                   </MenuItem>
+
                   <Divider />
-                  <MenuItem onClick={handleClose}>
+
+                  <MenuItem
+                    onClick={handleClose}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <ListItemIcon>
                       <PersonAdd fontSize="small" />
                     </ListItemIcon>
                     Thêm tài khoản
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+
+                  <MenuItem
+                    onClick={handleClose}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <ListItemIcon>
                       <Settings fontSize="small" />
                     </ListItemIcon>
                     Cài đặt
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
+
+                  <MenuItem
+                    onClick={handleLogout}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>
@@ -163,6 +202,6 @@ export default function Topbar() {
           </div>
         </div>
       </motion.header>
-    </>
+    </Container>
   );
 }
