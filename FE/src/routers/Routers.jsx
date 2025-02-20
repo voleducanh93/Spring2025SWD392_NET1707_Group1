@@ -10,6 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
+import UploadForm from "../pages/AuthPage/upload";
 
 
 
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
       { path: "/manager-page", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
-      { path: "/children", element: <RegistrationForm /> },
+      { path: "/children", element: <UploadForm/> },
     ],
   },
   {
