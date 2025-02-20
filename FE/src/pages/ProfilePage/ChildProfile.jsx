@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Add navigate for routing
 import { useChildren } from "../../hooks/useChildren"; // Gọi dữ liệu từ useChildren
 import { Card, CardContent, CardActions, Button, Avatar, Typography, Grid, CircularProgress, Alert } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -9,7 +10,8 @@ import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 
 const ChildProfile = () => {
-  const { vaccines: children, isLoading, isError, error, removeChildren } = useChildren(); // Gọi API từ useChildren
+  const { vaccines: children, isLoading, isError, error, removeChildren } = useChildren();
+  const navigate = useNavigate(); // Use navigate to redirect to the edit page
 
   // Xử lý trạng thái tải dữ liệu
   if (isLoading) {
@@ -36,6 +38,15 @@ const ChildProfile = () => {
     }
   };
 
+  // If there are no children
+  if (children.length === 0) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert severity="info">Chưa có hồ sơ trẻ em. Hãy thêm hồ sơ mới.</Alert>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-6">
       <motion.h1
@@ -61,28 +72,23 @@ const ChildProfile = () => {
                   <Avatar sx={{ width: 80, height: 80, mb: 2 }}>
                     {child.gender === "Male" ? <MaleIcon fontSize="large" color="primary" /> : <FemaleIcon fontSize="large" color="secondary" />}
                   </Avatar>
-                  <Typography variant="h6" fontWeight="bold">
-                    {child.fullName}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Ngày sinh: {new Date(child.dateOfBirth).toLocaleDateString("vi-VN")}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Giới tính: {child.gender === "Male" ? "Nam" : "Nữ"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Quan hệ: {child.relationToUser}
-                  </Typography>
 
-                  <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: "bold" }}>
-                    Tiền sử bệnh:
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {child.medicalHistory ? child.medicalHistory : "Không có"}
-                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">{child.fullName}</Typography>
+                  <Typography variant="body2" color="textSecondary">Ngày sinh: {new Date(child.dateOfBirth).toLocaleDateString("vi-VN")}</Typography>
+                  <Typography variant="body2" color="textSecondary">Giới tính: {child.gender === "Male" ? "Nam" : "Nữ"}</Typography>
+                  <Typography variant="body2" color="textSecondary">Quan hệ: {child.relationToUser}</Typography>
+
+                  <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: "bold" }}>Tiền sử bệnh:</Typography>
+                  <Typography variant="body2" color="textSecondary">{child.medicalHistory ? child.medicalHistory : "Không có"}</Typography>
                 </CardContent>
+
                 <CardActions className="flex justify-center">
-                  <Button variant="contained" color="primary" startIcon={<EditIcon />}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<EditIcon />}
+                    onClick={() => navigate(`/edit-child/${child.childId}`)} // Navigate to edit page
+                  >
                     Chỉnh sửa
                   </Button>
                   <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => handleDelete(child.childId)}>
@@ -97,20 +103,7 @@ const ChildProfile = () => {
         {/* Nút thêm hồ sơ mới */}
         <Grid item xs={12} sm={6} md={4}>
           <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 200 }}>
-            <Card
-              sx={{
-                maxWidth: 350,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                border: "2px dashed #3b82f6",
-                boxShadow: "none",
-                borderRadius: 3,
-                padding: 3,
-              }}
-            >
+            <Card sx={{ maxWidth: 350, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", border: "2px dashed #3b82f6", boxShadow: "none", borderRadius: 3, padding: 3 }}>
               <Button variant="outlined" color="primary" startIcon={<AddCircleIcon />} size="large">
                 Thêm Hồ Sơ
               </Button>

@@ -22,7 +22,7 @@ import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 
 export default function Topbar() {
-  const navigate = useNavigate(); // Điều hướng trang
+  const navigate = useNavigate();
   const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -40,7 +40,7 @@ export default function Topbar() {
     handleClose();
     clearLS();
     setIsAuthenticated(false);
-    navigate("/auth"); // Chuyển hướng sau khi đăng xuất
+    navigate("/auth");
   };
 
   return (
@@ -52,12 +52,12 @@ export default function Topbar() {
         className="bg-white flex justify-between items-center w-full shadow-md p-4"
       >
         <div className="flex flex-col mx-auto md:flex-row justify-between items-center w-full px-8 lg:px-16">
-          {/* Logo - Nhấn vào để về trang Home */}
+          {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.1, rotate: 3 }}
             transition={{ type: "spring", stiffness: 200 }}
             className="flex items-center space-x-4 cursor-pointer"
-            onClick={() => navigate("/")} // Chuyển về Home khi nhấn
+            onClick={() => navigate("/")}
           >
             <img
               src="src/assets/logo-vnvc-tet-nguyen-dan.png"
@@ -120,13 +120,26 @@ export default function Topbar() {
                 </Tooltip>
 
                 {/* Dropdown Menu */}
-                <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                  <MenuItem onClick={handleClose}>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  PaperProps={{
+                    sx: {
+                      borderRadius: "8px",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
+                    },
+                  }}
+                >
+                  <MenuItem onClick={handleClose} className="hover:bg-gray-100 transition-all duration-200">
                     <Avatar /> Tài Khoản Của Tôi
                   </MenuItem>
 
-                  {/* Hồ sơ trẻ em - Chuyển hướng sang ChildProfile */}
-                  <MenuItem onClick={() => navigate("/child-profile")}>
+                  {/* Hồ sơ trẻ em */}
+                  <MenuItem
+                    onClick={() => navigate("/child-profile")}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <ListItemIcon>
                       <ChildCareIcon fontSize="small" />
                     </ListItemIcon>
@@ -135,21 +148,24 @@ export default function Topbar() {
 
                   <Divider />
 
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleClose} className="hover:bg-gray-100 transition-all duration-200">
                     <ListItemIcon>
                       <PersonAdd fontSize="small" />
                     </ListItemIcon>
                     Thêm tài khoản
                   </MenuItem>
 
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleClose} className="hover:bg-gray-100 transition-all duration-200">
                     <ListItemIcon>
                       <Settings fontSize="small" />
                     </ListItemIcon>
                     Cài đặt
                   </MenuItem>
 
-                  <MenuItem onClick={handleLogout}>
+                  <MenuItem
+                    onClick={handleLogout}
+                    className="hover:bg-gray-100 transition-all duration-200"
+                  >
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>
