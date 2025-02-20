@@ -18,21 +18,26 @@ namespace ChildVaccineSystem.Repository.Repositories
 		public IStaffScheduleRepository StaffSchedules { get; }
 		public IInjectionScheduleRepository InjectionSchedules { get; }
 		public IVaccineScheduleDetailRepository VaccineScheduleDetails { get; }
+        public IChildrenRepository Children { get; }
+        public IUserRepository Users { get; }
 
 
-		public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository)
+
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository)
         {
             _context = context;
             Vaccines = vaccineRepository;
             ComboVaccines = comboVaccines;
             ComboDetails = comboDetails;
-			VaccinationSchedules = vaccinationScheduleRepository;
-			StaffSchedules = staffScheduleRepository;
-			InjectionSchedules = injectionScheduleRepository;
-			VaccineScheduleDetails = vaccineScheduleDetailRepository;
-		}
+            VaccinationSchedules = vaccinationScheduleRepository;
+            StaffSchedules = staffScheduleRepository;
+            InjectionSchedules = injectionScheduleRepository;
+            VaccineScheduleDetails = vaccineScheduleDetailRepository;
+            Children = childrenRepository;
+            Users = userRepository;
+        }
 
-		public async Task<int> CompleteAsync()
+        public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();
         }

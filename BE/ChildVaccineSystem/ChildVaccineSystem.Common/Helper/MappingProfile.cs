@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using ChildVaccineSystem.Data.DTO;
+using ChildVaccineSystem.Data.DTO.Auth;
+using ChildVaccineSystem.Data.DTO.Children;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
 using ChildVaccineSystem.Data.DTO.InjectionSchedule;
 using ChildVaccineSystem.Data.DTO.StaffSchedule;
@@ -59,9 +61,11 @@ namespace ChildVaccineSystem.Common.Helper
                     opt => opt.MapFrom(src => DateTime.UtcNow));
 
 			// VaccinationSchedule Mappings
-			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>().ReverseMap();
+			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>()
+                .ForMember(dest => dest.VaccineScheduleDetails, opt => opt.MapFrom(src => src.VaccineScheduleDetails)).ReverseMap();
 
-			CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>();
+			CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>()
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes ?? string.Empty));
 
 			CreateMap<VaccineScheduleDetailDTO, Vaccine>();
 
@@ -70,7 +74,8 @@ namespace ChildVaccineSystem.Common.Helper
 
 			// VaccinationScheduleDetail Mappings
 			CreateMap<VaccineScheduleDetail, VaccineScheduleDetailDTO>()
-			.ForMember(dest => dest.VaccineName,
+				.ForMember(dest => dest.InjectionSchedules, opt => opt.MapFrom(src => src.InjectionSchedules))
+			    .ForMember(dest => dest.VaccineName,
 					  opt => opt.MapFrom(src => src.Vaccine.Name));
 
 			CreateMap<CreateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
@@ -95,9 +100,16 @@ namespace ChildVaccineSystem.Common.Helper
             CreateMap<InjectionSchedule, InjectionScheduleDTO>();
 
             CreateMap<CreateInjectionScheduleDTO, InjectionSchedule>()
+				 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes ?? string.Empty))
 				.ForMember(dest => dest.VaccineScheduleDetailId,
 					  opt => opt.Ignore());
+
 			CreateMap<UpdateInjectionScheduleDTO, InjectionSchedule>();
-		}
+
+            //Children
+            CreateMap<Children, ChildrenDTO>().ReverseMap();
+            CreateMap<CreateChildrenDTO, Children>();
+            CreateMap<UpdateChildrenDTO, Children>();
+        }
 	}
 }
