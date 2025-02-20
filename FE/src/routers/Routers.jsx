@@ -6,6 +6,7 @@ import AuthPage from "../pages/AuthPage/AuthPage";
 import ResetPassword from "../pages/AuthPage/resetPassword";
 import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
 import ManagerPage from "../pages/ManagerPage/ManagerPage";
+import ChildProfile from "../pages/ProfilePage/ChildProfile";
 import PrivateRoute from "./PrivateRoute";
 
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: "/manager-page", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <RegistrationForm /> },
+      { path: "/child-profile", element: <ChildProfile /> },
     ],
   },
   {
