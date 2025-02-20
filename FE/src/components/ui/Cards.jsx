@@ -1,15 +1,25 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { Container, Grid, CircularProgress, Alert } from "@mui/material";
+import {
+  Container,
+  Grid,
+  CircularProgress,
+  Alert,
+  Typography,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Pagination,
+} from "@mui/material";
 import { useVaccine } from "../../hooks/useVaccine";
+
+const ITEMS_PER_PAGE = 6; // Số vaccine mỗi trang
 
 export default function Cards() {
   const { vaccines, isLoading, isError, error } = useVaccine();
+  const [page, setPage] = useState(1); // Quản lý trang hiện tại
 
   if (isLoading) {
     return (
@@ -26,6 +36,13 @@ export default function Cards() {
       </Container>
     );
   }
+
+  // Tính toán vaccine hiển thị theo trang hiện tại
+  const totalPages = Math.ceil(vaccines.length / ITEMS_PER_PAGE);
+  const displayedVaccines = vaccines.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
 
   return (
     <Container sx={{ mt: 5, position: "relative" }}>
@@ -48,33 +65,13 @@ export default function Cards() {
         >
           Danh mục Vắc Xin
         </Typography>
-        <Button
-          variant="outlined"
-          sx={{
-            borderColor: "#2A388F",
-            color: "#2A388F",
-            borderRadius: "20px",
-            padding: "6px 16px",
-            "&:hover": {
-              borderColor: "#1F2B75",
-              color: "#1F2B75",
-              backgroundColor: "rgba(0, 0, 0, 0.1)",
-            },
-          }}
-          onClick={() => {
-            /* Handle view all action */
-          }}
-        >
-          Xem tất cả
-        </Button>
       </div>
+
+      {/* Hiển thị danh sách vaccine */}
       <Grid container spacing={4}>
-        {vaccines.map((vaccine, index) => (
+        {displayedVaccines.map((vaccine, index) => (
           <Grid item key={index} xs={12} sm={6} md={4}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 150 }}
-            >
+            <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 150 }}>
               <Card
                 sx={{
                   maxWidth: 345,
@@ -146,6 +143,16 @@ export default function Cards() {
           </Grid>
         ))}
       </Grid>
+
+      {/* Phân trang */}
+      <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+        />
+      </Container>
     </Container>
   );
 }
