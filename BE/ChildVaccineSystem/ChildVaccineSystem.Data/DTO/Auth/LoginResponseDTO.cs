@@ -10,5 +10,6 @@ namespace ChildVaccineSystem.Data.DTO.Auth
     {
         public string Token { get; set; }
         public string RefeshToken { get; set; }
+        public string UserId { get; set; }  
     }
 }
