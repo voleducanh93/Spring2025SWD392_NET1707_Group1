@@ -5,22 +5,22 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
-import { Avatar } from "@mui/material";
+import { Avatar, Container } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
+import PersonIcon from "@mui/icons-material/Person";
 
 export default function Topbar() {
-  const {  setIsAuthenticated,isAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -36,23 +36,23 @@ export default function Topbar() {
     handleClose();
     clearLS();
     setIsAuthenticated(false);
-  }
+  };
 
   return (
-    <>
+    <Container>
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-white flex justify-between items-center w-full"
+        className=" w-full"
       >
-        <div className="flex flex-col mx-auto md:flex-row justify-between items-center w-full px-8 lg:px-16">
+        <div className="flex flex-col mx-auto md:flex-row justify-around items-center w-full lg:px-16">
           {/* Logo Section */}
           <motion.div
             whileHover={{ scale: 1.1, rotate: 3 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="flex items-center space-x-4 cursor-pointer"
+            className="flex items-center !space-x-3 cursor-pointer"
           >
             <img
               src="src/assets/logo-vnvc-tet-nguyen-dan.png"
@@ -70,9 +70,9 @@ export default function Topbar() {
               href="#"
               whileHover={{ scale: 1.1, x: 5 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-blue-700 flex items-center gap-2 hover:text-blue-900 transition-all duration-300"
+              className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <LocationOnIcon className="text-blue-500" />
+              <LocationOnIcon />
               <span className="font-medium">TÌM TRUNG TÂM VNVC</span>
             </motion.a>
             {/* Register Link */}
@@ -80,16 +80,16 @@ export default function Topbar() {
               href="#"
               whileHover={{ scale: 1.1, x: 5 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-blue-700 flex items-center gap-2 hover:text-blue-900 transition-all duration-300"
+              className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <CalendarMonthIcon className="text-blue-500" />
+              <CalendarMonthIcon />
               <span className="font-medium">ĐĂNG KÝ TIÊM</span>
             </motion.a>
             {/* Hotline */}
             <motion.span
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="text-orange-500 font-bold text-lg md:text-base bg-orange-100 px-4 py-2 rounded-lg shadow-md hover:bg-orange-200 transition-all duration-300 cursor-pointer"
+              className="text-orange-500 font-bold text-lg md:text-base bg-orange-100 !px-4 !py-2 rounded-lg shadow-md hover:bg-orange-200 transition-all duration-300 cursor-pointer"
             >
               Hotline:{" "}
               <a href="tel:02871026595" className="hover:underline">
@@ -103,9 +103,10 @@ export default function Topbar() {
                 <Link to="/auth">
                   <motion.a
                     transition={{ type: "spring", stiffness: 200 }}
-                    className=" flex items-center border-amber-500 gap-2 hover:text-blue-500 transition-all duration-300"
+                    className=" flex items-center text-[#F9BC31] gap-2 hover:opacity-80 transition-all duration-200"
                   >
                     <span>Đăng nhập</span>
+                    <PersonIcon />
                   </motion.a>
                 </Link>
               </div>
@@ -163,6 +164,6 @@ export default function Topbar() {
           </div>
         </div>
       </motion.header>
-    </>
+    </Container>
   );
 }

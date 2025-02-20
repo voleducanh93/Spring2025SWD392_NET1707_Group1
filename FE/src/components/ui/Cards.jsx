@@ -14,8 +14,9 @@ import {
   Pagination,
 } from "@mui/material";
 import { useVaccine } from "../../hooks/useVaccine";
+import imgTam from "../../assets/vac-xin-pentaxim-1.jpg";
 
-const ITEMS_PER_PAGE = 6; // Số vaccine mỗi trang
+const ITEMS_PER_PAGE = 12; // Số vaccine mỗi trang
 
 export default function Cards() {
   const { vaccines, isLoading, isError, error } = useVaccine();
@@ -70,8 +71,11 @@ export default function Cards() {
       {/* Hiển thị danh sách vaccine */}
       <Grid container spacing={4}>
         {displayedVaccines.map((vaccine, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4}>
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 150 }}>
+          <Grid item key={index} xs={12} sm={6} md={3}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 150 }}
+            >
               <Card
                 sx={{
                   maxWidth: 345,
@@ -89,7 +93,7 @@ export default function Cards() {
                   component="img"
                   alt={vaccine.name}
                   height="200"
-                  image={vaccine.image || "default-image.jpg"} // Fallback image
+                  image={imgTam} //{vaccine.image || "default-image.jpg"} // Fallback image
                   sx={{
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",
@@ -100,14 +104,25 @@ export default function Cards() {
                     gutterBottom
                     variant="h6"
                     component="div"
-                    sx={{ fontWeight: "bold", color: "#2A388F", fontSize: "1.2rem" }}
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#2A388F",
+                      fontSize: "1.2rem",
+                    }}
                   >
                     {vaccine.name}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ color: "#555", fontSize: "0.9rem", lineHeight: "1.4" }}
+                    sx={{
+                      color: "#555",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
                   >
                     {vaccine.description}
                   </Typography>

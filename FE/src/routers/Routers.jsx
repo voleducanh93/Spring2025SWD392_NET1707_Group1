@@ -10,8 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
-
-
+import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "/manager-page", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <RegistrationForm /> },
+      { path: "/vaccine-detail", element: <VaccineDetailPage /> },
     ],
   },
   {
