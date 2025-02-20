@@ -53,12 +53,15 @@ namespace ChildVaccineSystem.Service.Services
             if (!user.EmailConfirmed)
                 throw new Exception("Email is not confirmed. Please confirm your email to login.");
 
+
             var token = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
+           
             return new LoginResponseDTO
             {
                 Token = token,
                 RefeshToken = refreshToken,
+                UserId = user.Id
             };
         }
         public async Task<User> RegisterAsync(UserRegisterDTO dto)
