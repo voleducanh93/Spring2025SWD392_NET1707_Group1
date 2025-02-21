@@ -8,6 +8,7 @@ import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
 import ManagerPage from "../pages/ManagerPage/ManagerPage";
 import ChildProfile from "../pages/ProfilePage/ChildProfile";
 import EditChildProfile from "../pages/ProfilePage/EditChildProfile";
+import BookingPage from "../pages/BookingPage/BookingPage";
 import PrivateRoute from "./PrivateRoute";
 
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
       { path: "/children", element: <RegistrationForm /> },
       { path: "/child-profile", element: <ChildProfile /> },
       { path: "/edit-child/:childId", element: <EditChildProfile /> },
+      { path: "/booking", element: <BookingPage /> },
     ],
   },
   {
