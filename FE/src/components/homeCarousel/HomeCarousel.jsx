@@ -32,24 +32,32 @@ function HomeCarousel() {
       navigation={true}
       effect="fade"
       modules={[Pagination, Autoplay, Navigation, EffectFade]}
-      className="carousel h-screen w-full"
+      breakpoints={{
+        320: { slidesPerView: 1 }, // Điện thoại nhỏ
+        640: { slidesPerView: 1 }, // Tablet dọc
+        1024: { slidesPerView: 1 }, // Tablet ngang
+        1280: { slidesPerView: 1 }, // Laptop
+        1536: { slidesPerView: 1 }, // Desktop lớn
+      }}
+      className="carousel w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px]"
     >
       {slides.map((slide, index) => (
         <SwiperSlide key={index}>
-          <div className="relative h-full w-full">
+          <div className="relative w-full h-full">
+            {/* Ảnh nền */}
             <img
               loading="lazy"
               src={slide.image}
               alt=""
-              className="h-full w-full object-cover"
+              className="w-full h-full object-cover"
             />
 
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
 
-            {/* Text with Animation */}
+            {/* Text với Animation và Responsive */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <h2 className="text-white text-5xl font-bold drop-shadow-lg opacity-0 animate-fadeIn">
+              <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold drop-shadow-lg opacity-0 animate-fadeIn">
                 {slide.text}
               </h2>
             </div>

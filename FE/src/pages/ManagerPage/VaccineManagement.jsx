@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Space, notification } from 'antd';
+import { Table, Button, Modal, Form, Input, Space, notification, Row, Col, Upload } from 'antd';
 import { useVaccine } from '../../hooks/useVaccine'; // Sử dụng hook lấy dữ liệu vaccine
+import { UploadOutlined } from '@mui/icons-material';
+import { toast } from 'react-toastify';
+import { uploadFile } from '../../config/firebase';
 
 const VaccineManagement = () => {
   const { vaccines, isLoading, addVaccine, editVaccine, removeVaccine } = useVaccine();
@@ -9,7 +12,8 @@ const VaccineManagement = () => {
   const [editingVaccine, setEditingVaccine] = useState(null);
   const [selectedVaccine, setSelectedVaccine] = useState(null);
   const [form] = Form.useForm();
-
+  const [selectedFile, setSelectedFile] = useState(null);
+  
   // Mở modal chi tiết vaccine
   const showDetailModal = (vaccine) => {
     setSelectedVaccine(vaccine);
@@ -59,32 +63,67 @@ const VaccineManagement = () => {
     });
   };
 
-  // Thêm hoặc cập nhật vaccine
-  const handleOk = () => {
-    form.validateFields().then((values) => {
-      const vaccineData = {
-        ...values,
-        price: parseFloat(values.price),
-        status: true, // Chắc chắn vaccine mới sẽ có status = true
-        isNecessary: true, // Cần tiêm nhiều mũi mặc định là true
-      };
-
-      if (editingVaccine) {
-        // Cập nhật vaccine
-        const vaccineId = editingVaccine.vaccineId;
-        console.log(vaccineId);
-        
-        editVaccine.mutate({ id: vaccineId, data: vaccineData });
-        notification.success({ message: 'Vaccine đã được cập nhật thành công!' });
-      } else {
-        // Thêm vaccine mới
-        addVaccine.mutate(vaccineData);
-        notification.success({ message: 'Vaccine đã được thêm thành công!' });
-      }
-      setIsModalOpen(false);
-      form.resetFields();
-    });
+  const handleFileChange = ({ file }) => {
+    setSelectedFile(file);
+    console.log(selectedFile);
+     // Lưu file khi chọn
   };
+  // Thêm hoặc cập nhật vaccine
+ const handleOk = async () => {
+  try {
+    // Validate form fields
+    await form.validateFields();
+    console.log(selectedFile);
+
+    // Ensure file is uploaded and get the URL
+    let url = '';
+    if (selectedFile) {
+      url = await uploadFile(selectedFile);  // Wait for the file to upload and get the URL
+      console.log("Uploaded Image URL:", url);
+    }
+
+    // Prepare the vaccine data
+    const vaccineData = {
+      ...form.getFieldsValue(),
+      image: url,  // Store the uploaded image URL
+      price: parseFloat(form.getFieldValue('price')),
+      status: true,  // Default status is active
+      isNecessary: true,  // Default to necessary for multiple injections
+    };
+
+    // If editing existing vaccine, update it
+    if (editingVaccine) {
+      const vaccineId = editingVaccine.vaccineId;
+      editVaccine.mutate({ id: vaccineId, data: vaccineData }, {
+        onSuccess: () => {
+          toast.success('Vaccine updated successfully!');
+        },
+        onError: (error) => {
+          toast.error(`Error updating vaccine: ${error.message}`);
+        },
+      });
+    } else {
+      // If adding new vaccine, create it
+      addVaccine.mutate(vaccineData, {
+        onSuccess: () => {
+          toast.success('Vaccine added successfully!');
+        },
+        onError: (error) => {
+          toast.error(`Error adding vaccine: ${error.message}`);
+        },
+      });
+    }
+
+    // Close modal and reset form
+    setIsModalOpen(false);
+    form.resetFields();
+  } catch (error) {
+    console.error("Error during file upload or form validation:", error);
+    toast.error("Error during file upload or form validation.");
+  }
+};
+
+  
 
   // Cấu hình cột cho bảng
   const columns = [
@@ -149,65 +188,79 @@ const VaccineManagement = () => {
 
       {/* Modal thêm/sửa vaccine */}
       <Modal
-        title={editingVaccine ? 'Cập nhật vaccine' : 'Thêm vaccine'}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={() => setIsModalOpen(false)}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="name" label="Tên Vaccine" rules={[{ required: true, message: 'Vui lòng nhập tên vaccine!' }]}>
-            <Input />
-          </Form.Item>
+      title={editingVaccine ? "Cập nhật vaccine" : "Thêm vaccine"}
+      open={isModalOpen}
+      onOk={handleOk}
+      onCancel={() => setIsModalOpen(false)}
+      width={800} // Tăng độ rộng modal
+    >
+      <Form form={form} layout="vertical">
+        <Row gutter={16}>
+          {/* Cột 1 */}
+          <Col span={12}>
+            <Form.Item name="name" label="Tên Vaccine" rules={[{ required: true, message: "Vui lòng nhập tên vaccine!" }]}>
+              <Input />
+            </Form.Item>
 
-          <Form.Item name="description" label="Mô Tả" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
-            <Input />
-          </Form.Item>
+            <Form.Item name="description" label="Mô Tả" rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}>
+              <Input />
+            </Form.Item>
 
-          <Form.Item name="manufacturer" label="Nhà Sản Xuất" rules={[{ required: true, message: 'Vui lòng nhập nhà sản xuất!' }]}>
-            <Input />
-          </Form.Item>
+            <Form.Item name="manufacturer" label="Nhà Sản Xuất" rules={[{ required: true, message: "Vui lòng nhập nhà sản xuất!" }]}>
+              <Input />
+            </Form.Item>
 
-          <Form.Item name="sideEffect" label="Tác Dụng Phụ" rules={[{ required: true, message: 'Vui lòng nhập tác dụng phụ!' }]}>
-            <Input />
-          </Form.Item>
+            <Form.Item name="sideEffect" label="Tác Dụng Phụ" rules={[{ required: true, message: "Vui lòng nhập tác dụng phụ!" }]}>
+              <Input />
+            </Form.Item>
 
-          <Form.Item name="diseasePrevented" label="Bệnh Phòng Tránh" rules={[{ required: true, message: 'Vui lòng nhập bệnh phòng tránh!' }]}>
-            <Input />
-          </Form.Item>
+            <Form.Item name="diseasePrevented" label="Bệnh Phòng Tránh" rules={[{ required: true, message: "Vui lòng nhập bệnh phòng tránh!" }]}>
+              <Input />
+            </Form.Item>
 
-          <Form.Item name="price" label="Giá" rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}>
-            <Input type="number" />
-          </Form.Item>
+            <Form.Item name="price" label="Giá" rules={[{ required: true, message: "Vui lòng nhập giá!" }]}>
+              <Input type="number" />
+            </Form.Item>
+          </Col>
 
-          <Form.Item name="image" label="Hình Ảnh">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="injectionSite" label="Vị Trí Tiêm">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="notes" label="Ghi Chú">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="vaccineInteractions" label="Tương Tác Vắc-xin">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="undesirableEffects" label="Phản Ứng Không Mong Muốn">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="preserve" label="Bảo Quản">
-            <Input />
-          </Form.Item>
-
+          {/* Cột 2 */}
+          <Col span={12}>
           <Form.Item name="injectionsCount" label="Số Mũi Tiêm">
-            <Input type="number" />
-          </Form.Item>
-        </Form>
-      </Modal>
+              <Input type="number" />
+            </Form.Item>
+          
+
+            <Form.Item name="injectionSite" label="Vị Trí Tiêm">
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="notes" label="Ghi Chú">
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="vaccineInteractions" label="Tương Tác Vắc-xin">
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="undesirableEffects" label="Phản Ứng Không Mong Muốn">
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="preserve" label="Bảo Quản">
+              <Input />
+            </Form.Item>
+            <Form.Item label="Upload Image">
+        <Upload beforeUpload={() => false} onChange={handleFileChange} maxCount={1} showUploadList={true}>
+          <Button icon={<UploadOutlined />} >
+            Select File
+          </Button>
+        </Upload>
+      </Form.Item>
+            
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
     </div>
   );
 };

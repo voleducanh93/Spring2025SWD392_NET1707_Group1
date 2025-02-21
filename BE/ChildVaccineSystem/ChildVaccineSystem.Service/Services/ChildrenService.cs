@@ -39,13 +39,17 @@ namespace ChildVaccineSystem.Service.Services
             return _mapper.Map<ChildrenDTO>(child);
         }
 
-        public async Task<ChildrenDTO> CreateChildAsync(CreateChildrenDTO childDto)
+        public async Task<ChildrenDTO> CreateChildAsync(CreateChildrenDTO childDto, string userId)
         {
             var child = _mapper.Map<Children>(childDto);
+
+            child.UserId = userId;
+
             var createdChild = await _unitOfWork.Children.AddAsync(child);
             await _unitOfWork.CompleteAsync();
             return _mapper.Map<ChildrenDTO>(createdChild);
         }
+
 
         public async Task<ChildrenDTO> UpdateChildAsync(int id, UpdateChildrenDTO updatedChildDto)
         {

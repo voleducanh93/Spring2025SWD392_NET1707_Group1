@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChildVaccineSystem.Data.DTO
+namespace ChildVaccineSystem.Data.Enum
 {
-    public class ForgetPasswordRequestDTO
+    public enum BookingType
     {
-        public string Email { get; set; }
+        comboVacinne,
+        singleVaccine
     }
 }

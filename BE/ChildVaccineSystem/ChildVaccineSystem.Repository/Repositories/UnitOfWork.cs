@@ -20,10 +20,11 @@ namespace ChildVaccineSystem.Repository.Repositories
 		public IVaccineScheduleDetailRepository VaccineScheduleDetails { get; }
         public IChildrenRepository Children { get; }
         public IUserRepository Users { get; }
+        public IBookingRepository Bookings { get; private set; }
+        public IBookingDetailRepository BookingDetails { get; private set; }
 
 
-
-        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository)
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository)
         {
             _context = context;
             Vaccines = vaccineRepository;
@@ -35,6 +36,8 @@ namespace ChildVaccineSystem.Repository.Repositories
             VaccineScheduleDetails = vaccineScheduleDetailRepository;
             Children = childrenRepository;
             Users = userRepository;
+            Bookings = bookingRepository;
+            BookingDetails = bookingDetailRepository;
         }
 
         public async Task<int> CompleteAsync()
