@@ -24,6 +24,7 @@ namespace ChildVaccineSystem.Service
 			services.AddScoped<IStaffScheduleService, StaffScheduleService>();
             services.AddTransient<IChildrenService, ChildrenService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IBookingService, BookingService>();
             return services;
         }
     }
