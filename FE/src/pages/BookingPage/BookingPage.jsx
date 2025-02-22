@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-
+import MenuIcon from "@mui/icons-material/Menu";
+import SellIcon from "@mui/icons-material/Sell";
+import DoneIcon from "@mui/icons-material/Done";
+import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 const vaccines = [
   {
     id: 1,
@@ -26,16 +29,19 @@ const vaccines = [
 
 const filterOptions = {
   "Tất cả": [],
-  "Cúm": [
+  Cúm: [
     {
       label: "Cúm mùa",
-      children: ["VẮC XIN CÚM TỨ GIÁ VAXIGRIP TETRA", "VẮC XIN CÚM TỨ GIÁ INFLUVAC TETRA"]
+      children: [
+        "VẮC XIN CÚM TỨ GIÁ VAXIGRIP TETRA",
+        "VẮC XIN CÚM TỨ GIÁ INFLUVAC TETRA",
+      ],
     },
     {
       label: "Cúm người lớn",
-      children: ["VẮC XIN IVACFLU-S 0,5ML (VIỆT NAM)"]
-    }
-  ]
+      children: ["VẮC XIN IVACFLU-S 0,5ML (VIỆT NAM)"],
+    },
+  ],
 };
 
 const BookingPage = () => {
@@ -53,27 +59,44 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 gap-4">
+    <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
+      <div className="flex gap-6 items-center flex-wrap">
+        <div className="flex items-center gap-3 bg-[#FBA307] !p-4 rounded-xl text-amber-50 font-bold">
+          <MenuIcon />
+          <button>Danh mục</button>
+        </div>
+        <h1 className="text-[#2A389C] text-2xl font-bold">
+          THÔNG TIN SẢN PHẨM VẮC XIN
+        </h1>
+      </div>
+
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-2 relative">
-        <label className="font-bold">Hiển thị theo</label>
+      <div className="flex items-center gap-6 relative flex-wrap !mt-10">
+        <label className="font-semibold text-lg">Hiển thị theo</label>
         <div className="relative">
           <select
-            className="border p-2 rounded-md cursor-pointer"
+            className="border border-[#dcdfe6] !p-3 rounded-md cursor-pointer sm:w-52"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
             {Object.keys(filterOptions).map((category) => (
-              <option key={category} value={category}>{category}</option>
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </select>
           {filter !== "Tất cả" && (
-            <div className="absolute left-0 mt-1 w-full bg-white border rounded-md shadow-lg z-10">
+            <div className="absolute left-0 mt-2 w-full bg-white border rounded-md shadow-lg z-10">
               {filterOptions[filter].map((group, index) => (
-                <div key={index} className="p-2">
+                <div key={index} className="p-3">
                   <strong>{group.label}</strong>
                   {group.children.map((item, idx) => (
-                    <div key={idx} className="p-1 hover:bg-gray-200 cursor-pointer">{item}</div>
+                    <div
+                      key={idx}
+                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                    >
+                      {item}
+                    </div>
                   ))}
                 </div>
               ))}
@@ -82,53 +105,95 @@ const BookingPage = () => {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-8">
         {/* Vaccine List */}
-        <div className="w-2/3 grid grid-cols-3 gap-4">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {vaccines
-            .filter((vaccine) =>
-              filter === "Tất cả" ||
-              filterOptions[filter].some((group) => group.children.includes(vaccine.name))
+            .filter(
+              (vaccine) =>
+                filter === "Tất cả" ||
+                filterOptions[filter].some((group) =>
+                  group.children.includes(vaccine.name)
+                )
             )
             .map((vaccine) => (
-              <div key={vaccine.id} className="border p-4 rounded-lg shadow-md">
-                <h3 className="font-bold">{vaccine.name}</h3>
-                <p className="text-sm text-gray-500">Nguồn gốc: {vaccine.origin}</p>
-                <p className="text-blue-600 font-bold">{vaccine.price.toLocaleString()} VNĐ</p>
-                <p className="text-gray-600">Phòng bệnh: {vaccine.disease}</p>
-                <button
-                  className={`mt-2 px-4 py-2 text-white rounded-lg w-full ${
-                    selectedVaccines.some((v) => v.id === vaccine.id)
-                      ? "bg-green-500"
-                      : "bg-blue-600"
-                  }`}
-                  onClick={() => toggleSelection(vaccine)}
-                >
-                  {selectedVaccines.some((v) => v.id === vaccine.id) ? "ĐÃ CHỌN" : "CHỌN"}
-                </button>
+              <div
+                key={vaccine.id}
+                className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg max-h-[410px] overflow-hidden"
+              >
+                <div className="flex flex-col gap-3 bg-[#DDECF9] rounded-2xl !p-4">
+                  <h3 className="text-[#234060] text-lg font-medium">
+                    {vaccine.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Nguồn gốc: {vaccine.origin}
+                  </p>
+                  <div className="flex items-center gap-3 text-[#2A388F] !mt-6">
+                    <SellIcon />
+                    <p className="font-semibold text-2xl">
+                      {vaccine.price.toLocaleString()} VNĐ
+                    </p>
+                  </div>
+                </div>
+
+                <div className="!p-4">
+                  <p className="text-gray-600">Phòng bệnh:</p>
+                  <p className="text-gray-600">{vaccine.disease}</p>
+                </div>
+
+                <div className="">
+                  <button
+                    className={`cursor-pointer !p-4 text-white rounded-lg w-full font-semibold text-lg ${
+                      selectedVaccines.some((v) => v.id === vaccine.id)
+                        ? "bg-[#35944A]"
+                        : "bg-[#2A388F]"
+                    }`}
+                    onClick={() => toggleSelection(vaccine)}
+                  >
+                    {selectedVaccines.some((v) => v.id === vaccine.id) ? (
+                      <div className="flex justify-between">
+                        ĐÃ CHỌN <DoneIcon />
+                      </div>
+                    ) : (
+                      "CHỌN"
+                    )}
+                  </button>
+                </div>
               </div>
             ))}
         </div>
 
         {/* Selected Vaccines List */}
-        <div className="w-1/3 p-4 border rounded-lg shadow-md">
-          <h2 className="font-bold text-xl">DANH SÁCH VẮC XIN CHỌN MUA</h2>
-          {selectedVaccines.length > 0 ? (
-            <div>
-              {selectedVaccines.map((vaccine) => (
-                <div key={vaccine.id} className="mt-2 p-2 border rounded-lg">
-                  <h4 className="font-bold">{vaccine.name}</h4>
-                  <p className="text-sm">Phòng bệnh: {vaccine.disease}</p>
-                  <p className="font-bold text-blue-600">{vaccine.price.toLocaleString()} VNĐ</p>
-                </div>
-              ))}
-              <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded-lg">
-                ĐĂNG KÝ MŨI TIÊM
-              </button>
-            </div>
-          ) : (
-            <p className="text-gray-500">Chưa có vắc xin nào được chọn.</p>
-          )}
+        <div className="border border-[#dcdfe6] w-full md:w-1/3 !p-8 rounded-2xl shadow-xl bg-white">
+          <div className="text-[#2A388F] flex items-center gap-3 !mt-5">
+            <InventoryOutlinedIcon />
+            <h2 className="font-semibold text-xl">
+              DANH SÁCH VẮC XIN CHỌN MUA
+            </h2>
+          </div>
+          <div className="!mt-10">
+            {selectedVaccines.length > 0 ? (
+              <div>
+                {selectedVaccines.map((vaccine) => (
+                  <div
+                    key={vaccine.id}
+                    className="!mt-3 !p-5 rounded-lg !mb-3 shadow-xl flex flex-col gap-3"
+                  >
+                    <h4 className="font-semibold">{vaccine.name}</h4>
+                    <p className="text-sm">Phòng bệnh: {vaccine.disease}</p>
+                    <p className="font-semibold text-blue-600">
+                      {vaccine.price.toLocaleString()} VNĐ
+                    </p>
+                  </div>
+                ))}
+                <button className="!mt-5 w-full bg-orange-500 text-white !p-3 rounded-lg">
+                  ĐĂNG KÝ MŨI TIÊM
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-500">Chưa có vắc xin nào được chọn.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
