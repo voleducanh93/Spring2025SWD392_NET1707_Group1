@@ -1,12 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getChildren, createChildren, updateChildren, deleteChildren } from "../api/children.api";
+import { useContext } from "react";
+import { AppContext } from "../contexts/app.context";
 
 export const useChildren = () => {
   const queryClient = useQueryClient();
+const { getUser} = useContext(AppContext);
+console.log(getUser);
 
   const { data: vaccines, isLoading, isError, error } = useQuery({
     queryKey: ["children"],
-    queryFn: getChildren,
+    queryFn: () => getChildren(getUser),
     refetchOnWindowFocus: false,
     onError: (err) => {
       console.error("❌ Lỗi khi lấy dữ liệu children:", err);

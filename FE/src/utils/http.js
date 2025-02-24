@@ -5,6 +5,7 @@ import {
   getRefreshTokenFromLS,
   setAccessTokenToLS,
   setRefreshTokenToLS,
+  setUserIdLS,
 } from "./auth";
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from "../api/auth.api";
 import {
@@ -46,9 +47,10 @@ class Http {
           const data = response.data;
           this.accessToken = data.token;
           this.refreshToken = data.refeshToken;
-
+          this.userId = data.userId;
           setAccessTokenToLS(this.accessToken);
           setRefreshTokenToLS(this.refreshToken);
+          setUserIdLS(this.userId);
         }
 
         if (url === URL_LOGOUT) {
