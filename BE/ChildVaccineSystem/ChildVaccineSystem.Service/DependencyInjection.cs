@@ -25,6 +25,7 @@ namespace ChildVaccineSystem.Service
             services.AddTransient<IChildrenService, ChildrenService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IBookingService, BookingService>();
+            services.AddTransient<IVaccineInventoryService, VaccineInventoryService>();
             return services;
         }
     }
