@@ -23,9 +23,10 @@ namespace ChildVaccineSystem.Repository.Repositories
         public IBookingRepository Bookings { get; private set; }
         public IBookingDetailRepository BookingDetails { get; private set; }
         public IVaccineInventoryRepository VaccineInventories { get; }
+        public IPricingPoliciesRepository PricingPolicies { get; }
 
 
-        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories)
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories, IPricingPoliciesRepository pricingPolicies)
         {
             _context = context;
             Vaccines = vaccineRepository;
@@ -40,6 +41,7 @@ namespace ChildVaccineSystem.Repository.Repositories
             Bookings = bookingRepository;
             BookingDetails = bookingDetailRepository;
             VaccineInventories = vaccineInventories;
+            PricingPolicies = pricingPolicies;
         }
 
         public async Task<int> CompleteAsync()
