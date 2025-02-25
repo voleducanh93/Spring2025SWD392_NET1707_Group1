@@ -2,11 +2,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getChildren, createChildren, updateChildren, deleteChildren } from "../api/children.api";
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
+import { toast } from "react-toastify";
 
 export const useChildren = () => {
   const queryClient = useQueryClient();
 const { getUser} = useContext(AppContext);
-console.log(getUser);
+
 
   const { data: vaccines, isLoading, isError, error } = useQuery({
     queryKey: ["children"],
@@ -18,9 +19,10 @@ console.log(getUser);
   });
 
   const addChildren = useMutation({
-    mutationFn: createChildren,
+    mutationFn:(data) => createChildren(getUser,data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["children"] });
+      toast.success("Thêm children thành công!");
     },
     onError: (error) => {
       console.error("❌ Lỗi khi thêm children:", error);

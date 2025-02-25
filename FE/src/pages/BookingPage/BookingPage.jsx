@@ -1,11 +1,13 @@
-import  { useRef, useState } from "react";
+import  {  useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import SellIcon from "@mui/icons-material/Sell";
 import DoneIcon from "@mui/icons-material/Done";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
 import { useChildren } from "../../hooks/useChildren";
-import { Button, Divider, Input, Select, Space } from "antd";
-import { PlusOutlined } from '@ant-design/icons';
+import { Avatar, Button, Divider, Select, Space } from "antd";
+import { PlusOutlined, UserOutlined } from '@ant-design/icons';
+import AddChildModal from "../../components/ChildrenInput/CreateChildren";
+import moment from "moment";
 const vaccines = [
   {
     id: 1,
@@ -46,20 +48,42 @@ const filterOptions = {
     },
   ],
 };
-let index = 0;
+
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
   const [filter, setFilter] = useState("Tất cả");
-  const { vaccines: children, isLoading, isError } = useChildren();
-  const [selectedChild, setSelectedChild] = useState("");
-
-  const [items, setItems] = useState(['jack', 'lucy']);
-  const [name, setName] = useState('');
-  const inputRef = useRef(null);
-
-  const handleChangeChild = (e) => {
-    setSelectedChild(e.target.value);
+  const { vaccines: children,addChildren} = useChildren();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedChild, setSelectedChild] = useState(null);
+  const addItem = () => {
+    //e.preventDefault();
+    console.log("gff");
+    
+    setIsModalVisible(true);  
   };
+  const handleCloseModal = () => {
+    setIsModalVisible(false);  
+  };
+  const handleAddChild = (newChild) => {
+    newChild.imageUrl = "hhhhh.jpg";
+console.log(newChild);
+
+     addChildren.mutateAsync(newChild);
+  };
+  
+  const editItem = (child) => {
+    // Ensure dateOfBirth is a moment object
+    const formattedChild = {
+      ...child,
+      dateOfBirth: child.dateOfBirth ? moment(child.dateOfBirth) : null,
+    };
+    setSelectedChild(formattedChild);
+    setIsModalVisible(true); // Open the modal for editing
+  };
+  
+  
+
+
   const toggleSelection = (vaccine) => {
     setSelectedVaccines((prev) => {
       if (prev.some((v) => v.id === vaccine.id)) {
@@ -70,18 +94,30 @@ const BookingPage = () => {
     });
   };
 
-  // Filter Dropdown
-  const onNameChange = (event) => {
-    setName(event.target.value);
+  
+  const calculateAgeInMonths = (dob) => {
+    // Ensure dob is a valid moment object
+    const birthDate = moment(dob); // Use moment to parse the date
+  
+    if (!birthDate.isValid()) {
+      console.error('Invalid date:', dob);
+      return 'Invalid Date';
+    }
+  
+    const today = moment(); // Get the current date as a moment object
+    const years = today.year() - birthDate.year();
+    const months = today.month() - birthDate.month();
+  
+    return years * 12 + months;
   };
-  const addItem = (e) => {
-    e.preventDefault();
-    setItems([...items, name || `New item ${index++}`]);
-    setName('');
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };
+  // const addItem = (e) => {
+  //   e.preventDefault();
+  //   setItems([...items, name || `New item ${index++}`]);
+  //   setName('');
+  //   setTimeout(() => {
+  //     inputRef.current?.focus();
+  //   }, 0);
+  // };
   
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
@@ -99,42 +135,40 @@ const BookingPage = () => {
       <div className="flex items-center gap-6 relative flex-wrap mt-6">
         <label className="font-semibold text-lg">Chọn trẻ:</label>
         <Select
-      style={{
-        width: 300,
-      }}
-      placeholder="custom dropdown render"
-      dropdownRender={(menu) => (
-        <>
-          {menu}
-          <Divider
-            style={{
-              margin: '8px 0',
-            }}
-          />
-          <Space
-            style={{
-              padding: '0 8px 4px',
-            }}
-          >
-            <Input
-              placeholder="Please enter item"
-              ref={inputRef}
-              value={name}
-              onChange={onNameChange}
-              onKeyDown={(e) => e.stopPropagation()}
-            />
-            <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-              Add item
-            </Button>
-          </Space>
-        </>
-      )}
-      options={items.map((item) => ({
-        label: item,
-        value: item,
-      }))}
-    />
+          style={{ width: 300 }}
+          placeholder="custom dropdown render"
+          dropdownRender={(menu) => (
+            <>
+              {menu}
+              <Divider style={{ margin: '8px 0' }} />
+              <Space style={{ padding: '0 8px 4px' }}>
+                <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                  Add item
+                </Button>
+              </Space>
+            </>
+          )}
+          options={children && children.map((child) => ({
+            label: (
+              <div className="flex items-center gap-3" onClick={() => editItem(child)}>
+                <Avatar
+                  style={{ backgroundColor: '#87d068' }}
+                  icon={<UserOutlined />}
+                />
+                <span className="ml-2">{child.fullName} - {calculateAgeInMonths(child.dateOfBirth)} months</span>
+              </div>
+            ),
+            value: child.fullName,
+          }))}
+        />
       </div>
+
+<AddChildModal
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        onAddChild={handleAddChild} // Pass the function to handle new child data
+        initialValues={selectedChild} // Pass selected child data to pre-fill (for edit)
+      />
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Vaccine List */}
