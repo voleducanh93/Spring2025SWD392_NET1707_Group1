@@ -78,7 +78,7 @@ console.log(newChild);
       dateOfBirth: child.dateOfBirth ? moment(child.dateOfBirth) : null,
     };
     setSelectedChild(formattedChild);
-    setIsModalVisible(true); // Open the modal for editing
+    //setIsModalVisible(true); // Open the modal for editing
   };
   
   
@@ -96,29 +96,20 @@ console.log(newChild);
 
   
   const calculateAgeInMonths = (dob) => {
-    // Ensure dob is a valid moment object
-    const birthDate = moment(dob); // Use moment to parse the date
+    const birthDate = moment(dob); 
   
     if (!birthDate.isValid()) {
       console.error('Invalid date:', dob);
       return 'Invalid Date';
     }
   
-    const today = moment(); // Get the current date as a moment object
+    const today = moment(); 
     const years = today.year() - birthDate.year();
     const months = today.month() - birthDate.month();
   
     return years * 12 + months;
   };
-  // const addItem = (e) => {
-  //   e.preventDefault();
-  //   setItems([...items, name || `New item ${index++}`]);
-  //   setName('');
-  //   setTimeout(() => {
-  //     inputRef.current?.focus();
-  //   }, 0);
-  // };
-  
+ 
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
       <div className="max-w-full bg-[#252A6F] rounded-3xl">
@@ -195,7 +186,7 @@ console.log(newChild);
         visible={isModalVisible}
         onClose={handleCloseModal}
         onAddChild={handleAddChild} // Pass the function to handle new child data
-        initialValues={selectedChild} // Pass selected child data to pre-fill (for edit)
+        //initialValues={selectedChild} // Pass selected child data to pre-fill (for edit)
       />
 
       <div className="flex flex-col md:flex-row gap-8">

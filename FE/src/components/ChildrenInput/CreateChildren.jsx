@@ -1,23 +1,15 @@
 import React from 'react';
 import { Modal, Form, Input, Select, DatePicker, Button, Upload, message } from 'antd';
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import { toast } from 'react-toastify';
+
 
 const { Option } = Select;
 
-const AddChildModal = ({ visible, onClose, onAddChild, initialValues }) => {
+const AddChildModal = ({ visible, onClose, onAddChild  }) => {
   const [form] = Form.useForm();
 
-  // Pre-fill the form if initialValues are passed
-  React.useEffect(() => {
-    if (initialValues) {
-      // Ensure the dateOfBirth is a moment object
-      form.setFieldsValue({
-        ...initialValues,
-        dateOfBirth: initialValues.dateOfBirth ? moment(initialValues.dateOfBirth) : null,
-      });
-    }
-  }, [initialValues, form]);
+  
 
   const handleOk = async () => {
     try {
@@ -34,8 +26,8 @@ const AddChildModal = ({ visible, onClose, onAddChild, initialValues }) => {
       // Reset form and close modal
       form.resetFields();
       onClose();
-      message.success('Child added successfully!');
-    } catch (error) {
+      toast.success('Child added successfully!');
+    } catch  {
       message.error('Please fill all required fields!');
     }
   };
@@ -55,7 +47,7 @@ const AddChildModal = ({ visible, onClose, onAddChild, initialValues }) => {
       cancelText="Cancel"
       width={600}
     >
-      <Form form={form} layout="vertical" name="createChildForm" initialValues={initialValues}>
+      <Form form={form} layout="vertical" name="createChildForm" >
         {/* Full Name Input */}
         <Form.Item
           label="Full Name"
@@ -76,7 +68,7 @@ const AddChildModal = ({ visible, onClose, onAddChild, initialValues }) => {
     format="YYYY-MM-DD HH:mm"
     style={{ width: '100%' }}
     placeholder="Select date and time"
-    defaultValue={initialValues?.dateOfBirth ? moment(initialValues.dateOfBirth) : null} // Use moment() to parse the date correctly
+   // defaultValue={initialValues?.dateOfBirth ? moment(initialValues.dateOfBirth) : null} // Use moment() to parse the date correctly
   />
 </Form.Item>
 
