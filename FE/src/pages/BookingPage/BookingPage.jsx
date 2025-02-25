@@ -85,7 +85,7 @@ const BookingPage = () => {
 
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
-      <div className="container bg-[#252A6F] rounded-3xl">
+      <div className="max-w-full bg-[#252A6F] rounded-3xl">
         <h2 className="!m-3 text-4xl font-medium flex justify-center text-[#F9AA1A]">
           <span>CÁC DỊCH VỤ CỦA CHÚNG TÔI</span>
         </h2>
