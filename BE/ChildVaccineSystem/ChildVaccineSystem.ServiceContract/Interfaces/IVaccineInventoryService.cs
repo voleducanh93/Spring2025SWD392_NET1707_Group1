@@ -11,5 +11,10 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
     {
         Task<IEnumerable<VaccineInventoryDTO>> GetVaccineStockReportAsync();
         Task<IEnumerable<VaccineInventoryDTO>> GetVaccineInventoryByIdAsync(int vaccineId);
+        Task<IEnumerable<VaccineInventoryDTO>> SearchVaccineStockAsync(string keyword);
+        Task IssueVaccineAsync(int id, int quantity);
+        Task ReturnVaccineAsync(int id, int quantity);
+        Task<IEnumerable<VaccineInventoryDTO>> GetIssuedVaccinesAsync();
+        Task<IEnumerable<ReturnedVaccineDTO>> GetReturnedVaccinesAsync();
     }
 }

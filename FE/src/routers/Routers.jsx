@@ -15,8 +15,8 @@ import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
 import UploadForm from "../pages/AuthPage/upload";
 
-
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
+import AdminPage from "../pages/AdminPage/AdminPage";
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
       { path: "/manager-page", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
-      { path: "/children", element: <UploadForm/> },
+      { path: "/children", element: <UploadForm /> },
       { path: "/children", element: <RegistrationForm /> },
       { path: "/vaccine-detail", element: <VaccineDetailPage /> },
       { path: "/child-profile", element: <ChildProfile /> },
@@ -48,5 +48,10 @@ export const router = createBrowserRouter([
         <AuthPage />
       </PrivateRoute>
     ),
+  },
+
+  {
+    path: "/admin",
+    element: <AdminPage />,
   },
 ]);

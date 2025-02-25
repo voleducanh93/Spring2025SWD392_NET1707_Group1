@@ -14,5 +14,6 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task<T> DeleteAsync(T entity);
+
     }
 }
