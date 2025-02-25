@@ -31,7 +31,8 @@ namespace ChildVaccineSystem.Data.Models
 		public DbSet<Staff> Staff { get; set; }
 		public DbSet<StaffSchedule> StaffSchedules { get; set; }
 		public DbSet<InjectionSchedule> InjectionSchedules { get; set; }
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<VaccineTransactionHistory> VaccineTransactions { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
@@ -342,6 +343,13 @@ namespace ChildVaccineSystem.Data.Models
 				.WithMany()
 				.HasForeignKey(t => t.BookingId)
 				.OnDelete(DeleteBehavior.Restrict);
-		}
-	}
+
+            //VaccineTransactionHistory
+            modelBuilder.Entity<VaccineTransactionHistory>()
+            .HasOne(vth => vth.VaccineInventory)
+            .WithMany(vi => vi.TransactionHistories)
+            .HasForeignKey(vth => vth.VaccineInventoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
 }

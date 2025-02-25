@@ -16,10 +16,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChildVaccineSystem.Data.DTO.VaccineInventory;
 
 namespace ChildVaccineSystem.Common.Helper
 {
-	public class MappingProfile : Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -33,7 +34,7 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true)) 
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             // Vaccine Mapping
@@ -62,51 +63,51 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.CreatedAtUpdatedAt,
                     opt => opt.MapFrom(src => DateTime.UtcNow));
 
-			// VaccinationSchedule Mappings
-			CreateMap<VaccinationSchedule, VaccinationScheduleDTO>()
+            // VaccinationSchedule Mappings
+            CreateMap<VaccinationSchedule, VaccinationScheduleDTO>()
                 .ForMember(dest => dest.VaccineScheduleDetails, opt => opt.MapFrom(src => src.VaccineScheduleDetails)).ReverseMap();
 
-			CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>()
+            CreateMap<CreateVaccinationScheduleDTO, VaccinationSchedule>()
                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes ?? string.Empty));
 
-			CreateMap<VaccineScheduleDetailDTO, Vaccine>();
+            CreateMap<VaccineScheduleDetailDTO, Vaccine>();
 
             CreateMap<UpdateVaccinationScheduleDTO, VaccinationSchedule>()
                 .ForMember(dest => dest.ScheduleId, opt => opt.Ignore());
 
-			// VaccinationScheduleDetail Mappings
-			CreateMap<VaccineScheduleDetail, VaccineScheduleDetailDTO>()
-				.ForMember(dest => dest.InjectionSchedules, opt => opt.MapFrom(src => src.InjectionSchedules))
-			    .ForMember(dest => dest.VaccineName,
-					  opt => opt.MapFrom(src => src.Vaccine.Name));
+            // VaccinationScheduleDetail Mappings
+            CreateMap<VaccineScheduleDetail, VaccineScheduleDetailDTO>()
+                .ForMember(dest => dest.InjectionSchedules, opt => opt.MapFrom(src => src.InjectionSchedules))
+                .ForMember(dest => dest.VaccineName,
+                      opt => opt.MapFrom(src => src.Vaccine.Name));
 
-			CreateMap<CreateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
+            CreateMap<CreateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
 
-			CreateMap<UpdateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
+            CreateMap<UpdateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
 
 
-			// StaffSchedule Mappings
-			CreateMap<StaffSchedule, StaffScheduleDTO>()
-				.ForMember(dest => dest.Staff, opt => opt.MapFrom(src => src.Staff));
+            // StaffSchedule Mappings
+            CreateMap<StaffSchedule, StaffScheduleDTO>()
+                .ForMember(dest => dest.Staff, opt => opt.MapFrom(src => src.Staff));
 
-			CreateMap<CreateStaffScheduleDTO, StaffSchedule>()
-				.ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => true))
-				.ForMember(dest => dest.Staff, opt => opt.Ignore());
+            CreateMap<CreateStaffScheduleDTO, StaffSchedule>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.Staff, opt => opt.Ignore());
 
-			CreateMap<UpdateStaffScheduleDTO, StaffSchedule>()
-				.ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-				.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateStaffScheduleDTO, StaffSchedule>()
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // InjectionSchedule Mappings
             CreateMap<InjectionSchedule, InjectionScheduleDTO>();
 
             CreateMap<CreateInjectionScheduleDTO, InjectionSchedule>()
-				 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes ?? string.Empty))
-				.ForMember(dest => dest.VaccineScheduleDetailId,
-					  opt => opt.Ignore());
+                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes ?? string.Empty))
+                .ForMember(dest => dest.VaccineScheduleDetailId,
+                      opt => opt.Ignore());
 
-			CreateMap<UpdateInjectionScheduleDTO, InjectionSchedule>();
+            CreateMap<UpdateInjectionScheduleDTO, InjectionSchedule>();
 
             //Children
             CreateMap<Children, ChildrenDTO>().ReverseMap();
@@ -129,6 +130,30 @@ namespace ChildVaccineSystem.Common.Helper
                     opt => opt.MapFrom(src => src.BookingDetails));
 
             CreateMap<BookingDetail, BookingDetailDTO>();
+
+            CreateMap<VaccineInventory, VaccineInventoryDTO>()
+                .ForMember(dest => dest.VaccineId, opt => opt.MapFrom(src => src.Vaccine.VaccineId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Vaccine.Name))
+                .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.Vaccine.Manufacturer))
+                .ForMember(dest => dest.BatchNumber, opt => opt.MapFrom(src => src.BatchNumber))
+                .ForMember(dest => dest.ManufacturingDate, opt => opt.MapFrom(src => src.ManufacturingDate))
+                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
+                .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier))
+                .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity)) 
+                .ForMember(dest => dest.TotalQuantity, opt => opt.MapFrom(src => src.InitialQuantity - src.QuantityInStock));
+
+            CreateMap<VaccineInventory, ReturnedVaccineDTO>()
+                .ForMember(dest => dest.VaccineId, opt => opt.MapFrom(src => src.VaccineId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Name : "Unknown"))
+                .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Manufacturer : "Unknown"))
+                .ForMember(dest => dest.BatchNumber, opt => opt.MapFrom(src => src.BatchNumber))
+                .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity))
+                .ForMember(dest => dest.QuantityInStock, opt => opt.MapFrom(src => src.QuantityInStock))
+                .ForMember(dest => dest.ReturnedQuantity, opt => opt.MapFrom(src => src.QuantityInStock - src.InitialQuantity))
+                .ForMember(dest => dest.ManufacturingDate, opt => opt.MapFrom(src => src.ManufacturingDate))
+                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
+                .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier));
+
         }
-	}
+    }
 }
