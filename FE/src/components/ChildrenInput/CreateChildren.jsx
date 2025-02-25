@@ -10,10 +10,12 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
   const [form] = Form.useForm();
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false); 
-  const [fileList, setFileList] = useState([]);
-  const handleFileChange = ({ file }) => {
-    setFileList(fileList); // Cập nhật danh sách tệp đã chọ
-    setSelectedFile(fileList[0]);
+  const [fileList, setFileList] = useState();
+  const handleFileChange = ({file}) => {
+    setSelectedFile(file)// Cập nhật danh sách tệp đã chọ
+    //setSelectedFile(fileList[0]);
+    console.log(file);
+    
     
   };
 
