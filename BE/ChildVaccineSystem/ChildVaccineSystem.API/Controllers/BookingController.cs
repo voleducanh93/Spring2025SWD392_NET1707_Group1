@@ -46,9 +46,9 @@ namespace ChildVaccineSystem.API.Controllers
             }
             catch (ArgumentException ex)
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.BadRequest;  
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ex.Message);
+                _response.ErrorMessages.Add(ex.Message);  
                 return BadRequest(_response);
             }
             catch (Exception ex)
