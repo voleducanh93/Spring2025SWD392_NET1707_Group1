@@ -3,6 +3,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import SellIcon from "@mui/icons-material/Sell";
 import DoneIcon from "@mui/icons-material/Done";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
+import { useChildren } from "../../hooks/useChildren";
+import { useDispatch, useSelector } from "react-redux";
+import { createBooking } from "../../features/booking/bookingSlice";
+import { notification } from "antd";
 const vaccines = [
   {
     id: 1,
@@ -47,7 +51,15 @@ const filterOptions = {
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
   const [filter, setFilter] = useState("Tất cả");
+  const { vaccines: children, isLoading, isError } = useChildren();
+  const [selectedChild, setSelectedChild] = useState("");
+  const dispatch = useDispatch();
+  const { status, error } = useSelector((state) => state.booking);
 
+
+  const handleChangeChild = (e) => {
+    setSelectedChild(e.target.value);
+  };
   const toggleSelection = (vaccine) => {
     setSelectedVaccines((prev) => {
       if (prev.some((v) => v.id === vaccine.id)) {
@@ -56,6 +68,29 @@ const BookingPage = () => {
         return [...prev, vaccine];
       }
     });
+  };
+  // Dữ liệu mẫu
+  const sampleBookingData = {
+    childId: 1,
+    bookingDate: "2025-09-28T18:05:24.111Z",
+    notes: "This is a note for the booking",
+    bookingDetails: [
+      {
+        vaccineId: 4, // Vaccine ID mẫu
+      },
+    ],
+  };
+
+  const handle = () => {
+    // Gửi async action để tạo booking
+    dispatch(createBooking(sampleBookingData)) // Gửi data mẫu
+      .unwrap() // unwrap sẽ trả về response nếu thành công hoặc lỗi nếu thất bại
+      .then(() => {
+        console.log("Booking created successfully!")
+      })
+      .catch((error) => {
+        console.error("Failed to create booking: ", error);
+      });
   };
 
   return (
@@ -71,38 +106,27 @@ const BookingPage = () => {
       </div>
 
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-6 relative flex-wrap !mt-10">
-        <label className="font-semibold text-lg">Hiển thị theo</label>
-        <div className="relative">
-          <select
-            className="border border-[#dcdfe6] !p-3 rounded-md cursor-pointer sm:w-52"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            {Object.keys(filterOptions).map((category) => (
-              <option key={category} value={category}>
-                {category}
+      <div className="flex items-center gap-6 relative flex-wrap mt-6">
+        <label className="font-semibold text-lg">Chọn trẻ:</label>
+        <select
+          className="border border-gray-300 p-3 rounded-md cursor-pointer sm:w-52"
+          value={selectedChild}
+          onChange={handleChangeChild}
+          disabled={isLoading || isError}
+        >
+          <option value="">-- Chọn trẻ --</option>
+          {isLoading ? (
+            <option disabled>Đang tải danh sách...</option>
+          ) : isError ? (
+            <option disabled>Lỗi khi tải dữ liệu</option>
+          ) : (
+            children?.map((child) => (
+              <option key={child.id} value={child.id}>
+                {child.fullName}
               </option>
-            ))}
-          </select>
-          {filter !== "Tất cả" && (
-            <div className="absolute left-0 mt-2 w-full bg-white border rounded-md shadow-lg z-10">
-              {filterOptions[filter].map((group, index) => (
-                <div key={index} className="p-3">
-                  <strong>{group.label}</strong>
-                  {group.children.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2 hover:bg-gray-200 cursor-pointer"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+            ))
           )}
-        </div>
+        </select>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
@@ -148,7 +172,7 @@ const BookingPage = () => {
                         ? "bg-[#35944A]"
                         : "bg-[#2A388F]"
                     }`}
-                    onClick={() => toggleSelection(vaccine)}
+                    onClick={() => handle()}
                   >
                     {selectedVaccines.some((v) => v.id === vaccine.id) ? (
                       <div className="flex justify-between">
