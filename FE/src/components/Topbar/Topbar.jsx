@@ -84,15 +84,18 @@ export default function Topbar() {
               <span className="font-medium">TÌM TRUNG TÂM VNVC</span>
             </motion.a>
 
-            <motion.a
-              href="#"
+            <motion.div
               whileHover={{ scale: 1.1, x: 5 }}
               transition={{ type: "spring", stiffness: 200 }}
               className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
+              <Link
+                to="/Booking"
+              >
               <CalendarMonthIcon />
               <span className="font-medium">ĐĂNG KÝ TIÊM</span>
-            </motion.a>
+              </Link>
+            </motion.div>
 
             <motion.span
               whileHover={{ scale: 1.1 }}
