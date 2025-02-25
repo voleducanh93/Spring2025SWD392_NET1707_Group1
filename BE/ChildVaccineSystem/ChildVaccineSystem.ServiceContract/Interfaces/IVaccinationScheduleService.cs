@@ -14,5 +14,6 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
 		Task<VaccinationScheduleDTO> CreateScheduleAsync(CreateVaccinationScheduleDTO scheduleDto);
 		Task<VaccinationScheduleDTO> UpdateScheduleAsync(int id, UpdateVaccinationScheduleDTO scheduleDto);
 		Task<bool> DeleteScheduleAsync(int id);
+		Task<ScheduleByAgeResponseDTO> GetScheduleByChildrenAgeAsync(int childrenId);
 	}
 }
