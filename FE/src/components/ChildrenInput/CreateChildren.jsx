@@ -1,38 +1,59 @@
-import React from 'react';
-import { Modal, Form, Input, Select, DatePicker, Button, Upload, message } from 'antd';
-import { UserOutlined, PlusOutlined } from '@ant-design/icons';
+import  { useState } from 'react';
+import { Modal, Form, Input, Select, DatePicker, Button, Upload } from 'antd';
+import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
-
+import { uploadFile } from '../../config/firebase'; // Assuming you have a function to upload to Firebase
 
 const { Option } = Select;
 
-const AddChildModal = ({ visible, onClose, onAddChild  }) => {
+const AddChildModal = ({ visible, onClose, onAddChild }) => {
   const [form] = Form.useForm();
-
-  
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false); 
+  const [fileList, setFileList] = useState([]);
+  const handleFileChange = ({ file }) => {
+    setFileList(fileList); // Cập nhật danh sách tệp đã chọ
+    setSelectedFile(fileList[0]);
+    
+  };
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
       const formData = {
         ...values,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null, // Ensure date format is correct
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null,
       };
 
-      // Pass the data back to the parent
-      onAddChild(formData);
-      console.log("hhhh");
+      
 
-      // Reset form and close modal
+      if (selectedFile) {
+        setIsUploading(true); 
+        const url = await uploadFile(selectedFile); 
+        formData.imageUrl = url; 
+       
+        setIsUploading(false); 
+        console.log("Uploaded Image URL:", url);
+      }
+      console.log(formData.imageUrl);
+      
+      onAddChild(formData);
+
+     
       form.resetFields();
+      setSelectedFile(null);
       onClose();
-      toast.success('Child added successfully!');
-    } catch  {
-      message.error('Please fill all required fields!');
+     
+    } catch {
+      toast.error('Please fill all required fields!');
+    } finally {
+      setIsUploading(false); 
     }
   };
 
   const handleCancel = () => {
+    setFileList([]);
+    setSelectedFile(null);
     form.resetFields();
     onClose();
   };
@@ -46,8 +67,12 @@ const AddChildModal = ({ visible, onClose, onAddChild  }) => {
       okText="Add"
       cancelText="Cancel"
       width={600}
+      okButtonProps={{
+        disabled: isUploading, // Disable OK button when uploading
+        loading: isUploading, // Show loading spinner on OK button while uploading
+      }}
     >
-      <Form form={form} layout="vertical" name="createChildForm" >
+      <Form form={form} layout="vertical" name="createChildForm">
         {/* Full Name Input */}
         <Form.Item
           label="Full Name"
@@ -59,18 +84,17 @@ const AddChildModal = ({ visible, onClose, onAddChild  }) => {
 
         {/* Date of Birth with Time */}
         <Form.Item
-  label="Date of Birth"
-  name="dateOfBirth"
-  rules={[{ required: true, message: 'Please select the date of birth!' }]}
->
-  <DatePicker
-    showTime
-    format="YYYY-MM-DD HH:mm"
-    style={{ width: '100%' }}
-    placeholder="Select date and time"
-   // defaultValue={initialValues?.dateOfBirth ? moment(initialValues.dateOfBirth) : null} // Use moment() to parse the date correctly
-  />
-</Form.Item>
+          label="Date of Birth"
+          name="dateOfBirth"
+          rules={[{ required: true, message: 'Please select the date of birth!' }]}
+        >
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD HH:mm"
+            style={{ width: '100%' }}
+            placeholder="Select date and time"
+          />
+        </Form.Item>
 
         {/* Gender Select */}
         <Form.Item
@@ -122,27 +146,9 @@ const AddChildModal = ({ visible, onClose, onAddChild  }) => {
         </Form.Item>
 
         {/* Image Upload */}
-        <Form.Item
-          label="Upload Image"
-          name="imageUrl"
-          valuePropName="fileList"
-          getValueFromEvent={({ fileList }) => fileList || []} // Ensure fileList is always an array
-        >
-          <Upload
-            name="image"
-            action="/upload" // Use your image upload API endpoint
-            listType="picture"
-            maxCount={1}
-            beforeUpload={(file) => {
-              const isImage = file.type.startsWith('image/');
-              if (!isImage) {
-                message.error('You can only upload image files!');
-              }
-              return isImage;
-            }}
-            showUploadList={false}
-          >
-            <Button icon={<PlusOutlined />}>Upload Image</Button>
+        <Form.Item label="Upload Image">
+          <Upload beforeUpload={() => false} onChange={handleFileChange} maxCount={1} showUploadList={true}>
+            <Button icon={<UploadOutlined />} >Select File</Button>
           </Upload>
         </Form.Item>
       </Form>

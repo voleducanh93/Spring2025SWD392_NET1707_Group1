@@ -55,18 +55,18 @@ const BookingPage = () => {
   const { vaccines: children,addChildren} = useChildren();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
-  const addItem = () => {
-    //e.preventDefault();
-    console.log("gff");
-    
+  
+  
+  const addItem = (e) => {
+    e.preventDefault();
     setIsModalVisible(true);  
   };
   const handleCloseModal = () => {
     setIsModalVisible(false);  
   };
   const handleAddChild = (newChild) => {
-    newChild.imageUrl = "hhhhh.jpg";
-console.log(newChild);
+    
+
 
      addChildren.mutateAsync(newChild);
   };
@@ -169,16 +169,22 @@ console.log(newChild);
           )}
           options={children && children.map((child) => ({
             label: (
-              <div className="flex items-center gap-3" onClick={() => editItem(child)}>
-                <Avatar
-                  style={{ backgroundColor: '#87d068' }}
-                  icon={<UserOutlined />}
-                />
-                <span className="ml-2">{child.fullName} - {calculateAgeInMonths(child.dateOfBirth)} months</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3" onClick={() => editItem(child)}>
+                  <Avatar
+                    style={{ backgroundColor: '#87d068' }}
+                    icon={child.imageUrl ? <img src={child.imageUrl} alt="avatar" /> : <UserOutlined />}
+                  />
+                  <span className="ml-2">{child.fullName}</span>
+                </div>
+                <span className="ml-2 text-right" style={{ minWidth: '50px' }}>
+                  {calculateAgeInMonths(child.dateOfBirth)} months
+                </span>
               </div>
             ),
             value: child.fullName,
           }))}
+          
         />
       </div>
 
