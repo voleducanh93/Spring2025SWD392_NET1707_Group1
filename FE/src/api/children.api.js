@@ -3,8 +3,6 @@ import http from "../utils/http";
 const BASE_URL = "/Children";
 export const getChildren = async (id) => {
   const response = await http.get(`${BASE_URL}/user/${id}`);
-  console.log(response);
-  
   return response.data.result;
 };
 
