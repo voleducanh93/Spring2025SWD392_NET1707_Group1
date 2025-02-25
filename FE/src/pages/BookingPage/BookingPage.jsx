@@ -1,5 +1,5 @@
-import  {  useState } from "react";
-import MenuIcon from "@mui/icons-material/Menu";
+
+import {  useState } from "react";
 import SellIcon from "@mui/icons-material/Sell";
 import DoneIcon from "@mui/icons-material/Done";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
@@ -121,27 +121,55 @@ console.log(newChild);
   
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
-      <div className="flex gap-6 items-center flex-wrap">
-        <div className="flex items-center gap-3 bg-[#FBA307] !p-4 rounded-xl text-amber-50 font-bold">
-          <MenuIcon />
-          <button>Danh mục</button>
+      <div className="max-w-full bg-[#252A6F] rounded-3xl">
+        <h2 className="!m-3 text-4xl font-medium flex justify-center text-[#F9AA1A]">
+          <span>CÁC DỊCH VỤ CỦA CHÚNG TÔI</span>
+        </h2>
+        <div className="flex flex-row !mt-10 !mb-10 justify-around">
+          <div className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer hover:">
+            <img
+              src="https://vnvc.vn/wp-content/uploads/2025/02/tiem-chung-tai-trung-tam-vnvc.png"
+              alt=""
+            />
+            <h4 className="text-[#252A6F] text-xl font-medium">
+              <span>VACCCINE</span>
+            </h4>
+          </div>
+          <div className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer">
+            <img
+              src="https://vnvc.vn/wp-content/uploads/2025/02/tiem-chung-goi-uu-tien.png"
+              alt=""
+            />
+            <h4 className="text-[#252A6F] text-xl font-medium">
+              <span>COMBO VACCINE</span>
+            </h4>
+          </div>
         </div>
-        <h1 className="text-[#2A389C] text-2xl font-bold">
-          THÔNG TIN SẢN PHẨM VẮC XIN
-        </h1>
       </div>
 
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-6 relative flex-wrap mt-6">
-        <label className="font-semibold text-lg">Chọn trẻ:</label>
+      <div className="flex items-center gap-6 relative flex-wrap !mt-6 !mb-6">
+        <label className="font-semibold text-xl">Chọn trẻ:</label>
         <Select
-          style={{ width: 300 }}
+          style={{
+            width: 300,
+            height: 50,
+          }}
           placeholder="custom dropdown render"
           dropdownRender={(menu) => (
             <>
               {menu}
-              <Divider style={{ margin: '8px 0' }} />
-              <Space style={{ padding: '0 8px 4px' }}>
+              <Divider
+                style={{
+                  margin: "8px 0",
+                }}
+              />
+              <Space
+                style={{
+                  padding: "0 8px 4px",
+                }}
+              >
+                
                 <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
                   Add item
                 </Button>
