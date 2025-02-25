@@ -59,7 +59,6 @@ namespace ChildVaccineSystem.API.Controllers
 				vnpayData[key] = Request.Query[key];
 			}
 
-			// Define frontend URLs for success and failure redirects
 			var frontendUrl = HttpContext.RequestServices.GetRequiredService<IConfiguration>().GetValue<string>("http://localhost:7134");
 			var successUrl = $"{frontendUrl}/payment-success";
 			var failureUrl = $"{frontendUrl}/payment-failure";
@@ -68,26 +67,21 @@ namespace ChildVaccineSystem.API.Controllers
 			{
 				bool paymentSuccess = await _vnPaymentService.PaymentExecute(vnpayData);
 
-				// Redirect to the appropriate frontend page
 				if (paymentSuccess)
 				{
-					// Add relevant query parameters
 					successUrl += $"?orderId={vnpayData["vnp_TxnRef"]}&amount={vnpayData["vnp_Amount"]}";
 					return Redirect(successUrl);
 				}
 				else
 				{
-					// Add error information
 					failureUrl += $"?orderId={vnpayData["vnp_TxnRef"]}&errorCode={vnpayData["vnp_ResponseCode"]}";
 					return Redirect(failureUrl);
 				}
 			}
 			catch (Exception ex)
 			{
-				// Log the error
 				Console.Error.WriteLine($"Error processing payment return: {ex}");
 
-				// Add error information
 				failureUrl += $"?error={WebUtility.UrlEncode(ex.Message)}";
 				return Redirect(failureUrl);
 			}
