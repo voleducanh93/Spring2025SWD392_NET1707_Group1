@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using ChildVaccineSystem.Data.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Threading.Tasks;
 
@@ -19,6 +20,8 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IBookingDetailRepository BookingDetails { get; }
         IVaccineInventoryRepository VaccineInventories { get; }
         IPricingPoliciesRepository PricingPolicies { get; }
+        IVaccineTransactionHistoryRepository VaccineTransactionHistories { get; }
+
         Task<int> CompleteAsync();
 		Task<IDbContextTransaction> BeginTransactionAsync();
 	}

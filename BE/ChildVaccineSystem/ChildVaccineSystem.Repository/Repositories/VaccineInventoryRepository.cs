@@ -33,7 +33,57 @@ namespace ChildVaccineSystem.Repository.Repositories
                                  .Include(vi => vi.Vaccine)  // Đảm bảo lấy Vaccine
                                  .ToListAsync();
         }
+        public async Task<VaccineInventory> GetVaccineByIdAsync(int vaccineId)
+        {
+            return await _context.VaccineInventories
+                .Include(vi => vi.Vaccine)
+                .FirstOrDefaultAsync(vi => vi.VaccineId == vaccineId);
+        }
+
+        // Tìm kiếm vaccine trong kho theo từ khóa
+        public async Task<IEnumerable<VaccineInventory>> SearchVaccineStockAsync(string? keyword)
+        {
+            var query = _context.VaccineInventories
+                .Include(vi => vi.Vaccine)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                keyword = keyword.ToLower();
+                query = query.Where(vi =>
+                    EF.Functions.Like(vi.Vaccine.Name.ToLower(), $"%{keyword}%") ||
+                    EF.Functions.Like(vi.Vaccine.Manufacturer.ToLower(), $"%{keyword}%")
+                );
+            }
+
+            return await query.ToListAsync();
+        }
+
+        // Lấy danh sách vaccine đã xuất kho
+        public async Task<IEnumerable<VaccineInventory>> GetIssuedVaccinesAsync()
+        {
+            return await _context.VaccineInventories
+                .Include(vi => vi.Vaccine)
+                .Where(vi => vi.QuantityInStock < vi.InitialQuantity)
+                .ToListAsync();
+        }
 
 
+        // Lấy danh sách vaccine đã hoàn trả về kho
+        public async Task<IEnumerable<VaccineInventory>> GetReturnedVaccinesAsync()
+        {
+            return await _context.VaccineInventories
+                .Where(vi => vi.QuantityInStock > 0 && vi.QuantityInStock != vi.InitialQuantity)
+                .Include(vi => vi.Vaccine)
+                .ToListAsync();
+        }
+
+        public async Task<List<VaccineInventory>> GetAvailableInventoriesByVaccineIdAsync(int vaccineId)
+        {
+            return await _context.VaccineInventories
+                .Where(v => v.VaccineId == vaccineId && v.QuantityInStock > 0)
+                .OrderBy(v => v.ExpiryDate)
+                .ToListAsync();
+        }
     }
 }
