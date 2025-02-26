@@ -4,6 +4,7 @@ using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.Repository.Repositories;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -235,6 +236,26 @@ namespace ChildVaccineSystem.Service.Services
             return returnedVaccineDTOs;
         }
 
+        // Kiểm tra vaccine tồn kho thấp
+        public async Task<IEnumerable<VaccineInventoryDTO>> GetLowStockVaccinesAsync(int threshold)
+        {
+            var vaccines = await _unitOfWork.VaccineInventories.GetLowStockVaccinesAsync(threshold);
+            return _mapper.Map<IEnumerable<VaccineInventoryDTO>>(vaccines);
+        }
+
+        // Gửi cảnh báo vaccine hết hạn
+        public async Task SendExpiryAlertsAsync(int daysThreshold)
+        {
+            var vaccines = await _unitOfWork.VaccineInventories.GetExpiringVaccinesAsync(daysThreshold);
+            if (!vaccines.Any()) return;
+
+            var adminEmail = "hauphanduc3014@gmail.com";
+            var expiringVaccineList = vaccines
+                .Select(v => $"{v.Vaccine.Name} - Expiration date: {v.ExpiryDate.ToShortDateString()}")
+                .ToList();
+
+            await _emailService.SendExpiryAlertsAsync(adminEmail, expiringVaccineList);
+        }
 
 
     }

@@ -150,5 +150,40 @@ namespace ChildVaccineSystem.API.Controllers
             return Ok(_response);
         }
 
+        /// <summary>
+        /// Kiểm tra vaccine có số lượng thấp
+        /// </summary>
+        [HttpGet("low-stock/{threshold}")]
+        public async Task<IActionResult> CheckLowStock(int threshold)
+        {
+            _response.Result = await _vaccineInventoryService.GetLowStockVaccinesAsync(threshold);
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Gửi cảnh báo vaccine hết hạn hoặc sắp hết 
+        /// </summary>
+        [HttpPost("alerts/expiry")]
+        public async Task<IActionResult> SendExpiryAlerts([FromBody] int daysThreshold)
+        {
+            try
+            {
+                await _vaccineInventoryService.SendExpiryAlertsAsync(daysThreshold);
+                _response.Result = "Expiry alerts sent successfully";
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
+
     }
 }

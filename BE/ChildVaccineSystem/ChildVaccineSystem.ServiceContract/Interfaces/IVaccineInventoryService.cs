@@ -16,5 +16,7 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task ReturnVaccineAsync(int id, int quantity);
         Task<IEnumerable<VaccineInventoryDTO>> GetIssuedVaccinesAsync();
         Task<IEnumerable<ReturnedVaccineDTO>> GetReturnedVaccinesAsync();
+        Task<IEnumerable<VaccineInventoryDTO>> GetLowStockVaccinesAsync(int threshold);
+        Task SendExpiryAlertsAsync(int daysThreshold);
     }
 }
