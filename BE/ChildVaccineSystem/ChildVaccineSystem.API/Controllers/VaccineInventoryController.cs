@@ -1,4 +1,5 @@
 ﻿using ChildVaccineSystem.Common.Helper;
+using ChildVaccineSystem.Data.DTO.VaccineInventory;
 using ChildVaccineSystem.Service.Services;
 using ChildVaccineSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,53 @@ namespace ChildVaccineSystem.API.Controllers
             _vaccineInventoryService = vaccineInventoryService;
             _response = new APIResponse();
         }
+
+        /// <summary>
+        /// Thêm VaccineInventory 
+        /// </summary>
+        [HttpPost("add")]
+        public async Task<IActionResult> AddVaccineInventory([FromBody] CreateVaccineInventoryDTO dto)
+        {
+            try
+            {
+                var result = await _vaccineInventoryService.AddVaccineInventoryAsync(dto);
+                _response.Result = result;
+                _response.StatusCode = HttpStatusCode.Created;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
+
+        /// <summary>
+        /// Edit VaccineInventory 
+        /// </summary>
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateVaccineInventory(int id, [FromBody] UpdateVaccineInventoryDTO dto)
+        {
+            try
+            {
+                var result = await _vaccineInventoryService.UpdateVaccineInventoryAsync(id, dto);
+                _response.Result = result;
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
+
         /// <summary>
         /// Lấy danh sách tồn kho vaccine
         /// </summary>
