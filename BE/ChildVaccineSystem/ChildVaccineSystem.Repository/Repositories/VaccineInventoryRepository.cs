@@ -103,5 +103,18 @@ namespace ChildVaccineSystem.Repository.Repositories
                 .Where(v => v.ExpiryDate <= DateTime.Now.AddDays(daysThreshold))
                 .ToListAsync();
         }
+
+        // Lấy số lô của Vaccine
+        public async Task<VaccineInventory?> GetByBatchNumberAsync(string batchNumber)
+        {
+            return await _context.VaccineInventories
+                .FirstOrDefaultAsync(v => v.BatchNumber == batchNumber);
+        }
+
+        public async Task<VaccineInventory?> GetByIdAsync(int id)
+        {
+            return await _context.VaccineInventories.FindAsync(id);
+        }
+
     }
 }
