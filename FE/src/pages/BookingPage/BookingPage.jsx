@@ -8,6 +8,7 @@ import { PlusOutlined, UserOutlined } from "@ant-design/icons";
 import AddChildModal from "../../components/ChildrenInput/CreateChildren";
 import moment from "moment";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
@@ -38,11 +39,56 @@ const BookingPage = () => {
     setSelectedChild(child);
 
     if (child && child.childId) {
-      fetchVaccinationSchedule(child.childId); // Gọi API lấy lịch tiêm chủng
+      fetchVaccinationSchedule(child.childId); 
     }
   };
 
-  // Gọi API lấy lịch tiêm chủng
+  const handleBooking = () => {
+    console.log("📌 Selected Vaccines:", selectedVaccines);
+    //console.log("📌 Selected Combo Vaccines:", selectedComboVaccines);
+
+    if (!selectedVaccines || selectedVaccines.length === 0){
+        console.error("❌ Không có vaccine hoặc combo vaccine nào được chọn!");
+        toast.error("Vui lòng chọn ít nhất một vaccine hoặc combo vaccine.");
+        return;
+    }
+
+    const bookingDetails = [];
+
+    // ✅ Xử lý danh sách Vaccine
+    if (selectedVaccines && selectedVaccines.length > 0) {
+        selectedVaccines.forEach(vaccine => {
+            bookingDetails.push({
+                vaccineId: vaccine.vaccineId,  // Chỉ có vaccine
+                comboVaccineId: null
+            });
+        });
+    }
+
+    // // ✅ Xử lý danh sách Combo Vaccine
+    // if (selectedComboVaccines && selectedComboVaccines.length > 0) {
+    //     selectedComboVaccines.forEach(combo => {
+    //         bookingDetails.push({
+    //             vaccineId: null,  // Chỉ có combo vaccine
+    //             comboVaccineId: combo.comboVaccineId
+    //         });
+    //     });
+    // }
+
+    const bookingData = {
+        childId: selectedChildId,  // Đảm bảo `selectedChildId` có giá trị hợp lệ
+        bookingDate: new Date().toISOString(),
+        notes: "Đặt lịch tiêm chủng",
+        bookingDetails: bookingDetails
+    };
+
+    console.log("📌 Booking Data Sent:", bookingData);
+
+    addBooking.mutate(bookingData);
+};
+
+
+  
   const fetchVaccinationSchedule = async (childId) => {
     try {
       const response = await axios.get(
@@ -96,13 +142,13 @@ const BookingPage = () => {
   };
 
   const editItem = (child) => {
-    // Ensure dateOfBirth is a moment object
+    
     const formattedChild = {
       ...child,
       dateOfBirth: child.dateOfBirth ? moment(child.dateOfBirth) : null,
     };
     setSelectedChild(formattedChild);
-    //setIsModalVisible(true); // Open the modal for editing
+    
   };
 
   const toggleSelection = (vaccine) => {
@@ -117,6 +163,8 @@ const BookingPage = () => {
         ? prev.filter((v) => v.vaccineId !== vaccine.vaccineId)
         : [...prev, vaccine];
     });
+    console.log(selectedVaccines);
+    
   };
 
   const calculateAgeInYears = (dob) => {
@@ -315,7 +363,7 @@ const BookingPage = () => {
                     </button>
                   </div>
                 ))}
-                <button className="!mt-5 w-full bg-orange-500 text-white !p-3 rounded-lg">
+                <button className="!mt-5 w-full bg-orange-500 text-white !p-3 rounded-lg" onClick={handleBooking  }>
                   ĐĂNG KÝ MŨI TIÊM
                 </button>
               </div>
