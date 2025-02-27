@@ -82,7 +82,7 @@ namespace ChildVaccineSystem.Data.Models
 			//Booking
 			modelBuilder.Entity<Booking>()
 				.HasOne(b => b.User)
-				.WithMany()
+				.WithMany(u => u.Bookings)
 				.HasForeignKey(b => b.UserId)
 				.HasPrincipalKey(u => u.Id)
 				.OnDelete(DeleteBehavior.Restrict);
@@ -217,7 +217,7 @@ namespace ChildVaccineSystem.Data.Models
 			//Children
 			modelBuilder.Entity<Children>()
 				.HasOne(c => c.User)
-				.WithMany()
+				.WithMany(u => u.Children)
 				.HasForeignKey(c => c.UserId)
 				.HasPrincipalKey(u => u.Id)
 				.OnDelete(DeleteBehavior.Restrict);

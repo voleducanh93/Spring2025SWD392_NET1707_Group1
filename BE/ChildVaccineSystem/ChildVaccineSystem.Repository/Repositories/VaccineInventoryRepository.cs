@@ -85,5 +85,36 @@ namespace ChildVaccineSystem.Repository.Repositories
                 .OrderBy(v => v.ExpiryDate)
                 .ToListAsync();
         }
+
+        // Kiểm tra vaccine tồn kho thấp
+        public async Task<IEnumerable<VaccineInventory>> GetLowStockVaccinesAsync(int threshold)
+        {
+            return await _context.VaccineInventories
+                .Where(vi => vi.QuantityInStock <= threshold)
+                .Include(vi => vi.Vaccine)
+                .ToListAsync();
+        }
+
+        // Kiểm tra vaccine sắp hết hạn
+        public async Task<List<VaccineInventory>> GetExpiringVaccinesAsync(int daysThreshold)
+        {
+            return await _context.Set<VaccineInventory>()
+                .Include(v => v.Vaccine)
+                .Where(v => v.ExpiryDate <= DateTime.Now.AddDays(daysThreshold))
+                .ToListAsync();
+        }
+
+        // Lấy số lô của Vaccine
+        public async Task<VaccineInventory?> GetByBatchNumberAsync(string batchNumber)
+        {
+            return await _context.VaccineInventories
+                .FirstOrDefaultAsync(v => v.BatchNumber == batchNumber);
+        }
+
+        public async Task<VaccineInventory?> GetByIdAsync(int id)
+        {
+            return await _context.VaccineInventories.FindAsync(id);
+        }
+
     }
 }

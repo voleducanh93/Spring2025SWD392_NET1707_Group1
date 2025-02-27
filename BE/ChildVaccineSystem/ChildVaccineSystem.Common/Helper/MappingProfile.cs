@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChildVaccineSystem.Data.DTO.VaccineInventory;
+using ChildVaccineSystem.Data.DTO.Transaction;
 
 namespace ChildVaccineSystem.Common.Helper
 {
@@ -154,6 +155,9 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
                 .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier));
 
-        }
+			// Transaction
+			CreateMap<Transaction, TransactionDTO>().ReverseMap();
+			CreateMap<CreateTransactionDTO, Transaction>();
+		}
     }
 }

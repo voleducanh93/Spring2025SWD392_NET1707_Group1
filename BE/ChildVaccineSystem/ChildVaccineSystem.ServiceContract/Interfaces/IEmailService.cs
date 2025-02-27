@@ -12,6 +12,7 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         public void SendEmail(EmailRequestDTO request);
         public void SendEmailConfirmation(string username, string confirmLink);
         Task SendEmailForgotPassword(string email, string resetLink);
+        Task SendExpiryAlertsAsync(string adminEmail, List<string> expiringVaccines);
 
     }
 }

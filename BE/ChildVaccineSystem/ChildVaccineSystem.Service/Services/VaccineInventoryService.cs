@@ -4,6 +4,7 @@ using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.Repository.Repositories;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -235,7 +236,102 @@ namespace ChildVaccineSystem.Service.Services
             return returnedVaccineDTOs;
         }
 
+        // Kiểm tra vaccine tồn kho thấp
+        public async Task<IEnumerable<VaccineInventoryDTO>> GetLowStockVaccinesAsync(int threshold)
+        {
+            var vaccines = await _unitOfWork.VaccineInventories.GetLowStockVaccinesAsync(threshold);
+            return _mapper.Map<IEnumerable<VaccineInventoryDTO>>(vaccines);
+        }
 
+        // Gửi cảnh báo vaccine hết hạn
+        public async Task SendExpiryAlertsAsync(int daysThreshold)
+        {
+            var vaccines = await _unitOfWork.VaccineInventories.GetExpiringVaccinesAsync(daysThreshold);
+            if (!vaccines.Any()) return;
+
+            var adminEmail = "hauphanduc3014@gmail.com";
+            var expiringVaccineList = vaccines
+                .Select(v => $"{v.Vaccine.Name} - Expiration date: {v.ExpiryDate.ToShortDateString()}")
+                .ToList();
+
+            await _emailService.SendExpiryAlertsAsync(adminEmail, expiringVaccineList);
+        }
+
+        // Thêm mới VaccineInventory
+        public async Task<VaccineInventoryDTO> AddVaccineInventoryAsync(CreateVaccineInventoryDTO dto)
+        {
+            // Kiểm tra vaccine có tồn tại không
+            var vaccine = await _unitOfWork.Vaccines.GetByIdAsync(dto.VaccineId);
+            if (vaccine == null)
+            {
+                throw new Exception("Vaccine does not exist.");
+            }
+
+            // Kiểm tra xem lô vaccine đã tồn tại chưa
+            var existingBatch = await _unitOfWork.VaccineInventories
+                .GetByBatchNumberAsync(dto.BatchNumber);
+
+            if (existingBatch != null)
+            {
+                throw new Exception("Batch number already exists.");
+            }
+
+            // Tạo mới một bản ghi VaccineInventory
+            var newInventory = new VaccineInventory
+            {
+                VaccineId = dto.VaccineId,
+                BatchNumber = dto.BatchNumber,
+                ManufacturingDate = dto.ManufacturingDate,
+                ExpiryDate = dto.ExpiryDate,
+                InitialQuantity = dto.InitialQuantity,
+                QuantityInStock = dto.InitialQuantity, // Ban đầu số lượng tồn kho = số lượng nhập vào
+                Supplier = dto.Supplier
+            };
+
+            await _unitOfWork.VaccineInventories.AddAsync(newInventory);
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<VaccineInventoryDTO>(newInventory);
+        }
+
+        //Cập nhật Vaccine Inventory
+        public async Task<VaccineInventoryDTO> UpdateVaccineInventoryAsync(int id, UpdateVaccineInventoryDTO dto)
+        {
+            // Tìm kiếm vaccine inventory theo id
+            var inventory = await _unitOfWork.VaccineInventories.GetByIdAsync(id);
+            if (inventory == null)
+            {
+                throw new Exception("Vaccine inventory does not exist.");
+            }
+
+            // Kiểm tra xem batch number mới có bị trùng không (nếu cập nhật batch number)
+            if (!string.IsNullOrEmpty(dto.BatchNumber) && dto.BatchNumber != inventory.BatchNumber)
+            {
+                var existingBatch = await _unitOfWork.VaccineInventories.GetByBatchNumberAsync(dto.BatchNumber);
+                if (existingBatch != null)
+                {
+                    throw new Exception("Batch number already exists.");
+                }
+                inventory.BatchNumber = dto.BatchNumber;
+            }
+
+            // Cập nhật thông tin khác nếu có
+            inventory.ManufacturingDate = dto.ManufacturingDate ?? inventory.ManufacturingDate;
+            inventory.ExpiryDate = dto.ExpiryDate ?? inventory.ExpiryDate;
+            inventory.Supplier = dto.Supplier ?? inventory.Supplier;
+
+            // Nếu cập nhật số lượng ban đầu, thì cập nhật cả tồn kho
+            if (dto.InitialQuantity.HasValue)
+            {
+                int quantityDifference = dto.InitialQuantity.Value - inventory.InitialQuantity;
+                inventory.InitialQuantity = dto.InitialQuantity.Value;
+                inventory.QuantityInStock += quantityDifference; // Điều chỉnh tồn kho theo số lượng mới
+            }
+
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<VaccineInventoryDTO>(inventory);
+        }
 
     }
 

@@ -21,9 +21,18 @@ namespace ChildVaccineSystem.Data.Entities
         public string UserId { get; set; }
         public User User { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public string PaymentMethod { get; set; }
-        public string Status { get; set; }
-    }
+		public DateTime CreatedAt { get; set; }
+
+		public DateTime? UpdatedAt { get; set; }
+
+		[Required]
+		public string PaymentMethod { get; set; }
+
+		[Required]
+		public string Status { get; set; }
+
+		[Column(TypeName = "decimal(18,2)")]
+		public decimal Amount { get; set; }
+	}
 
 }
