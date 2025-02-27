@@ -24,6 +24,8 @@ const BookingPage = () => {
   const { fetchPaymentUrl, isLoading: isPaymentLoading } = usePayment();
   const [selectedDate, setSelectedDate] = useState(null);
 const [loading, setLoading] = useState(isPaymentLoading);
+const [isComboSelected, setIsComboSelected] = useState(false);
+const [comboVaccines, setComboVaccines] = useState([]);
   const openAddChildModal = () => {
     setIsModalVisible(true);
   };
@@ -37,22 +39,30 @@ const [loading, setLoading] = useState(isPaymentLoading);
   // Khi người dùng chọn trẻ
   const handleSelectChild = async (value) => {
     setSelectedChild(value.childId);
+    setSelectedVaccines([]);
+    //setIsComboSelected(false);
+  
     try {
       const result = await getVaccinesAndCombo(value.childId);
       console.log("✅ API Response:", result);
-
-      
-      if (result && result.result && Array.isArray(result.result.vaccines)) {
-          setVaccinationSchedule(result.result.vaccines);
+  
+      if (result?.result) {
+        setVaccinationSchedule(result.result.vaccines || []);
+        setComboVaccines(result.result.comboVaccines || []);
+        console.log(comboVaccines);
+        
       } else {
-          console.warn("⚠️ Không có dữ liệu vaccine hợp lệ.");
-          setVaccinationSchedule([]); 
+        console.warn("⚠️ Không có dữ liệu vaccine hoặc combo hợp lệ.");
+        setVaccinationSchedule([]);
+        setComboVaccines([]);
       }
-  } catch (error) {
+    } catch (error) {
       console.error("❌ Lỗi khi gọi API:", error);
-      setVaccinationSchedule([]); 
-  }
+      setVaccinationSchedule([]);
+      setComboVaccines([]);
+    }
   };
+  
 
   const handleBooking = () => {
    
@@ -73,28 +83,22 @@ const [loading, setLoading] = useState(isPaymentLoading);
 
     
     if (selectedVaccines && selectedVaccines.length > 0) {
-        selectedVaccines.forEach(vaccine => {
-            bookingDetails.push({
-                vaccineId: vaccine.vaccineId,  
-            });
-        });
-    }
-   
-    
-    // // ✅ Xử lý danh sách Combo Vaccine
-    // if (selectedComboVaccines && selectedComboVaccines.length > 0) {
-    //     selectedComboVaccines.forEach(combo => {
-    //         bookingDetails.push({
-    //             vaccineId: null,  // Chỉ có combo vaccine
-    //             comboVaccineId: combo.comboVaccineId
-    //         });
-    //     });
-    // }
-
- 
-
-    
-   
+      selectedVaccines.forEach(item => {
+          console.log(item.comboId);
+          
+          if (isComboSelected && item.comboId) {
+              
+              bookingDetails.push({
+                  comboVaccineId: item.comboId,
+              });
+          } else if (item.vaccineId) {
+             
+              bookingDetails.push({
+                  vaccineId: item.vaccineId,
+              });
+          }
+      });
+  }
   
   const bookingDate = moment(selectedDate, "DD/MM/YYYY", true);
   if (!bookingDate.isValid()) {
@@ -113,9 +117,8 @@ const [loading, setLoading] = useState(isPaymentLoading);
         notes: "Đặt lịch tiêm chủng",
         bookingDetails: bookingDetails
     };
-
+    console.log(bookingData);
     
-
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
         console.log("✅ Booking Created:", response);
@@ -153,17 +156,36 @@ const [loading, setLoading] = useState(isPaymentLoading);
     });
 };
 
-  const toggleSelection = (vaccine) => {
+const toggleSelection = (item) => {
+  setSelectedVaccines((prev) => {
     
-    setSelectedVaccines((prev) => {
-      const isSelected = prev.some((v) => v.vaccineId === vaccine.vaccineId);
-      return isSelected
-        ? prev.filter((v) => v.vaccineId !== vaccine.vaccineId)
-        : [...prev, vaccine];
-    });
-    console.log(selectedVaccines);
+    if (item.comboId) {
+      
+      const isComboSelected = prev.some((v) => v.comboId === item.comboId);
+
     
-  };
+      if (isComboSelected) {
+        return prev.filter((v) => v.comboId !== item.comboId);
+      }
+
+   
+      return [...prev, item]; 
+    } else {
+     
+      const isVaccineSelected = prev.some((v) => v.vaccineId === item.vaccineId);
+
+     
+      if (isVaccineSelected) {
+        return prev.filter((v) => v.vaccineId !== item.vaccineId);
+      }
+
+     
+      return [...prev, item];
+    }
+  });
+};
+
+
 
   const calculateAgeInYears = (dob) => {
     const birthDate = moment(dob);
@@ -173,11 +195,46 @@ const [loading, setLoading] = useState(isPaymentLoading);
 
     return `${years} tuổi`;
   };
-  
+ 
+ const  handleVaccineAndCombo =(value) => {
+  alert(` Dữ liệu sẽ bị xóa bên kia`);
+  if (value === "vaccine") {
+    setIsComboSelected(false);
+  } else {
+    setIsComboSelected(true);
+  }
+  setSelectedVaccines([]);
+  console.log(selectedVaccines);
+  console.log(isComboSelected);
+ }
 
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
-      
+      <div className="max-w-full bg-[#252A6F] rounded-3xl">
+        <h2 className="!m-3 text-4xl font-medium flex justify-center text-[#F9AA1A]">
+          <span className="!mt-3">DỊCH VỤ CỦA CHÚNG TÔI</span>
+        </h2>
+        <div className="flex flex-row !mt-10 !mb-10 justify-around">
+          <div  onClick={() => handleVaccineAndCombo("vaccine")} className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer hover:">
+            <img
+              src="https://vnvc.vn/wp-content/uploads/2025/02/tiem-chung-tai-trung-tam-vnvc.png"
+              alt=""
+            />
+            <h4 className="text-[#252A6F] text-xl font-medium">
+              <span>CÁC LOẠI VACCCINE</span>
+            </h4>
+          </div>
+          <div onClick={() => handleVaccineAndCombo("combo")(true)} className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer" >
+            <img
+              src="https://vnvc.vn/wp-content/uploads/2025/02/tiem-chung-goi-uu-tien.png"
+              alt=""
+            />
+            <h4 className="text-[#252A6F] text-xl font-medium" >
+              <span >COMBO VACCINE</span>
+            </h4>
+          </div>
+        </div>
+      </div>
       {/* Filter Dropdown */}
       <div className="flex items-center justify-between gap-6 w-full">
         <div className="flex items-center gap-4 w-1/2">
@@ -255,31 +312,88 @@ const [loading, setLoading] = useState(isPaymentLoading);
       />
 <div className="flex flex-col md:flex-row gap-8">
 <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-  {vaccinationSchedule && vaccinationSchedule.length > 0 ? (
-    vaccinationSchedule.map((vaccine) => (
-      <div key={vaccine.vaccineId} className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg max-h-[410px] overflow-hidden">
-        <div className="flex flex-col gap-3 bg-[#DDECF9] rounded-2xl !p-4">
-          <h3 className="text-[#234060] text-lg font-medium">{vaccine.name}</h3>
-          <p className="text-sm text-gray-600">Nguồn gốc: {vaccine.manufacturer}</p>
-          <p className="text-sm text-gray-600">Phòng bệnh: {vaccine.description}</p>
-          <div className="flex items-center gap-3 text-[#2A388F] mt-6">
-            <SellIcon />
-            <p className="font-semibold text-2xl">
-              {vaccine.price ? `${vaccine.price.toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
-            </p>
-          </div>
+  {/* 1. Hiển thị danh sách vaccine đơn */}
+{ !isComboSelected && vaccinationSchedule?.length > 0 ? (
+  vaccinationSchedule.map((vaccine) => (
+    <div key={vaccine.vaccineId} className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg max-h-[410px] overflow-hidden">
+      <div className="flex flex-col gap-3 bg-[#DDECF9] rounded-2xl !p-4">
+        <h3 className="text-[#234060] text-lg font-medium">{vaccine.name}</h3>
+        <p className="text-sm text-gray-600">Nguồn gốc: {vaccine.manufacturer}</p>
+        <p className="text-sm text-gray-600">Phòng bệnh: {vaccine.description}</p>
+        <div className="flex items-center gap-3 text-[#2A388F] mt-6">
+          <SellIcon />
+          <p className="font-semibold text-2xl">
+            {vaccine.price ? `${vaccine.price.toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
+          </p>
         </div>
-        <button
-          className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
-            selectedVaccines.some((v) => v.vaccineId === vaccine.vaccineId) ? "bg-[#35944A]" : "bg-[#2A388F]"
-          }`}
-          onClick={() => toggleSelection(vaccine)}
-        >
-          {selectedVaccines.some((v) => v.vaccineId === vaccine.vaccineId) ? "ĐÃ CHỌN" : "CHỌN"}
-        </button>
       </div>
-    ))) : ( <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
-  ) }
+      <button
+        className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
+          selectedVaccines.some((v) => v.vaccineId === vaccine.vaccineId) ? "bg-[#35944A]" : "bg-[#2A388F]"
+        }`}
+        onClick={() => toggleSelection(vaccine)}
+      >
+        {selectedVaccines.some((v) => v.vaccineId === vaccine.vaccineId) ? "ĐÃ CHỌN" : "CHỌN"}
+      </button>
+    </div>
+  ))
+) : (
+  !isComboSelected && <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
+)}
+
+
+
+{/* 2. Thông báo khi không có vaccine đơn */}
+{ !isComboSelected && vaccinationSchedule?.length === 0 && (
+  <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
+)}
+
+
+
+{/* 3. Hiển thị danh sách combo vaccine */}
+{ isComboSelected && comboVaccines?.length > 0 ? (
+  comboVaccines.map((combo) => (
+    <div key={combo.comboId} className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg max-h-[410px] overflow-hidden">
+      {/* Hiển thị thông tin combo vaccine */}
+      <div className="flex flex-col gap-3 bg-[#DDECF9] rounded-2xl !p-4">
+        <h3 className="text-[#234060] text-lg font-medium">{combo.comboName}</h3>
+        <p className="text-sm text-gray-600">Mô tả: {combo.description}</p>
+        <div className="flex items-center gap-3 text-[#2A388F] mt-6">
+          <SellIcon />
+          <p className="font-semibold text-2xl">
+            {combo.totalPrice ? `${combo.totalPrice.toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
+          </p>
+        </div>
+        {/* Danh sách các vaccine trong combo */}
+        <div className="mt-4">
+          <h4 className="text-sm font-semibold">Danh sách vắc-xin:</h4>
+          <ul className="list-disc pl-5">
+            {combo.vaccines.map((vaccine) => (
+              <li key={vaccine.vaccineId} className="text-sm text-gray-600">{vaccine.name}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <button
+    className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${selectedVaccines.some((v) => v.comboId === combo.comboId) ? "bg-[#35944A]" : "bg-[#2A388F]"}`}
+    onClick={() => toggleSelection(combo)}
+  >
+    {selectedVaccines.some((v) => v.comboId === combo.comboId) ? "ĐÃ CHỌN" : "CHỌN"}
+  </button>
+    </div>
+  ))
+) : (
+  isComboSelected && comboVaccines.length === 0 && (
+    <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu combo vaccine</div>
+  )
+)}
+
+{/* 4. Thông báo khi không có vaccine đơn */}
+{ !isComboSelected && vaccinationSchedule?.length === 0 && (
+  <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
+)}
+
+
   </div>
         
         <div className="border border-[#dcdfe6] w-full md:w-1/3 !p-8 rounded-2xl shadow-xl bg-white">
@@ -290,7 +404,7 @@ const [loading, setLoading] = useState(isPaymentLoading);
           </h2>
         </div>
         <div className="!mt-10">
-          {selectedVaccines.length > 0 ? (
+          { selectedVaccines .length > 0  ? (
             <div>
               {selectedVaccines.map((vaccine) => (
                 <div
@@ -298,9 +412,9 @@ const [loading, setLoading] = useState(isPaymentLoading);
                   className="!mt-3 !p-5 rounded-lg !mb-3 shadow-xl flex flex-col gap-3"
                 >
                   <h4 className="font-semibold">{vaccine.vaccineName}</h4>
-                  <p className="text-sm">Phòng bệnh: {vaccine.disease}</p>
+                  <p className="text-sm">Tên: {vaccine.name?? vaccine.comboName}</p>
                   <p className="font-semibold text-blue-600">
-                    {vaccine.price?.toLocaleString()} VNĐ
+                  {vaccine.price?.toLocaleString() ?? vaccine.totalPrice?.toLocaleString()} VNĐ
                   </p>
                   <button
                     className="bg-red-500 text-white px-3 py-2 rounded-lg"

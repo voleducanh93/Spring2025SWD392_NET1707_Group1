@@ -17,6 +17,7 @@ import UploadForm from "../pages/AuthPage/upload";
 
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
+import ResultPayment from "../pages/PaymentPage/ResultPayment";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "/child-profile", element: <ChildProfile /> },
       { path: "/edit-child/:childId", element: <EditChildProfile /> },
       { path: "/booking", element: <BookingPage /> },
+      { path: "/payment", element: <ResultPayment /> }
     ],
   },
   {
