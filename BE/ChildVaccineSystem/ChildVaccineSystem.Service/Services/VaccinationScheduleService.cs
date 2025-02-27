@@ -323,6 +323,9 @@ namespace ChildVaccineSystem.Service.Services
 
 			var schedule = schedules.FirstOrDefault();
 
+			if (schedule == null)
+				throw new KeyNotFoundException($"Not found schedule for this chilren");
+
 			var response = new ScheduleByAgeResponseDTO();
 			
 			var vaccineIds = schedule.VaccineScheduleDetails.Select(vsd => vsd.VaccineId).ToList();
