@@ -4,8 +4,19 @@ import HomePage from "../pages/HomePage/HomePage";
 import MainLayout from "../pages/MainLayout/MainLayout";
 import AuthPage from "../pages/AuthPage/AuthPage";
 import ResetPassword from "../pages/AuthPage/resetPassword";
+import VaccineByAge from "../pages/ManagerPage/VaccineByAge";
+import ManagerPage from "../pages/ManagerPage/ManagerPage";
+import ChildProfile from "../pages/ProfilePage/ChildProfile";
+import EditChildProfile from "../pages/ProfilePage/EditChildProfile";
+import BookingPage from "../pages/BookingPage/BookingPage";
+import PrivateRoute from "./PrivateRoute";
 
+import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
+import RegistrationForm from "../pages/ProfilePage/ProfilePage";
+import UploadForm from "../pages/AuthPage/upload";
 
+import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
+import AdminPage from "../pages/AdminPage/AdminPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,9 +29,29 @@ export const router = createBrowserRouter([
     children: [
       // index: true
       { index: true, element: <HomePage /> },
-      {path:"/auth", element: <AuthPage/>},
-      {path:"/reset-password", element: <ResetPassword/>},
+      { path: "/reset-password", element: <ResetPassword /> },
+      { path: "/vaccineSchedule", element: <VaccineByAge /> },
+      { path: "/manager-page", element: <ManagerPage /> },
+      { path: "/vaccine", element: <VaccineManagement /> },
+      { path: "/children", element: <UploadForm /> },
+      { path: "/children", element: <RegistrationForm /> },
+      { path: "/vaccine-detail", element: <VaccineDetailPage /> },
+      { path: "/child-profile", element: <ChildProfile /> },
+      { path: "/edit-child/:childId", element: <EditChildProfile /> },
+      { path: "/booking", element: <BookingPage /> },
     ],
   },
+  {
+    path: "/auth",
+    element: (
+      <PrivateRoute>
+        <AuthPage />
+      </PrivateRoute>
+    ),
+  },
 
+  {
+    path: "/admin",
+    element: <AdminPage />,
+  },
 ]);

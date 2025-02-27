@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { getAccessTokenFromLS } from "../utils/auth";
+import { getAccessTokenFromLS, getUserIdLS } from "../utils/auth";
 
 export const AppContext = createContext({
   isAuthenticated: false,
@@ -8,9 +8,9 @@ export const AppContext = createContext({
 
 export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAccessTokenFromLS()));
-
+  const [getUser] = useState(getUserIdLS());
   return (
-    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, getUser }}>
       {children}
     </AppContext.Provider>
   );

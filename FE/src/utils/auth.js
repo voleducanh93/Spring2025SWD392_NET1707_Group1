@@ -12,6 +12,10 @@ export const setRefreshTokenToLS = (refresh_token) => {
   localStorage.setItem('refresh_token', refresh_token);
 };
 
+export const setUserIdLS = (userId) => {
+  localStorage.setItem('userId', userId);
+};
+
 
 export const clearLS = () => {
   localStorage.removeItem('access_token');
@@ -28,6 +32,8 @@ export const getAccessTokenFromLS = () => localStorage.getItem('access_token') |
 
 
 export const getRefreshTokenFromLS = () => localStorage.getItem('refresh_token') || '';
+
+export const getUserIdLS = () => localStorage.getItem('userId') || '';
 
 
 export const getProfileFromLS = () => {

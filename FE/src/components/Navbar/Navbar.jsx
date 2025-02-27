@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { Container } from "@mui/material";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -12,22 +13,28 @@ export default function Navbar() {
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+  const searchSuggestions = [
+    "Vắc xin Qdenga (Sản xuất tại Đức)",
+    "Vắc xin Shingrix (Bỉ)",
+    "Vắc xin Pneumovax 23 (Mỹ)",
+    "Vắc xin Bexsero (Ý)",
+  ];
 
-  const searchSuggestions = ["Vắc xin Qdenga (Sản xuất tại Đức)", "Vắc xin Shingrix (Bỉ)", "Vắc xin Pneumovax 23 (Mỹ)", "Vắc xin Bexsero (Ý)"];
-
+  const hideSearch = () => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+  };
   // Sticky Navbar + Hiển thị nút cuộn lên đầu trang
   useEffect(() => {
     const handleScroll = () => {
       setIsSticky(window.scrollY > 80);
       setIsScrollTopVisible(window.scrollY > 300);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
   // Đóng dropdown khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,33 +47,41 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
   // Cuộn lên đầu trang khi bấm nút 🔝
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   // Xử lý khi chọn gợi ý tìm kiếm
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
     setIsSearchOpen(false);
     handleSearch(suggestion);
   };
-
   // Giả lập chức năng tìm kiếm
   const handleSearch = (query) => {
     console.log("Tìm kiếm:", query);
     // Ở đây có thể điều hướng đến trang kết quả tìm kiếm hoặc thực hiện fetch API
   };
-
   return (
-    <>
-      <nav className={`transition-all duration-500 ${isSticky ? "fixed top-0 left-0 w-full z-50 bg-white shadow-xl" : "bg-white shadow-md py-3"}`}>
-        <div className="mx-auto px-10 flex justify-between items-center">
-          
+    <Container>
+      <nav
+        className={`transition-all duration-500 ${
+          isSticky ? "fixed top-0 left-0 w-full z-50" : "py-3"
+        }`}
+      >
+        <div className="mx-auto px-10 flex justify-around items-center">
           {/* Menu chính */}
-          <div className="flex items-center space-x-6">
-            {["TRANG CHỦ", "GIỚI THIỆU", "VẮC XIN TRẺ EM", "VẮC XIN NGƯỜI LỚN", "GÓI VẮC XIN", "CẨM NANG", "BẢNG GIÁ", "BỆNH HỌC"].map((item, index) => (
+          <div className="flex items-center gap-6">
+            {[
+              "TRANG CHỦ",
+              "GIỚI THIỆU",
+              "VẮC XIN TRẺ EM",
+              "VẮC XIN NGƯỜI LỚN",
+              "GÓI VẮC XIN",
+              "CẨM NANG",
+              "BẢNG GIÁ",
+              "BỆNH HỌC",
+            ].map((item, index) => (
               <a
                 key={index}
                 href="#"
@@ -84,7 +99,6 @@ export default function Navbar() {
               >
                 TIN TỨC <ExpandMoreIcon className="ml-1" />
               </button>
-
               {/* Danh sách dropdown */}
               <AnimatePresence>
                 {isDropdownOpen && (
@@ -103,7 +117,7 @@ export default function Navbar() {
                       "Lớp tư vấn sức khỏe cộng đồng",
                       "Trực tuyến",
                       "Cuộc thi",
-                      "Hợp tác"
+                      "Hợp tác",
                     ].map((subItem, idx) => (
                       <motion.a
                         key={idx}
@@ -119,17 +133,15 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           </div>
-
           {/* Khu vực phải - Tìm kiếm */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 relative">
             {/* Nút tìm kiếm */}
             <button
               className="text-[#2A388F] hover:text-[#1F2B75] transition-all duration-300"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
-              <SearchIcon fontSize="large" />
+              <SearchIcon fontSize="large" className="relative" />
             </button>
-
             {/* Ô tìm kiếm mở rộng */}
             <AnimatePresence>
               {isSearchOpen && (
@@ -138,7 +150,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="absolute top-16 right-10 bg-white p-3 rounded-lg shadow-md w-80 flex flex-col space-y-2"
+                  className="absolute top-10 right-0 bg-white p-3 rounded-lg shadow-md w-80 flex flex-col space-y-2 z-10"
                 >
                   <div className="flex items-center space-x-2">
                     <input
@@ -150,7 +162,7 @@ export default function Navbar() {
                     />
                     <button
                       className="text-gray-500 hover:text-gray-700 transition-all duration-300"
-                      onClick={() => setIsSearchOpen(false)}
+                      onClick={() => hideSearch()}
                     >
                       <CloseIcon />
                     </button>
@@ -176,6 +188,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-    </>
+    </Container>
   );
 }

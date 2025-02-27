@@ -1,63 +1,52 @@
-import { motion } from "framer-motion"; // Ensure motion is imported from framer-motion
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { Container, Grid } from "@mui/material";
-import anhVacxin from "../../assets/vac-xin-pentaxim-1.jpg"; // Your image source
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Container,
+  Grid,
+  CircularProgress,
+  Alert,
+  Typography,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Pagination,
+} from "@mui/material";
+import { useVaccine } from "../../hooks/useVaccine";
+import imgTam from "../../assets/vac-xin-pentaxim-1.jpg";
 
-// Data for vaccines (replace these titles and images accordingly)
-const cardsData = [
-  {
-    title: "Vaccine 1",
-    description:
-      "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 2",
-    description:
-      "Chameleons are distinguished by their zygodactylous feet, swaying gait, and unique ability to change color.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 3",
-    description:
-      "Geckos are unique among lizards for their vocalizations, making chirping sounds for communication.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 4",
-    description:
-      "Geckos are unique among lizards for their vocalizations, making chirping sounds for communication.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 5",
-    description:
-      "Geckos are unique among lizards for their vocalizations, making chirping sounds for communication.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 6",
-    description:
-      "Geckos are unique among lizards for their vocalizations, making chirping sounds for communication.",
-    image: anhVacxin,
-  },
-  {
-    title: "Vaccine 7",
-    description:
-      "Geckos are unique among lizards for their vocalizations, making chirping sounds for communication.",
-    image: anhVacxin,
-  },
-];
+const ITEMS_PER_PAGE = 12; // Số vaccine mỗi trang
 
 export default function Cards() {
+  const { vaccines, isLoading, isError, error } = useVaccine();
+  const [page, setPage] = useState(1); // Quản lý trang hiện tại
+
+  if (isLoading) {
+    return (
+      <Container sx={{ mt: 5, display: "flex", justifyContent: "center" }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Alert severity="error">Error fetching data: {error?.message}</Alert>
+      </Container>
+    );
+  }
+
+  // Tính toán vaccine hiển thị theo trang hiện tại
+  const totalPages = Math.ceil(vaccines.length / ITEMS_PER_PAGE);
+  const displayedVaccines = vaccines.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
   return (
     <Container sx={{ mt: 5, position: "relative" }}>
-      {/* Title Section with underline */}
       <div
         style={{
           display: "flex",
@@ -70,65 +59,44 @@ export default function Cards() {
           variant="h5"
           sx={{
             fontWeight: "bold",
-            color: "#2A388F", // Modern font color
-            borderBottom: "2px solid #2A388F", // Create the underline
-            paddingBottom: "4px", // Spacing between text and underline
+            color: "#2A388F",
+            borderBottom: "2px solid #2A388F",
+            paddingBottom: "4px",
           }}
         >
           Danh mục Vắc Xin
         </Typography>
-
-        {/* Xem tất cả Button */}
-        <Button
-          variant="outlined"
-          sx={{
-            borderColor: "#2A388F",
-            color: "#2A388F",
-            borderRadius: "20px", // Round corners for a modern touch
-            padding: "6px 16px", // More padding for button
-            "&:hover": {
-              borderColor: "#1F2B75",
-              color: "#1F2B75",
-              backgroundColor: "rgba(0, 0, 0, 0.1)", // Subtle background change
-            },
-          }}
-          onClick={() => {
-            /* Action for "Xem tất cả" */
-          }}
-        >
-          Xem tất cả
-        </Button>
       </div>
 
-      {/* Grid Layout */}
+      {/* Hiển thị danh sách vaccine */}
       <Grid container spacing={4}>
-        {cardsData.map((card, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4}>
+        {displayedVaccines.map((vaccine, index) => (
+          <Grid item key={index} xs={12} sm={6} md={3}>
             <motion.div
-              whileHover={{ scale: 1.02 }} // Reduced scale effect on hover
-              transition={{ type: "spring", stiffness: 150 }} // Reduced stiffness for more subtle effect
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 150 }}
             >
               <Card
                 sx={{
                   maxWidth: 345,
                   transition: "all 0.3s ease-in-out",
-                  boxShadow: 3, // Reduced initial box shadow
+                  boxShadow: 3,
                   "&:hover": {
-                    boxShadow: 8, // Subtler shadow on hover
-                    transform: "translateY(-5px)", // Smaller lift effect
+                    boxShadow: 8,
+                    transform: "translateY(-5px)",
                   },
-                  borderRadius: "12px", // Rounded corners for modern look
-                  backgroundColor: "#f9f9f9", // Light background color for cards
+                  borderRadius: "12px",
+                  backgroundColor: "#f9f9f9",
                 }}
               >
                 <CardMedia
                   component="img"
-                  alt={card.title}
+                  alt={vaccine.name}
                   height="200"
-                  image={card.image}
+                  image={imgTam} //{vaccine.image || "default-image.jpg"} // Fallback image
                   sx={{
                     borderTopLeftRadius: "12px",
-                    borderTopRightRadius: "12px", // Rounded top corners
+                    borderTopRightRadius: "12px",
                   }}
                 />
                 <CardContent>
@@ -142,7 +110,7 @@ export default function Cards() {
                       fontSize: "1.2rem",
                     }}
                   >
-                    {card.title}
+                    {vaccine.name}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -150,10 +118,13 @@ export default function Cards() {
                     sx={{
                       color: "#555",
                       fontSize: "0.9rem",
-                      lineHeight: "1.4", // Adjust line height for better readability
+                      lineHeight: "1.4",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
-                    {card.description}
+                    {vaccine.description}
                   </Typography>
                 </CardContent>
                 <CardActions>
@@ -163,7 +134,7 @@ export default function Cards() {
                       "&:hover": {
                         backgroundColor: "#FF7043",
                         color: "white",
-                        transform: "scale(1.05)", // Reduced scale effect for buttons
+                        transform: "scale(1.05)",
                       },
                     }}
                   >
@@ -175,7 +146,7 @@ export default function Cards() {
                       "&:hover": {
                         backgroundColor: "#0288D1",
                         color: "white",
-                        transform: "scale(1.05)", // Reduced scale effect for buttons
+                        transform: "scale(1.05)",
                       },
                     }}
                   >
@@ -187,6 +158,16 @@ export default function Cards() {
           </Grid>
         ))}
       </Grid>
+
+      {/* Phân trang */}
+      <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+        />
+      </Container>
     </Container>
   );
 }

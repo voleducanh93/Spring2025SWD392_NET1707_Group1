@@ -1,0 +1,61 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getChildren, createChildren, updateChildren, deleteChildren } from "../api/children.api";
+import { useContext } from "react";
+import { AppContext } from "../contexts/app.context";
+import { toast } from "react-toastify";
+
+export const useChildren = () => {
+  const queryClient = useQueryClient();
+const { getUser} = useContext(AppContext);
+
+
+  const { data: vaccines, isLoading, isError, error } = useQuery({
+    queryKey: ["children"],
+    queryFn: () => getChildren(getUser),
+    refetchOnWindowFocus: false,
+    onError: (err) => {
+      console.error("❌ Lỗi khi lấy dữ liệu children:", err);
+    },
+  });
+
+  const addChildren = useMutation({
+    mutationFn:(data) => createChildren(getUser,data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["children"] });
+      toast.success("Thêm children thành công!");
+    },
+    onError: (error) => {
+      console.error("❌ Lỗi khi thêm children:", error);
+    },
+  });
+
+  const editChildren = useMutation({
+    mutationFn: ({ id, data }) => updateChildren(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["children"] });
+    },
+    onError: (error) => {
+      console.error("❌ Lỗi khi cập nhật children:", error);
+    },
+  });
+
+  const removeChildren = useMutation({
+    mutationFn: deleteChildren,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["children"] });
+    },
+    onError: (error) => {
+      console.error("❌ Lỗi khi xóa children:", error);
+    },
+  });
+
+  return {
+    vaccines,
+    isLoading,
+    isError,
+    error,
+    addChildren,
+    editChildren,
+    removeChildren,
+  };
+};

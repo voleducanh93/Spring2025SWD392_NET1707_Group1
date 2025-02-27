@@ -104,7 +104,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:7979") // URL FontEnd
+        policy.WithOrigins("http://localhost:5173") // URL FontEnd
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

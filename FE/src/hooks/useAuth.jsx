@@ -3,12 +3,16 @@ import { useMutation } from "@tanstack/react-query";
 import authApi from "../api/auth.api";
 import { toast } from "react-toastify";
 import { useQueryString } from "../utils/utils";
+import { useContext } from "react";
+import { AppContext } from "../contexts/app.context";
 
 export const useRegister = () => {
   return useMutation({
     mutationFn: (userData) => authApi.registerAccount(userData),
     onSuccess: (data) => {
-      toast.success(data.message || "Đăng ký thành công! Vui lòng kiểm tra email.");
+      toast.success(
+        data.message || "Đăng ký thành công! Vui lòng kiểm tra email."
+      );
     },
     onError: (error) => {
       toast.error(error.response?.data?.error || "Đăng ký thất bại!");
@@ -16,11 +20,14 @@ export const useRegister = () => {
   });
 };
 
-
 export const useLogin = () => {
+  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
   return useMutation({
     mutationFn: (userData) => authApi.login(userData),
-    onSuccess: (data) => {
+    onSuccess: () => {
+      setIsAuthenticated(true);
+      console.log(isAuthenticated);
+
       toast.success("Đăng nhập thành công!");
     },
     onError: (error) => {
@@ -28,10 +35,6 @@ export const useLogin = () => {
     },
   });
 };
-
-
-
-
 
 export const useForgotPassword = () => {
   return useMutation({
@@ -45,19 +48,15 @@ export const useForgotPassword = () => {
   });
 };
 
-
 export const useResetPassword = () => {
-  const queryParams = useQueryString(); 
+  const queryParams = useQueryString();
   console.log(queryParams.email + queryParams.token);
   return useMutation({
-    
-    
     mutationFn: (passwordData) =>
       authApi.resetPassword({
-        email: queryParams.email, 
-        token: queryParams.token, 
+        email: queryParams.email,
+        token: queryParams.token,
         newPassword: passwordData.newPassword, // Fix lỗi truyền tham số
-
       }),
 
     onSuccess: (data) => {

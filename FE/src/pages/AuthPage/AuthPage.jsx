@@ -33,39 +33,39 @@ function AuthPage() {
     buildFullAddress,
   } = useLocationData();
 
-  // Hooks for registration and login
+  
   const { mutate: registerMutate, isSuccess: isRegisterSuccess, isError: isRegisterError } = useRegister();
   const { mutate: loginMutate, isSuccess: isLoginSuccess, isError: isLoginError } = useLogin();
   const { mutate: forgotPasswordMutate } = useForgotPassword();
 
-  // Handle registration and login logic
+  
   useEffect(() => {
     if (isRegisterSuccess) {
-      setIsLoading(false);  // Stop loading spinner
+      setIsLoading(false);  
       form.resetFields();
-      navigate("/auth"); // Navigate to login page after successful registration
+      navigate("/auth"); 
     }
 
     if (isRegisterError) {
-      setIsLoading(false);  // Stop loading spinner on error
-     // alert("Registration failed. Please try again.");
+      setIsLoading(false);  
+  
     }
   }, [isRegisterSuccess, isRegisterError, navigate, form]);
 
   useEffect(() => {
     if (isLoginSuccess) {
-      setIsLoading(false);  // Stop loading spinner after successful login
-      navigate("/"); // Navigate to home page after successful login
+      setIsLoading(false);  
+      navigate("/"); 
     }
 
     if (isLoginError) {
-      setIsLoading(false);  // Stop loading spinner on error
-     // alert("Login failed. Please check your credentials and try again.");
+      setIsLoading(false); 
+    
     }
   }, [isLoginSuccess, isLoginError, navigate]);
 
   const handleOnFinish = (values) => {
-    setIsLoading(true);  // Start loading spinner
+    setIsLoading(true);  
 
     if (isSignUpMode) {
       registerMutate({
@@ -87,7 +87,9 @@ function AuthPage() {
   };
   const handleSubmitForgot = (email) => {
     
-    forgotPasswordMutate({email: email});  // Call forgot password mutation
+    forgotPasswordMutate({email: email}); 
+    form.resetFields();
+    //setIsResetPasswordModalVisible(true);
   };
 
   return (
