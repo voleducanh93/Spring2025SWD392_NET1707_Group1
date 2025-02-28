@@ -235,6 +235,13 @@ namespace ChildVaccineSystem.Service.Services
 
             return _mapper.Map<List<BookingDTO>>(bookings);
         }
+        public async Task<List<BookingDTO>> GetAllBookingsAsync()
+        {
+            var bookings = await _unitOfWork.Bookings.GetAllAsync(
+                includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User");
+
+            return _mapper.Map<List<BookingDTO>>(bookings);
+        }
 
     }
 }
