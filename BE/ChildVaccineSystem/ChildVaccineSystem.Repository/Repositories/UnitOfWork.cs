@@ -26,10 +26,9 @@ namespace ChildVaccineSystem.Repository.Repositories
         public IVaccineTransactionHistoryRepository VaccineTransactionHistories { get; }
         public IPricingPoliciesRepository PricingPolicies { get; }
 		public ITransactionRepository Transactions { get; }
+        public IDoctorWorkScheduleRepository DoctorWorkSchedules { get; }
 
-
-
-		public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories, IPricingPoliciesRepository pricingPolicies, IVaccineTransactionHistoryRepository vaccineTransactionHistoryRepository, ITransactionRepository transactionRepository)
+        public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories, IPricingPoliciesRepository pricingPolicies, IVaccineTransactionHistoryRepository vaccineTransactionHistoryRepository, ITransactionRepository transactionRepository, IDoctorWorkScheduleRepository doctorWorkScheduleRepositories)
         {
             _context = context;
             Vaccines = vaccineRepository;
@@ -48,6 +47,7 @@ namespace ChildVaccineSystem.Repository.Repositories
 			Transactions = transactionRepository;
 
 			PricingPolicies = pricingPolicies;
+            DoctorWorkSchedules = doctorWorkScheduleRepositories;
         }
 
         public async Task<int> CompleteAsync()

@@ -3,6 +3,7 @@ using ChildVaccineSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using ChildVaccineSystem.Common.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChildVaccineSystem.API.Controllers
 {
@@ -153,5 +154,36 @@ namespace ChildVaccineSystem.API.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, _response);
             }
         }
+
+        [HttpPost("assign-doctor")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        public async Task<IActionResult> AssignDoctorToBooking(int bookingId, string userId)
+        {
+            try
+            {
+                var result = await _bookingService.AssignDoctorToBooking(bookingId, userId);
+                return Ok(new { Success = result, Message = "Doctor assigned to booking successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [HttpGet("doctor/{userId}/bookings")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor, Admin")]
+        public async Task<IActionResult> GetDoctorBookings(string userId)
+        {
+            try
+            {
+                var bookings = await _bookingService.GetDoctorBookingsAsync(userId);
+                return Ok(bookings);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
     }
 }
