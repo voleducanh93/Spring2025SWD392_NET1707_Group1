@@ -17,6 +17,7 @@ import UploadForm from "../pages/AuthPage/upload";
 
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
+import StaffPage from "../pages/StaffPage/StaffPage";
 
 export const router = createBrowserRouter([
   {
@@ -53,5 +54,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPage />,
+  },
+  {
+    path: "/staff",
+    element: <StaffPage />,
   },
 ]);
