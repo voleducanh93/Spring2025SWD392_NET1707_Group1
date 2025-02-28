@@ -1,62 +1,62 @@
-import  { useState } from 'react';
-import { Modal, Form, Input, Select, DatePicker, Button, Upload } from 'antd';
-import { UserOutlined, UploadOutlined } from '@ant-design/icons';
-import { toast } from 'react-toastify';
-import { uploadFile } from '../../config/firebase'; // Assuming you have a function to upload to Firebase
+import { useState } from "react";
+import { Modal, Form, Input, Select, DatePicker, Button, Upload } from "antd";
+import { UserOutlined, UploadOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
+import { uploadFile } from "../../config/firebase"; // Giả định có hàm upload lên Firebase
 
 const { Option } = Select;
 
 const AddChildModal = ({ visible, onClose, onAddChild }) => {
   const [form] = Form.useForm();
   const [selectedFile, setSelectedFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false); 
-  const [fileList, setFileList] = useState();
-  const handleFileChange = ({file}) => {
-    setSelectedFile(file)// Cập nhật danh sách tệp đã chọ
-    //setSelectedFile(fileList[0]);
-    console.log(file);
-    
-    
+  const [isUploading, setIsUploading] = useState(false);
+
+  // ✅ Xử lý khi chọn file
+  const handleFileChange = ({ file }) => {
+    setSelectedFile(file); 
+    console.log("📂 File Selected:", file);
   };
 
+  // ✅ Xử lý khi nhấn OK
   const handleOk = async () => {
     try {
-      const values = await form.validateFields();
-      const formData = {
-        ...values,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null,
-      };
+        const values = await form.validateFields();
 
-      
+        if (!selectedFile) {
+            toast.error("Please upload an image!");
+            return;
+        }
 
-      if (selectedFile) {
-        setIsUploading(true); 
-        const url = await uploadFile(selectedFile); 
-        formData.imageUrl = url; 
-       
-        setIsUploading(false); 
+        const formData = {
+            ...values,
+            dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null,
+        };
+
+        setIsUploading(true);
+        const url = await uploadFile(selectedFile);
+        formData.imageUrl = url;
         console.log("Uploaded Image URL:", url);
-      }
-      console.log(formData.imageUrl);
-      
-      onAddChild(formData);
 
-     
-      form.resetFields();
-      setSelectedFile(null);
-      onClose();
-     
+        onAddChild(formData);
+
+        // Xóa dữ liệu sau khi thêm thành công
+        form.resetFields();
+        setSelectedFile(null);
+        
+        onClose();
+
     } catch {
-      toast.error('Please fill all required fields!');
+        toast.error('Please fill all required fields!');
     } finally {
-      setIsUploading(false); 
+        setIsUploading(false);
     }
-  };
+};
 
+
+  // ✅ Đóng Modal và reset dữ liệu
   const handleCancel = () => {
-    setFileList([]);
-    setSelectedFile(null);
     form.resetFields();
+    setSelectedFile(null);
     onClose();
   };
 
@@ -70,60 +70,36 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
       cancelText="Cancel"
       width={600}
       okButtonProps={{
-        disabled: isUploading, // Disable OK button when uploading
-        loading: isUploading, // Show loading spinner on OK button while uploading
+        disabled: isUploading, // Vô hiệu hóa khi đang tải ảnh
+        loading: isUploading, // Hiển thị spinner khi tải ảnh
       }}
     >
       <Form form={form} layout="vertical" name="createChildForm">
-        {/* Full Name Input */}
-        <Form.Item
-          label="Full Name"
-          name="fullName"
-          rules={[{ required: true, message: 'Please enter the full name!' }]}
-        >
+        {/* Full Name */}
+        <Form.Item label="Full Name" name="fullName" rules={[{ required: true, message: "Please enter the full name!" }]}>
           <Input prefix={<UserOutlined />} placeholder="Enter full name" />
         </Form.Item>
 
-        {/* Date of Birth with Time */}
-        <Form.Item
-          label="Date of Birth"
-          name="dateOfBirth"
-          rules={[{ required: true, message: 'Please select the date of birth!' }]}
-        >
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm"
-            style={{ width: '100%' }}
-            placeholder="Select date and time"
-          />
+        {/* Date of Birth */}
+        <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select the date of birth!" }]}>
+          <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} placeholder="Select date" />
         </Form.Item>
 
-        {/* Gender Select */}
-        <Form.Item
-          label="Gender"
-          name="gender"
-          rules={[{ required: true, message: 'Please select the gender!' }]}
-        >
+        {/* Gender */}
+        <Form.Item label="Gender" name="gender" rules={[{ required: true, message: "Please select the gender!" }]}>
           <Select placeholder="Select gender">
             <Option value="Male">Male</Option>
             <Option value="Female">Female</Option>
           </Select>
         </Form.Item>
 
-        {/* Medical History Input */}
-        <Form.Item
-          label="Medical History"
-          name="medicalHistory"
-        >
+        {/* Medical History */}
+        <Form.Item label="Medical History" name="medicalHistory">
           <Input placeholder="Enter medical history (optional)" />
         </Form.Item>
 
-        {/* Relation to User Select */}
-        <Form.Item
-          label="Relation to User"
-          name="relationToUser"
-          rules={[{ required: true, message: 'Please select the relation!' }]}
-        >
+        {/* Relation to User */}
+        <Form.Item label="Relation to User" name="relationToUser" rules={[{ required: true, message: "Please select the relation!" }]}>
           <Select placeholder="Select relation to user">
             <Option value="Son">Son</Option>
             <Option value="Daughter">Daughter</Option>
@@ -131,27 +107,25 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
           </Select>
         </Form.Item>
 
-        {/* Height Input */}
-        <Form.Item
-          label="Height"
-          name="height"
-        >
+        {/* Height */}
+        <Form.Item label="Height" name="height">
           <Input type="number" placeholder="Enter height (optional)" />
         </Form.Item>
 
-        {/* Weight Input */}
-        <Form.Item
-          label="Weight"
-          name="weight"
-        >
+        {/* Weight */}
+        <Form.Item label="Weight" name="weight">
           <Input type="number" placeholder="Enter weight (optional)" />
         </Form.Item>
 
         {/* Image Upload */}
-        <Form.Item label="Upload Image">
+        <Form.Item
+          label="Upload Image"
+          rules={[{ required: true, message: "Please upload an image!" }]} // 🔴 Bắt buộc chọn ảnh
+        >
           <Upload beforeUpload={() => false} onChange={handleFileChange} maxCount={1} showUploadList={true}>
-            <Button icon={<UploadOutlined />} >Select File</Button>
+            <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
+          {/* {selectedFile && <p>📂 Selected: {selectedFile.name}</p>} */}
         </Form.Item>
       </Form>
     </Modal>

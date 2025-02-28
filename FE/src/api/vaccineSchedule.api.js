@@ -27,3 +27,9 @@ export const deleteVaccine = async (id) => {
   const response = await http.delete(`${BASE_URL}/${id}`);
   return response.data;
 };
+export const getVaccinesAndCombo = async (id) => {
+  const response = await http.get(`${BASE_URL}/by-children/${id}`);
+  console.log(response.data);
+  
+  return response.data;
+};
