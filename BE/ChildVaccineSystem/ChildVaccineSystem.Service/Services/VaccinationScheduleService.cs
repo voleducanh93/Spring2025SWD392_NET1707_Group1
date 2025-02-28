@@ -314,16 +314,17 @@ namespace ChildVaccineSystem.Service.Services
 				throw new KeyNotFoundException($"Not found children with id: {childrenId}");
 
 			var today = DateTime.Today;
-			var ageInMonths = ((today.Year - children.DateOfBirth.Year) * 12) + today.Month - children.DateOfBirth.Month;
-			if (today.Day < children.DateOfBirth.Day)
-				ageInMonths--;
+			var age = (today.Year - children.DateOfBirth.Year);
 
 			var schedules = await _unitOfWork.VaccinationSchedules.GetAllAsync(
-				s => s.AgeRangeStart <= ageInMonths && s.AgeRangeEnd >= ageInMonths,
+				s => s.AgeRangeStart <= age && s.AgeRangeEnd >= age,
 				includeProperties: "VaccineScheduleDetails.Vaccine"
 			);
 
 			var schedule = schedules.FirstOrDefault();
+
+			if (schedule == null)
+				throw new KeyNotFoundException($"Not found schedule for this chilren");
 
 			var response = new ScheduleByAgeResponseDTO();
 			
