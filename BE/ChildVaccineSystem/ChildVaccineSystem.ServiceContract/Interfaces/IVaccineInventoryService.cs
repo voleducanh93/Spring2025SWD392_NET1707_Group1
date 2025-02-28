@@ -20,5 +20,6 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task SendExpiryAlertsAsync(int daysThreshold);
         Task<VaccineInventoryDTO> AddVaccineInventoryAsync(CreateVaccineInventoryDTO dto);
         Task<VaccineInventoryDTO> UpdateVaccineInventoryAsync(int id, UpdateVaccineInventoryDTO dto);
+        Task<IEnumerable<VaccineInventoryDTO>> GetExpiringVaccinesAsync(int daysThreshold);
     }
 }

@@ -211,6 +211,18 @@ namespace ChildVaccineSystem.API.Controllers
         }
 
         /// <summary>
+        /// Kiểm tra vaccine sắp hết hạn
+        /// </summary>
+        [HttpGet("expiry-check/{daysThreshold}")]
+        public async Task<IActionResult> CheckExpiry(int daysThreshold)
+        {
+            _response.Result = await _vaccineInventoryService.GetExpiringVaccinesAsync(daysThreshold);
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            return Ok(_response);
+        }
+
+        /// <summary>
         /// Gửi cảnh báo vaccine hết hạn hoặc sắp hết 
         /// </summary>
         [HttpPost("alerts/expiry")]

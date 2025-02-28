@@ -333,6 +333,12 @@ namespace ChildVaccineSystem.Service.Services
             return _mapper.Map<VaccineInventoryDTO>(inventory);
         }
 
+        // Kiểm tra vaccine sắp hết hạn
+        public async Task<IEnumerable<VaccineInventoryDTO>> GetExpiringVaccinesAsync(int daysThreshold)
+        {
+            var vaccines = await _unitOfWork.VaccineInventories.GetExpiringVaccinesAsync(daysThreshold);
+            return _mapper.Map<IEnumerable<VaccineInventoryDTO>>(vaccines);
+        }
     }
 
 }
