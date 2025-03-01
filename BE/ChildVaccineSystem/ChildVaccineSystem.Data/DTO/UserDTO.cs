@@ -16,5 +16,7 @@ namespace ChildVaccineSystem.Data.DTO
         public string Address { get; set; }
         public DateTime DateOfBirth { get; set; }
         public bool IsActive { get; set; }
+        public string Role { get; set; } // Thêm trường Role vào DTO
+
     }
 }
