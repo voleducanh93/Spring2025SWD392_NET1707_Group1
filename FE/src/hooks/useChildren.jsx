@@ -19,15 +19,26 @@ const { getUser} = useContext(AppContext);
   });
 
   const addChildren = useMutation({
-    mutationFn:(data) => createChildren(getUser,data),
+    mutationFn: (data) => createChildren(getUser, data),
+
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["children"] });
-      toast.success("Thêm children thành công!");
+        queryClient.invalidateQueries({ queryKey: ["children"] });
+        toast.success("🎉 Thêm trẻ thành công!");
     },
+
     onError: (error) => {
-      console.error("❌ Lỗi khi thêm children:", error);
-    },
-  });
+        console.error("❌ Lỗi khi thêm trẻ:", error);
+
+        
+        if (error?.response?.data?.errorMessages?.length > 0) {
+            const errorMessage = error.response.data.errorMessages[0]; // Lấy thông báo lỗi đầu tiên
+            toast.error(`⚠️ ${errorMessage}`);
+        } else {
+            toast.error("⚠️ Thêm trẻ thất bại! Vui lòng thử lại.");
+        }
+    }
+});
+
 
   const editChildren = useMutation({
     mutationFn: ({ id, data }) => updateChildren(id, data),

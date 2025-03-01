@@ -17,6 +17,8 @@ import UploadForm from "../pages/AuthPage/upload";
 
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
+import StaffPage from "../pages/StaffPage/StaffPage";
+import ResultPayment from "../pages/PaymentPage/ResultPayment";
 
 export const router = createBrowserRouter([
   {
@@ -31,7 +33,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
-      { path: "/manager-page", element: <ManagerPage /> },
+      { path: "/manager", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <UploadForm /> },
       { path: "/children", element: <RegistrationForm /> },
@@ -39,6 +41,7 @@ export const router = createBrowserRouter([
       { path: "/child-profile", element: <ChildProfile /> },
       { path: "/edit-child/:childId", element: <EditChildProfile /> },
       { path: "/booking", element: <BookingPage /> },
+      { path: "/payment", element: <ResultPayment /> }
     ],
   },
   {
@@ -53,5 +56,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPage />,
+  },
+  {
+    path: "/staff",
+    element: <StaffPage />,
   },
 ]);
