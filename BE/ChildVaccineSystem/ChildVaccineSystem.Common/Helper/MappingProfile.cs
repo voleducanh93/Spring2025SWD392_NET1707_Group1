@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using ChildVaccineSystem.Data.DTO.VaccineInventory;
 using ChildVaccineSystem.Data.DTO.Transaction;
 using ChildVaccineSystem.Data.DTO.DoctorWorkSchedule;
+using ChildVaccineSystem.Data.DTO.Feedback;
 
 namespace ChildVaccineSystem.Common.Helper
 {
@@ -167,6 +168,9 @@ namespace ChildVaccineSystem.Common.Helper
     .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.User.FullName))
     .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.Booking.BookingDate))
     .ForMember(dest => dest.ChildName, opt => opt.MapFrom(src => src.Booking.Children.FullName));
+            //feedback
+            CreateMap<Feedback, FeedbackDTO>();
+            CreateMap<CreateFeedbackDTO, Feedback>();
         }
     }
 }
