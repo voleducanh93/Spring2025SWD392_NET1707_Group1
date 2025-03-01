@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
-      { path: "/manager-page", element: <ManagerPage /> },
+      { path: "/manager", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <UploadForm /> },
       { path: "/children", element: <RegistrationForm /> },
