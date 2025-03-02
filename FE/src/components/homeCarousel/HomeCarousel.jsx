@@ -8,7 +8,7 @@ import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 
 // Import hình ảnh từ thư mục assets
-import image1 from "../../assets/logo-vnvc-tet-nguyen-dan.png";
+import image1 from "../../assets/vac-xin.jpg";
 import image2 from "../../assets/logo.webp";
 import image3 from "../../assets/vac-xin-pentaxim-1.jpg";
 
