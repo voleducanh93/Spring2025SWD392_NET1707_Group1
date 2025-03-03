@@ -27,5 +27,14 @@ namespace ChildVaccineSystem.Repository.Repositories
                              b.BookingDate.Date == bookingDate.Date &&
                              b.Status != BookingStatus.Cancelled);
         }
+        public async Task<Booking> GetBookingWithDetailsAsync(int bookingId)
+        {
+            return await _context.Bookings
+                .Include(b => b.BookingDetails)
+                .ThenInclude(d => d.Vaccine)
+                .Include(b => b.BookingDetails)
+                .ThenInclude(d => d.ComboVaccine)
+                .FirstOrDefaultAsync(b => b.BookingId == bookingId);
+        }
     }
 }
