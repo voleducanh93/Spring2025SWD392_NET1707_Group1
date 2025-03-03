@@ -135,6 +135,7 @@ namespace ChildVaccineSystem.Common.Helper
             CreateMap<BookingDetail, BookingDetailDTO>();
 
             CreateMap<VaccineInventory, VaccineInventoryDTO>()
+                 .ForMember(dest => dest.VaccineInventoryId, opt => opt.MapFrom(src => src.VaccineInventoryId))
                 .ForMember(dest => dest.VaccineId, opt => opt.MapFrom(src => src.Vaccine.VaccineId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Vaccine.Name))
                 .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.Vaccine.Manufacturer))
@@ -142,20 +143,21 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.ManufacturingDate, opt => opt.MapFrom(src => src.ManufacturingDate))
                 .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
                 .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier))
-                .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity)) 
+                .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity))
+                  .ForMember(dest => dest.ReturnedQuantity, opt => opt.MapFrom(src => src.ReturnedQuantity))
                 .ForMember(dest => dest.TotalQuantity, opt => opt.MapFrom(src => src.InitialQuantity - src.QuantityInStock));
 
-            CreateMap<VaccineInventory, ReturnedVaccineDTO>()
-                .ForMember(dest => dest.VaccineId, opt => opt.MapFrom(src => src.VaccineId))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Name : "Unknown"))
-                .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Manufacturer : "Unknown"))
-                .ForMember(dest => dest.BatchNumber, opt => opt.MapFrom(src => src.BatchNumber))
-                .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity))
-                .ForMember(dest => dest.QuantityInStock, opt => opt.MapFrom(src => src.QuantityInStock))
-                .ForMember(dest => dest.ReturnedQuantity, opt => opt.MapFrom(src => src.QuantityInStock - src.InitialQuantity))
-                .ForMember(dest => dest.ManufacturingDate, opt => opt.MapFrom(src => src.ManufacturingDate))
-                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
-                .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier));
+            //CreateMap<VaccineInventory, ReturnedVaccineDTO>()
+            //    .ForMember(dest => dest.VaccineId, opt => opt.MapFrom(src => src.VaccineId))
+            //    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Name : "Unknown"))
+            //    .ForMember(dest => dest.Manufacturer, opt => opt.MapFrom(src => src.Vaccine != null ? src.Vaccine.Manufacturer : "Unknown"))
+            //    .ForMember(dest => dest.BatchNumber, opt => opt.MapFrom(src => src.BatchNumber))
+            //    .ForMember(dest => dest.InitialQuantity, opt => opt.MapFrom(src => src.InitialQuantity))
+            //    .ForMember(dest => dest.QuantityInStock, opt => opt.MapFrom(src => src.QuantityInStock))
+            //    .ForMember(dest => dest.ReturnedQuantity, opt => opt.MapFrom(src => src.QuantityInStock - src.InitialQuantity))
+            //    .ForMember(dest => dest.ManufacturingDate, opt => opt.MapFrom(src => src.ManufacturingDate))
+            //    .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate))
+            //    .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier));
 
 			// Transaction
 			CreateMap<Transaction, TransactionDTO>().ReverseMap();
@@ -163,11 +165,11 @@ namespace ChildVaccineSystem.Common.Helper
 
             //Doctor
             CreateMap<DoctorWorkSchedule, DoctorWorkScheduleDTO>()
-    .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-    .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.BookingId))
-    .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.User.FullName))
-    .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.Booking.BookingDate))
-    .ForMember(dest => dest.ChildName, opt => opt.MapFrom(src => src.Booking.Children.FullName));
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.BookingId))
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.Booking.BookingDate))
+                .ForMember(dest => dest.ChildName, opt => opt.MapFrom(src => src.Booking.Children.FullName));
             //feedback
             CreateMap<Feedback, FeedbackDTO>();
             CreateMap<CreateFeedbackDTO, Feedback>();

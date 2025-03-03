@@ -14,7 +14,7 @@ namespace ChildVaccineSystem.API.Controllers
     [ApiController]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Staff,Manager")]
+    //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Staff,Manager")]
     public class VaccineInventoryController : ControllerBase
     {
         private readonly IVaccineInventoryService _vaccineInventoryService;
@@ -72,12 +72,35 @@ namespace ChildVaccineSystem.API.Controllers
         }
 
         /// <summary>
+        /// Soft Delete VaccineInventory
+        /// </summary>
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> SoftDeleteVaccineInventory(int id)
+        {
+            try
+            {
+                var result = await _vaccineInventoryService.SoftDeleteVaccineInventoryAsync(id);
+                _response.IsSuccess = true;
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.Result = result;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
+
+        /// <summary>
         /// Lấy danh sách tồn kho vaccine
         /// </summary>
         [HttpGet("stock")]
         public async Task<IActionResult> GetVaccineStock()
         {
-            _response.Result = await _vaccineInventoryService.GetVaccineStockReportAsync();
+            _response.Result = await _vaccineInventoryService.GetVaccineInventoryAsync();
             _response.StatusCode = HttpStatusCode.OK;
             _response.IsSuccess = true;
             return Ok(_response);
@@ -89,7 +112,7 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Lấy danh sách tồn kho vaccine theo ID
         /// </summary>
-        [HttpGet("stock/{vaccineId}")]
+        [HttpGet("stockByVaccineId/{vaccineId}")]
         public async Task<IActionResult> GetVaccineInventory(int vaccineId)
         {
             try
@@ -99,16 +122,49 @@ namespace ChildVaccineSystem.API.Controllers
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
                 _response.StatusCode = HttpStatusCode.NotFound;
                 _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
                 return NotFound(_response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.IsSuccess = false;
+                _response.ErrorMessages.Add($"Internal Server Error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+
+            return Ok(_response);
+        }
+
+        /// <summary>
+        /// Lấy thông tin tồn kho vaccine theo VaccineInventoryId
+        /// </summary>
+        [HttpGet("stockByVaccineInventory/{vaccineInventoryId}")]
+        public async Task<IActionResult> GetVaccineInventoryByVaccineInventoryId(int vaccineInventoryId)
+        {
+            try
+            {
+                var vaccineInventories = await _vaccineInventoryService.GetVaccineInventoryByVaccineInventoryIdAsync(vaccineInventoryId);
+                _response.Result = vaccineInventories;
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return NotFound(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add($"Internal Server Error: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, _response);
             }
 
@@ -130,25 +186,25 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Xuất vaccine khỏi kho
         /// </summary>
-        [HttpPost("issue/{id}")]
-        public async Task<IActionResult> IssueVaccine(int id, [FromBody] int quantity)
-        {
-            try
-            {
-                await _vaccineInventoryService.IssueVaccineAsync(id, quantity);
-                _response.Result = "Vaccine issued successfully";
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ex.Message);
-                return BadRequest(_response);
-            }
-        }
+        //[HttpPost("issue/{id}")]
+        //public async Task<IActionResult> IssueVaccine(int id, [FromBody] int quantity)
+        //{
+        //    try
+        //    {
+        //        await _vaccineInventoryService.IssueVaccineAsync(id, quantity);
+        //        _response.Result = "Vaccine issued successfully";
+        //        _response.StatusCode = HttpStatusCode.OK;
+        //        _response.IsSuccess = true;
+        //        return Ok(_response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _response.StatusCode = HttpStatusCode.BadRequest;
+        //        _response.IsSuccess = false;
+        //        _response.ErrorMessages.Add(ex.Message);
+        //        return BadRequest(_response);
+        //    }
+        //}
 
         /// <summary>
         /// Hoàn trả vaccine về kho
@@ -176,27 +232,27 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Lấy danh sách vaccine đã xuất kho
         /// </summary>
-        [HttpGet("issued")]
-        public async Task<IActionResult> GetIssuedVaccines()
-        {
-            _response.Result = await _vaccineInventoryService.GetIssuedVaccinesAsync();
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.IsSuccess = true;
-            return Ok(_response);
-        }
+        //[HttpGet("issued")]
+        //public async Task<IActionResult> GetIssuedVaccines()
+        //{
+        //    _response.Result = await _vaccineInventoryService.GetIssuedVaccinesAsync();
+        //    _response.StatusCode = HttpStatusCode.OK;
+        //    _response.IsSuccess = true;
+        //    return Ok(_response);
+        //}
 
 
         /// <summary>
         /// Lấy danh sách vaccine đã hoàn trả về kho
         /// </summary>
-        [HttpGet("returned")]
-        public async Task<IActionResult> GetReturnedVaccines()
-        {
-            _response.Result = await _vaccineInventoryService.GetReturnedVaccinesAsync();
-            _response.StatusCode = HttpStatusCode.OK;
-            _response.IsSuccess = true;
-            return Ok(_response);
-        }
+        //[HttpGet("returned")]
+        //public async Task<IActionResult> GetReturnedVaccines()
+        //{
+        //    _response.Result = await _vaccineInventoryService.GetReturnedVaccinesAsync();
+        //    _response.StatusCode = HttpStatusCode.OK;
+        //    _response.IsSuccess = true;
+        //    return Ok(_response);
+        //}
 
         /// <summary>
         /// Kiểm tra vaccine có số lượng thấp

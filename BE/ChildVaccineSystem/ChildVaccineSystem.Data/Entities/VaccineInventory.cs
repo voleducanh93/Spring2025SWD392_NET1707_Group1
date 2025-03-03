@@ -25,8 +25,9 @@ namespace ChildVaccineSystem.Data.Entities
         public int ReturnedQuantity { get; set; } = 0;
         public string Supplier { get; set; }
         public DateTime ExpiryDate { get; set; }
+        public bool IsActive { get; set; } = false;
 
-		public virtual ICollection<VaccinationRecord> VaccinationRecords { get; set; }
+        public virtual ICollection<VaccinationRecord> VaccinationRecords { get; set; }
         public virtual ICollection<VaccineTransactionHistory> TransactionHistories { get; set; }
 
 
