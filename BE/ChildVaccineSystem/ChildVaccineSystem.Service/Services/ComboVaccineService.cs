@@ -56,7 +56,6 @@ namespace ChildVaccineSystem.Service.Services
             return _mapper.Map<ComboVaccineDTO>(fullCombo);
         }
 
-
         public async Task<ComboVaccineDTO> UpdateAsync(int id, UpdateComboVaccineDTO comboDto)
         {
             var existingCombo = await _unitOfWork.ComboVaccines.GetById(id);
@@ -77,7 +76,8 @@ namespace ChildVaccineSystem.Service.Services
                     throw new Exception($"The following vaccine IDs already exist in the combo: {string.Join(", ", duplicates)}. Please remove them and try again.");
                 }
 
-                existingCombo.ComboDetails.Clear();
+                var comboDetailsToDelete = existingCombo.ComboDetails.ToList();
+                _unitOfWork.ComboDetails.RemoveRange(comboDetailsToDelete);
 
                 foreach (var vaccineId in comboDto.VaccineIds)
                 {
@@ -97,6 +97,7 @@ namespace ChildVaccineSystem.Service.Services
             var fullCombo = await _unitOfWork.ComboVaccines.GetById(id);
             return _mapper.Map<ComboVaccineDTO>(fullCombo);
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {
