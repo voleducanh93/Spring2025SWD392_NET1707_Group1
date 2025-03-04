@@ -1,4 +1,5 @@
 ﻿using ChildVaccineSystem.Data.DTO.StaffSchedule;
+using ChildVaccineSystem.Data.DTO.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChildVaccineSystem.Data.DTO.Staff
 {
-	public class StaffDTO
+    public class StaffDTO
 	{
 		public int StaffId { get; set; }
 		public string UserId { get; set; }

@@ -1,5 +1,4 @@
 ﻿using ChildVaccineSystem.Data.DTO.Auth;
-using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +9,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChildVaccineSystem.Data.DTO.User;
 
 namespace ChildVaccineSystem.API.Controllers
 {

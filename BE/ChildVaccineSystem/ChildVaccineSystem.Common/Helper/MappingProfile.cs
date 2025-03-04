@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Data.DTO.Auth;
 using ChildVaccineSystem.Data.DTO.Booking.BookingDetail;
 using ChildVaccineSystem.Data.DTO.Booking;
@@ -20,6 +19,7 @@ using ChildVaccineSystem.Data.DTO.VaccineInventory;
 using ChildVaccineSystem.Data.DTO.Transaction;
 using ChildVaccineSystem.Data.DTO.DoctorWorkSchedule;
 using ChildVaccineSystem.Data.DTO.Feedback;
+using ChildVaccineSystem.Data.DTO.User;
 
 namespace ChildVaccineSystem.Common.Helper
 {
@@ -173,6 +173,7 @@ namespace ChildVaccineSystem.Common.Helper
             //feedback
             CreateMap<Feedback, FeedbackDTO>();
             CreateMap<CreateFeedbackDTO, Feedback>();
+            CreateMap<User, UserProfileDTO>();
         }
     }
 }
