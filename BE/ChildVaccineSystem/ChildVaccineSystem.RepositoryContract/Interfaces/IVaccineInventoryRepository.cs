@@ -21,5 +21,7 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         Task<VaccineInventory?> GetByBatchNumberAsync(string batchNumber);
         Task<VaccineInventory?> GetByIdAsync(int id);
         Task<IEnumerable<VaccineInventory>> GetByVaccineInventoryIdAsync(int vaccineInventoryId);
+        Task<IEnumerable<VaccineInventory>> GetExportVaccinesAsync();
+
     }
 }
