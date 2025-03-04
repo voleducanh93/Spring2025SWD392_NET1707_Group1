@@ -13,12 +13,14 @@ namespace ChildVaccineSystem.API.Controllers
     public class BookingController : ControllerBase
     {
         private readonly IBookingService _bookingService;
+        private readonly IWalletService _walletService;
         private readonly APIResponse _response;
 
-        public BookingController(IBookingService bookingService, APIResponse response)
+        public BookingController(IBookingService bookingService, APIResponse response, IWalletService walletService)
         {
             _bookingService = bookingService;
             _response = response;
+            _walletService = walletService;
         }
 
         [HttpPost]
@@ -294,5 +296,5 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
-    }
+	}
 }
