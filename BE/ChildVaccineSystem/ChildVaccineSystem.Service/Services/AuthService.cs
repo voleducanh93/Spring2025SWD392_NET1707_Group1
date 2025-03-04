@@ -56,7 +56,10 @@ namespace ChildVaccineSystem.Service.Services
 
             var token = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
-           
+
+            user.RefreshToken = refreshToken;
+            await _userManager.UpdateAsync(user);
+
             return new LoginResponseDTO
             {
                 Token = token,
@@ -200,21 +203,35 @@ namespace ChildVaccineSystem.Service.Services
         {
             return Task.CompletedTask;
         }
+        
         public async Task<LoginResponseDTO> RefreshTokenAsync(string refreshToken)
         {
-            // Mock logic to validate the refresh token
-            var user = await _userManager.FindByIdAsync(refreshToken); // Ensure to change this as per your storage logic
+            // Tìm người dùng thông qua refreshToken (refreshToken nên được lưu trữ trong cơ sở dữ liệu)
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
             if (user == null)
                 throw new Exception("Invalid refresh token.");
 
+            // Xóa refreshToken cũ nếu muốn (hoặc có thể giữ lại tùy theo yêu cầu)
+            // user.RefreshToken = null;
+            // await _userManager.UpdateAsync(user);
+
+            // Tạo lại access token và refresh token mới
             var newToken = GenerateJwtToken(user);
             var newRefreshToken = GenerateRefreshToken();
 
+            // Cập nhật refresh token mới cho người dùng trong cơ sở dữ liệu
+            user.RefreshToken = newRefreshToken;
+            await _userManager.UpdateAsync(user);
+
+            // Trả về thông tin bao gồm token mới
             return new LoginResponseDTO
             {
                 Token = newToken,
+                RefeshToken = newRefreshToken,
+                UserId = user.Id
             };
         }
+
 
         public async Task<bool> ForgetPasswordAsync(string email)
         {
@@ -253,5 +270,6 @@ namespace ChildVaccineSystem.Service.Services
 
             return (true, "Password has been reset successfully.");
         }
+        
     }
 }
