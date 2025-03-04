@@ -57,6 +57,12 @@ export const router = createBrowserRouter([
       { path: "/chuyen-gia", element: <ChuyengiaPage/>},
       { path: "/confirm-email", element: <ConfirmEmailPage/>},
       { path: "/invetory", element: <InventoryManagement/>},
+      {
+        path: "/booking",
+        element: <PrivateRoute>
+        <BookingPage />
+      </PrivateRoute>,
+      },
     ],
   },
   {
@@ -65,12 +71,7 @@ export const router = createBrowserRouter([
         <AuthPage />
     ),
   },
-  {
-    path: "/booking",
-    element: <PrivateRoute>
-    <BookingPage />
-  </PrivateRoute>,
-  },
+  
   {
     path: "/admin",
     element: <AdminPage />,

@@ -5,6 +5,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Container } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -73,22 +74,22 @@ export default function Navbar() {
           {/* Menu chính */}
           <div className="flex items-center gap-6">
             {[
-              "TRANG CHỦ",
-              "GIỚI THIỆU",
-              "VẮC XIN TRẺ EM",
-              "VẮC XIN NGƯỜI LỚN",
-              "GÓI VẮC XIN",
-              "CẨM NANG",
-              "BẢNG GIÁ",
-              "BỆNH HỌC",
+              { name: "TRANG CHỦ", link: "/" },
+              { name: "GIỚI THIỆU", link: "/gioi-thieu" },
+              { name: "VẮC XIN TRẺ EM", link: "/vacxin-tre-em" },
+              { name: "VẮC XIN NGƯỜI LỚN", link: "/vacxin-nguoi-lon" },
+              { name: "GÓI VẮC XIN", link: "/goi-vacxin" },
+              { name: "CẨM NANG", link: "/cam-nang" },
+              { name: "BẢNG GIÁ", link: "/bang-gia" },
+              { name: "BỆNH HỌC", link: "/benh-hoc" },
             ].map((item, index) => (
-              <a
+              <Link
                 key={index}
-                href="#"
+                to={item.link}
                 className="text-gray-700 font-medium relative transition-all duration-300 before:absolute before:-bottom-1 before:left-0 before:w-0 before:h-0.5 before:bg-gradient-to-r before:from-[#2A388F] before:to-[#1F2B75] hover:before:w-full before:transition-all before:duration-500"
               >
-                {item}
-              </a>
+                {item.name}
+              </Link>
             ))}
 
             {/* Dropdown "TIN TỨC" */}

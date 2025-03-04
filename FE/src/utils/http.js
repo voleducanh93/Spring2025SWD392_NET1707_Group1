@@ -44,7 +44,7 @@ class Http {
         const { url } = response.config;
 
         if (url === URL_LOGIN) {
-          const data = response.data;
+          const data = response.data.result;
           this.accessToken = data.token;
           this.refreshToken = data.refeshToken;
           this.userId = data.userId;
