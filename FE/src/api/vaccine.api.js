@@ -6,7 +6,10 @@ export const getVaccines = async () => {
   return response.data.result;
 };
 
-
+export const getVaccineById = async (id) => {
+  const response = await http.get(`${BASE_URL}/${id}`);
+  return response.data.result;
+};
 export const createVaccine = async (vaccineData) => {
   const response = await http.post(BASE_URL, vaccineData);
   return response.data; 

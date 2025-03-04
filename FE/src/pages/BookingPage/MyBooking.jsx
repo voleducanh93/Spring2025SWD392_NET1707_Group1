@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+
+import  { useState, useEffect, useContext} from 'react';
+import { AppContext } from '../../contexts/app.context';
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
-
+  const  {getUser}  = useContext(AppContext);
   useEffect(() => {
     // Lấy dữ liệu từ API
     const fetchBookings = async () => {
       try {
-        const userId = "94085878-d5b9-499b-a1ad-5e041115b35c"; // Thay thế userId nếu cần
-        const response = await fetch(`https://localhost:7134/api/Booking/user/${userId}`);
+        
+        console.log(getUser);
+         // Thay thế userId nếu cần
+        const response = await fetch(`https://localhost:7134/api/Booking/user/${getUser}`);
         const data = await response.json();
 
         if (data.isSuccess) {

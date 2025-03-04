@@ -21,6 +21,8 @@ import StaffPage from "../pages/StaffPage/StaffPage";
 import ResultPayment from "../pages/PaymentPage/ResultPayment";
 import MyBooking from "../pages/BookingPage/MyBooking";
 import ChuyengiaPage from "../pages/ChuyengiaPage/ChuyengiaPage";
+import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
+import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 
 
 export const router = createBrowserRouter([
@@ -40,24 +42,35 @@ export const router = createBrowserRouter([
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <UploadForm /> },
       { path: "/children", element: <RegistrationForm /> },
-      { path: "/vaccine-detail", element: <VaccineDetailPage /> },
+      { path:"/vaccine/:id", element: <VaccineDetailPage /> },
       { path: "/child-profile", element: <ChildProfile /> },
       { path: "/edit-child/:childId", element: <EditChildProfile /> },
-      { path: "/booking", element: <BookingPage /> },
-      { path: "/payment", element: <ResultPayment /> },
+      {
+        path: "/payment-success",
+        element: <ResultPayment />,
+      },
+      {
+        path: "/payment-failure",
+        element: <ResultPayment />,
+      },
       { path: "/mybooking", element: <MyBooking /> },
-      { path: "/chuyen-gia", element: <ChuyengiaPage/>}
+      { path: "/chuyen-gia", element: <ChuyengiaPage/>},
+      { path: "/confirm-email", element: <ConfirmEmailPage/>},
+      { path: "/invetory", element: <InventoryManagement/>},
     ],
   },
   {
     path: "/auth",
-    element: (
-      <PrivateRoute>
+    element: (     
         <AuthPage />
-      </PrivateRoute>
     ),
   },
-
+  {
+    path: "/booking",
+    element: <PrivateRoute>
+    <BookingPage />
+  </PrivateRoute>,
+  },
   {
     path: "/admin",
     element: <AdminPage />,

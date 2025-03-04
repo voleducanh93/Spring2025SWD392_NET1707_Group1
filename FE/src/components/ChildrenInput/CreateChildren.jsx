@@ -99,13 +99,20 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
         </Form.Item>
 
         {/* Relation to User */}
-        <Form.Item label="Relation to User" name="relationToUser" rules={[{ required: true, message: "Please select the relation!" }]}>
-          <Select placeholder="Select relation to user">
-            <Option value="Son">Son</Option>
-            <Option value="Daughter">Daughter</Option>
-            <Option value="Other">Other</Option>
-          </Select>
-        </Form.Item>
+        <Form.Item
+  label="Relation to User"
+  name="relationToUser"
+  rules={[{ required: true, message: "Please select the relation!" }]}
+>
+  <Select placeholder="Select relation to user">
+    <Option value={0}>Son/Daughter</Option>
+    <Option value={1}>Grandchild</Option>
+    <Option value={2}>Sibling</Option>
+    <Option value={3}>Relative</Option>
+    <Option value={4}>Other</Option>
+  </Select>
+</Form.Item>
+
 
         {/* Height */}
         <Form.Item label="Height" name="height">

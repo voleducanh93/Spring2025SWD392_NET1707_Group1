@@ -93,7 +93,7 @@ export default function Cards() {
                   component="img"
                   alt={vaccine.name}
                   height="200"
-                  image={imgTam} //{vaccine.image || "default-image.jpg"} // Fallback image
+                  image={ imgTam} //{vaccine.image || "default-image.jpg"} // Fallback image
                   sx={{
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",

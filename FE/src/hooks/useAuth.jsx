@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useQueryString } from "../utils/utils";
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
+import { useNavigate } from "react-router-dom";
 
 export const useRegister = () => {
   return useMutation({
@@ -50,7 +51,7 @@ export const useForgotPassword = () => {
 
 export const useResetPassword = () => {
   const queryParams = useQueryString();
-  console.log(queryParams.email + queryParams.token);
+  //console.log(queryParams.email + queryParams.token);
   return useMutation({
     mutationFn: (passwordData) =>
       authApi.resetPassword({
@@ -65,6 +66,30 @@ export const useResetPassword = () => {
 
     onError: (error) => {
       toast.error(error.response?.data?.error || "Có lỗi xảy ra!");
+    },
+  });
+
+};
+export const useConfirmEmail = () => {
+  const queryParams = useQueryString();
+  const navigate = useNavigate();
+
+  const email = queryParams.email;
+  const token = queryParams.token;
+
+  return useMutation({
+    mutationFn: async () => {
+      console.log(email, token);
+      
+      if (!email || !token) throw new Error("Thông tin không hợp lệ!");
+      return await authApi.confirmEmail({ email, token });
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Xác nhận email thành công!, Mời bạn đăng nhập");
+      setTimeout(() => navigate("/auth"), 2000); 
+    },
+    onError: (error) => {
+      toast.error(error.response?.error || "Xác nhận thất bại!");
     },
   });
 };
