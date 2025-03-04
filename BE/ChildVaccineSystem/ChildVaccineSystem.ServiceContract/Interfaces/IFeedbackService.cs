@@ -13,6 +13,8 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task<FeedbackDTO> AddFeedbackAsync(CreateFeedbackDTO feedbackDto, string userId, string userName);
         Task<FeedbackDTO> UpdateFeedbackAsync(int bookingId, UpdateFeedbackDTO feedbackDto);
         Task<bool> DeleteFeedbackAsync(int bookingId);
+        Task<IEnumerable<FeedbackDTO>> GetAllFeedbackAsync();
+
     }
 
 }

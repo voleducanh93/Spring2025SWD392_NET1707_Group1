@@ -417,6 +417,25 @@ namespace ChildVaccineSystem.Service.Services
 
             return vaccineInventoryDTOs;
         }
+        // Lấy danh sách vaccine đã xuất kho (Export Vaccines)
+        public async Task<IEnumerable<VaccineInventoryDTO>> GetExportVaccinesAsync()
+        {
+            var issuedVaccines = await _unitOfWork.VaccineInventories.GetExportVaccinesAsync();
+
+            return issuedVaccines.Select(vi => new VaccineInventoryDTO
+            {
+                VaccineId = vi.VaccineInventoryId,
+                Name = vi.Vaccine?.Name ?? "Unknown",
+                Manufacturer = vi.Vaccine?.Manufacturer ?? "Unknown",
+                BatchNumber = vi.BatchNumber,
+                ManufacturingDate = vi.ManufacturingDate,
+                ExpiryDate = vi.ExpiryDate,
+                InitialQuantity = vi.InitialQuantity,
+                QuantityInStock = vi.QuantityInStock,
+                TotalQuantity = vi.InitialQuantity - vi.QuantityInStock, // Số lượng vaccine đã xuất (Exported)
+                Supplier = vi.Supplier
+            }).ToList();
+        }
     }
 }
 
