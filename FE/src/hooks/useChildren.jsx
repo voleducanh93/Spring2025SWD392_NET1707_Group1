@@ -5,12 +5,16 @@ import { AppContext } from "../contexts/app.context";
 import { toast } from "react-toastify";
 
 export const useChildren = () => {
+  
   const queryClient = useQueryClient();
 const { getUser} = useContext(AppContext);
-
+  
+if (!getUser) {
+  toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại."); 
+}
 
   const { data: vaccines, isLoading, isError, error } = useQuery({
-    queryKey: ["children"],
+    queryKey: ["children",getUser],
     queryFn: () => getChildren(getUser),
     refetchOnWindowFocus: false,
     onError: (err) => {

@@ -1,12 +1,15 @@
-import  { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useConfirmEmail } from "../../hooks/useAuth";
-
 
 const ConfirmEmailPage = () => {
   const { mutate, isLoading } = useConfirmEmail();
+  const hasMutated = useRef(false); 
 
   useEffect(() => {
-    mutate();
+    if (!hasMutated.current) {
+      mutate();
+      hasMutated.current = true; 
+    }
   }, [mutate]);
 
   return (

@@ -9,7 +9,7 @@ export const AppContext = createContext({
 export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAccessTokenFromLS()));
   const [getUser] = useState(getUserIdLS());
-  console.log(getUser);
+  
   
   return (
     <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, getUser }}>

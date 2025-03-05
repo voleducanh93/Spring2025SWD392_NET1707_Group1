@@ -16,8 +16,14 @@ export const useRegister = () => {
       );
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Đăng ký thất bại!");
+      // Kiểm tra nếu API trả về danh sách lỗi
+      const errorMessage = error.response?.data?.errorMessages?.length
+        ? error.response.data.errorMessages.join(", ") 
+        : "❌ Đăng ký thất bại! Vui lòng thử lại.";
+    
+      toast.error(errorMessage, { position: "top-right" });
     },
+    
   });
 };
 
