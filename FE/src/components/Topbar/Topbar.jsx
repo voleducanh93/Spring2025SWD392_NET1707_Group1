@@ -22,6 +22,7 @@ import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
+import { EventNote } from "@mui/icons-material";
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -160,13 +161,13 @@ export default function Topbar() {
                   <Divider />
 
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/mybooking")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <ListItemIcon>
-                      <PersonAdd fontSize="small" />
+                      <EventNote fontSize="small" />
                     </ListItemIcon>
-                    Thêm tài khoản
+                    Danh sách lịch hẹn
                   </MenuItem>
 
                   <MenuItem
