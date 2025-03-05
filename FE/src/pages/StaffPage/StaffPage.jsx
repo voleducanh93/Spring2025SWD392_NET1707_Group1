@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function StaffPage() {
   const [bookings, setBookings] = useState([]);
@@ -13,13 +14,19 @@ export default function StaffPage() {
       .get("https://localhost:7134/api/Admin/getAllDoctors")
       .then((response) => {
         if (response.data.isSuccess) {
-          setDoctors(response.data.result.map((doctor) => doctor.fullName));
+          setDoctors(
+            response.data.result.map((doctor) => ({
+              userId: doctor.id, // Lưu `userId`
+              fullName: doctor.fullName, // Lưu tên bác sĩ
+            }))
+          );
         }
       })
       .catch((error) => {
         console.error("Error fetching doctors:", error);
       });
   }, []);
+  
 
   useEffect(() => {
     axios
@@ -34,19 +41,61 @@ export default function StaffPage() {
       });
   }, []);
 
-  const handleDoctorChange = (bookingId, doctor) => {
+  const handleDoctorChange = (bookingId, doctorId) => {
+    const doctorData = doctors.find((doctor) => doctor.userId === doctorId);
+  
+    if (!doctorData) {
+      console.error("❌ Không tìm thấy bác sĩ với ID:", doctorId);
+      return;
+    }
+  
     setSelectedDoctor((prevState) => ({
       ...prevState,
-      [bookingId]: doctor,
+      [bookingId]: {
+        userId: doctorData.userId, // Lưu ID
+        fullName: doctorData.fullName, // Lưu tên
+      },
     }));
   };
+  
+  
 
+ 
   const handleSaveDoctor = (bookingId) => {
-    setSavedDoctors((prevState) => ({
-      ...prevState,
-      [bookingId]: selectedDoctor[bookingId],
-    }));
+    const selectedDoctorData = selectedDoctor[bookingId];
+  
+    if (!selectedDoctorData) {
+      toast.warn("Vui lòng chọn bác sĩ trước khi lưu!", { position: "top-right" });
+      return;
+    }
+  
+    const { userId, fullName } = selectedDoctorData;
+  
+    console.log(`🔍 Gán bác sĩ: ${fullName} (ID: ${userId}) cho lịch hẹn ID: ${bookingId}`);
+  
+    axios
+      .post(`https://localhost:7134/api/Booking/assign-doctor?bookingId=${bookingId}&userId=${userId}`)
+      .then((response) => {
+        if (response.data.isSuccess) {
+          setSavedDoctors((prevState) => ({
+            ...prevState,
+            [bookingId]: fullName,
+          }));
+  
+          toast.success(`✅ Bác sĩ ${fullName} đã được gán thành công!`, { position: "top-right" });
+        } else {
+          toast.error(`❌ Lỗi khi gán bác sĩ: ${response.data.errorMessages?.join(", ") || "Không xác định"}`, {
+            position: "top-right",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("❌ Lỗi khi gọi API:", error);
+        toast.error("❌ Lỗi khi gán bác sĩ! Vui lòng thử lại.", { position: "top-right" });
+      });
   };
+  
+  
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -155,19 +204,18 @@ export default function StaffPage() {
                     </span>
                   ) : (
                     <select
-                      className="border rounded-lg shadow-md p-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      value={selectedDoctor[booking.bookingId] || ""}
-                      onChange={(e) =>
-                        handleDoctorChange(booking.bookingId, e.target.value)
-                      }
-                    >
-                      <option value="">Chọn Bác Sĩ</option>
-                      {doctors.map((doctor, index) => (
-                        <option key={index} value={doctor}>
-                          {doctor}
-                        </option>
-                      ))}
-                    </select>
+  className="border rounded-lg shadow-md p-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
+  value={selectedDoctor[booking.bookingId]?.userId || ""}
+  onChange={(e) => handleDoctorChange(booking.bookingId, e.target.value)}
+>
+  <option value="">Chọn Bác Sĩ</option>
+  {doctors.map((doctor) => (
+    <option key={doctor.userId} value={doctor.userId}>
+      {doctor.fullName}
+    </option>
+  ))}
+</select>
+
                   )}
                 </td>
                 <td className="!px-6 !py-4 text-center">
