@@ -1,11 +1,12 @@
 // useRegister.js
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import authApi from "../api/auth.api";
 import { toast } from "react-toastify";
 import { useQueryString } from "../utils/utils";
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { useNavigate } from "react-router-dom";
+import userApi from "../api/profile.api";
 
 export const useRegister = () => {
   return useMutation({
@@ -38,7 +39,11 @@ export const useLogin = () => {
       toast.success("Đăng nhập thành công!");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Đăng nhập thất bại!");
+      const errorMessage = error.response?.data?.errorMessages?.length
+      ? error.response.data.errorMessages.join(", ") 
+      : "❌ Đăng nhập thất bại! Vui lòng thử lại.";
+  
+    toast.error(errorMessage, { position: "top-right" });
     },
   });
 };
@@ -99,3 +104,51 @@ export const useConfirmEmail = () => {
     },
   });
 };
+export const useGetProfile = () => {
+  const { isAuthenticated } = useContext(AppContext);
+
+  return useQuery({
+    queryKey: ["userProfile"],
+    queryFn: userApi.getUserProfile,
+    enabled: isAuthenticated, 
+    onError: (error) => {
+      // Kiểm tra nếu API trả về danh sách lỗi
+      const errorMessage = error.response?.data?.errorMessages?.length
+        ? error.response.data.errorMessages.join(", ") 
+        : "❌ Đăng ký thất bại! Vui lòng thử lại.";
+    
+      toast.error(errorMessage, { position: "top-right" });
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: (data) => userApi.updateProfile(data), // Gọi đúng hàm updateProfile
+    onSuccess: (response) => {
+      toast.success(response.message || "✅ Hồ sơ cập nhật thành công!");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.errorMessages?.length
+        ? error.response.data.errorMessages.join(", ")
+        : "❌ Cập nhật hồ sơ thất bại!";
+      toast.error(errorMessage, { position: "top-right" });
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (passwordData) => userApi.changePassword(passwordData),
+    onSuccess: (response) => {
+      toast.success(response.message || "✅ Đổi mật khẩu thành công!");
+    },
+    onError: (error) => {
+      const errorMessage = error.response?.data?.errorMessages?.length
+        ? error.response.data.errorMessages.join(", ")
+        : "❌ Đổi mật khẩu thất bại!";
+      toast.error(errorMessage, { position: "top-right" });
+    },
+  });
+};
+

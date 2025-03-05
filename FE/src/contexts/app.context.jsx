@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { getAccessTokenFromLS, getUserIdLS } from "../utils/auth";
 
 export const AppContext = createContext({
@@ -8,11 +8,18 @@ export const AppContext = createContext({
 
 export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAccessTokenFromLS()));
-  const [getUser] = useState(getUserIdLS());
+  const [getUser, setGetUser] = useState("");
   
+  
+  useEffect(() => {
+    const storedUserId = getUserIdLS();
+    if (storedUserId) {
+      setGetUser(storedUserId);
+    }
+  }, [isAuthenticated]);
   
   return (
-    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, getUser }}>
+    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, getUser,setGetUser }}>
       {children}
     </AppContext.Provider>
   );

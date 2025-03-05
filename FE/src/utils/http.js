@@ -15,7 +15,9 @@ import {
 import config from "../constants/config";
 import HttpStatusCode from "../constants/httpStatusCode.enum";
 
+
 class Http {
+  
   constructor() {
     this.accessToken = getAccessTokenFromLS();
     this.refreshToken = getRefreshTokenFromLS();
@@ -38,7 +40,7 @@ class Http {
       },
       (error) => Promise.reject(error)
     );
-
+    
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config;
@@ -120,6 +122,7 @@ class Http {
   }
 
   async handleRefreshToken() {
+
     try {
       const response = await this.instance.post(URL_REFRESH_TOKEN, {
         refreshToken: this.refreshToken,
