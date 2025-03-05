@@ -114,5 +114,19 @@ namespace ChildVaccineSystem.Repository.Repositories
             var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
             return result.Succeeded;
         }
+
+        public async Task<bool> UpdateUserProfileAsync(User user)
+        {
+            try
+            {
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync(); // Ensure the changes are saved to the database
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

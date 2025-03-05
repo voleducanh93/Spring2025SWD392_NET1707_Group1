@@ -65,9 +65,24 @@ public class UserController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
-            model.Id = userId; // Ensure we are updating the correct user profile
+            // Lấy userId từ token (claim NameIdentifier)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("User ID is missing in the token.");
+                return BadRequest(_response);
+            }
+
+            // Đảm bảo rằng userId trong token trùng khớp với userId trong model (body request)
+            // Không cần id trong model, chỉ cần lấy userId từ token
+            model.Id = userId;
+
+            // Cập nhật thông tin người dùng
             var success = await _userService.UpdateProfileAsync(model);
+
             if (!success)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;

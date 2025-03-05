@@ -65,7 +65,6 @@ namespace ChildVaccineSystem.Service.Services
                 Id = user.Id,
                 UserName = user.UserName,
                 FullName = user.FullName,
-                Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Address = user.Address,
                 DateOfBirth = user.DateOfBirth,
@@ -75,19 +74,54 @@ namespace ChildVaccineSystem.Service.Services
 
         public async Task<bool> UpdateProfileAsync(UserProfileDTO userDTO)
         {
-            var user = await _userRepository.GetUserByIdAsync(userDTO.Id);
-            if (user == null) return false;
-
-            user.FullName = userDTO.FullName;
-            user.Address = userDTO.Address;
-            user.PhoneNumber = userDTO.PhoneNumber;
-            user.DateOfBirth = (DateTime)userDTO.DateOfBirth;
-            if (!string.IsNullOrEmpty(userDTO.ImageUrl))
+            try
             {
-                user.ImageUrl = userDTO.ImageUrl;
-            }
+                // Lấy người dùng từ repository
+                var user = await _userRepository.GetUserByIdAsync(userDTO.Id);
+                if (user == null)
+                {
+                    return false; // Nếu không tìm thấy người dùng
+                }
 
-            return await _userRepository.UpdateUserAsync(user);
+                // Cập nhật thông tin người dùng chỉ khi có giá trị mới
+                if (!string.IsNullOrEmpty(userDTO.FullName))
+                {
+                    user.FullName = userDTO.FullName;
+                }
+
+                if (!string.IsNullOrEmpty(userDTO.Address))
+                {
+                    user.Address = userDTO.Address;
+                }
+
+                if (!string.IsNullOrEmpty(userDTO.PhoneNumber))
+                {
+                    user.PhoneNumber = userDTO.PhoneNumber;
+                }
+
+                if (userDTO.DateOfBirth.HasValue)
+                {
+                    user.DateOfBirth = userDTO.DateOfBirth.Value;
+                }
+
+                if (!string.IsNullOrEmpty(userDTO.ImageUrl))
+                {
+                    user.ImageUrl = userDTO.ImageUrl; // Cập nhật ảnh nếu có
+                }
+
+                // Lưu thay đổi
+                var result = await _userRepository.UpdateUserProfileAsync(user);
+                if (result)
+                {
+                    await _userRepository.SaveChangesAsync(); // Lưu vào database
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<bool> ChangePasswordAsync(string userId, string oldPassword, string newPassword)
