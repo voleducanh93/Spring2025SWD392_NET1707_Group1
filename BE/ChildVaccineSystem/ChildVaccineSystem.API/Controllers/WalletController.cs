@@ -78,6 +78,39 @@ namespace ChildVaccineSystem.API.Controllers
 			}
 		}
 
+		[HttpPost("create-admin-wallet")]
+		[Authorize(Roles = "Admin")]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult<APIResponse>> CreateAdminWallet()
+		{
+			try
+			{
+				var adminId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(adminId))
+				{
+					_response.StatusCode = HttpStatusCode.Unauthorized;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("Admin ID not found in token");
+					return Unauthorized(_response);
+				}
+
+				var wallet = await _walletService.CreateWalletAsync(adminId, isAdminWallet: true);
+
+				_response.Result = wallet;
+				_response.StatusCode = HttpStatusCode.Created;
+				_response.IsSuccess = true;
+				return StatusCode((int)HttpStatusCode.Created, _response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return BadRequest(_response);
+			}
+		}
+
 		[HttpGet("admin")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
