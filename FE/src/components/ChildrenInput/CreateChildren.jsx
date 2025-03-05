@@ -3,6 +3,7 @@ import { Modal, Form, Input, Select, DatePicker, Button, Upload } from "antd";
 import { UserOutlined, UploadOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { uploadFile } from "../../config/firebase"; // Giả định có hàm upload lên Firebase
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -39,7 +40,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
 
         onAddChild(formData);
 
-        // Xóa dữ liệu sau khi thêm thành công
+        
         form.resetFields();
         setSelectedFile(null);
         
@@ -81,9 +82,18 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
         </Form.Item>
 
         {/* Date of Birth */}
-        <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select the date of birth!" }]}>
-          <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} placeholder="Select date" />
-        </Form.Item>
+        <Form.Item 
+  label="Date of Birth" 
+  name="dateOfBirth" 
+  rules={[{ required: true, message: "Please select the date of birth!" }]}
+>
+  <DatePicker 
+    format="YYYY-MM-DD" 
+    style={{ width: "100%" }} 
+    placeholder="Select date" 
+    disabledDate={(current) => current && current >= moment().endOf('day')}
+  />
+</Form.Item>
 
         {/* Gender */}
         <Form.Item label="Gender" name="gender" rules={[{ required: true, message: "Please select the gender!" }]}>
@@ -116,13 +126,29 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
 
         {/* Height */}
         <Form.Item label="Height" name="height">
-          <Input type="number" placeholder="Enter height (optional)" />
-        </Form.Item>
+  <Input 
+    type="number" 
+    placeholder="Enter height (optional)" 
+    min={1} 
+    onChange={(e) => {
+      const value = parseFloat(e.target.value);
+      if (value <= 0) e.target.value = "";
+    }}
+  />
+</Form.Item>
 
-        {/* Weight */}
-        <Form.Item label="Weight" name="weight">
-          <Input type="number" placeholder="Enter weight (optional)" />
-        </Form.Item>
+<Form.Item label="Weight" name="weight">
+  <Input 
+    type="number" 
+    placeholder="Enter weight (optional)" 
+    min={1} 
+    onChange={(e) => {
+      const value = parseFloat(e.target.value);
+      if (value <= 0) e.target.value = "";
+    }}
+  />
+</Form.Item>
+
 
         {/* Image Upload */}
         <Form.Item

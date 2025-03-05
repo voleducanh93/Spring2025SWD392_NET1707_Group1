@@ -23,6 +23,8 @@ import MyBooking from "../pages/BookingPage/MyBooking";
 import ChuyengiaPage from "../pages/ChuyengiaPage/ChuyengiaPage";
 import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
+import UserProfile from "../pages/ProfilePage/UserProfile";
+import AccountSetting from "../pages/ProfilePage/UserProfile";
 
 
 export const router = createBrowserRouter([
@@ -57,6 +59,18 @@ export const router = createBrowserRouter([
       { path: "/chuyen-gia", element: <ChuyengiaPage/>},
       { path: "/confirm-email", element: <ConfirmEmailPage/>},
       { path: "/invetory", element: <InventoryManagement/>},
+      {
+        path: "/booking",
+        element: <PrivateRoute>
+        <BookingPage />
+      </PrivateRoute>,
+      },
+      {
+        path: "/user-profile",
+        element: <PrivateRoute>
+       <UserProfile/>
+      </PrivateRoute>,
+      }
     ],
   },
   {
@@ -64,13 +78,7 @@ export const router = createBrowserRouter([
     element: (     
         <AuthPage />
     ),
-  },
-  {
-    path: "/booking",
-    element: <PrivateRoute>
-    <BookingPage />
-  </PrivateRoute>,
-  },
+  },  
   {
     path: "/admin",
     element: <AdminPage />,
