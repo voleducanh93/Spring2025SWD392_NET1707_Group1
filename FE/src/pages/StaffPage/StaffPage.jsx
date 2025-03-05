@@ -219,27 +219,20 @@ export default function StaffPage() {
                   )}
                 </td>
                 <td className="!px-6 !py-4 text-center">
-                  <button
-                    onClick={() => handleSaveDoctor(booking.bookingId)}
-                    className={`${
-                      !selectedDoctor[booking.bookingId] ||
-                      booking.status !== "Confirmed"
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-teal-600 hover:bg-teal-700"
-                    } text-white !py-3 !px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400`}
-                    disabled={
-                      !selectedDoctor[booking.bookingId] ||
-                      booking.status !== "Confirmed"
-                    }
-                  >
-                    Lưu
-                  </button>
-                  {savedDoctors[booking.bookingId] && (
-                    <span className="text-green-500 ml-2 font-semibold">
-                      Đã Lưu
-                    </span>
-                  )}
-                </td>
+  <button
+    onClick={() => handleSaveDoctor(booking.bookingId)}
+    className={`${savedDoctors[booking.bookingId] ? "bg-gray-300 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700"}
+      text-white !py-3 !px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400`}
+    disabled={savedDoctors[booking.bookingId]} // Vô hiệu hóa khi đã lưu
+  >
+    Lưu
+  </button>
+
+  {savedDoctors[booking.bookingId] && (
+    <span className="text-green-500 ml-2 font-semibold">Đã Lưu</span>
+  )}
+</td>
+
               </tr>
             ))}
           </tbody>

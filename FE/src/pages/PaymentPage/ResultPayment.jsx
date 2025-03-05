@@ -27,7 +27,7 @@ const ResultPayment = () => {
     <Result
       status="success"
       title="Thanh toán thành công!"
-      subTitle={`Mã đơn hàng: ${orderId} | Số tiền: ${amount} VND`}
+      //subTitle={`Mã đơn hàng: ${orderId} | Số tiền: ${amount} VND`}
       extra={[
         <Button type="primary" key="book-more" onClick={() => navigate("/booking")}>
           Đặt thêm lịch hẹn
@@ -42,7 +42,7 @@ const ResultPayment = () => {
     <Result
       status="error"
       title="Thanh toán thất bại!"
-      subTitle={`Mã đơn hàng: ${orderId} | Mã lỗi: ${errorCode}`}
+      //subTitle={`Mã đơn hàng: ${orderId} | Mã lỗi: ${errorCode}`}
       extra={[
         <Button type="primary" key="retry" onClick={handleRetryPayment}>
           Thử thanh toán lại

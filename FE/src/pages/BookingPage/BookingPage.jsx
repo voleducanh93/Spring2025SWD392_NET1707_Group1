@@ -289,16 +289,18 @@ const toggleSelection = (item) => {
       <div className="flex items-center gap-4">
         <label className="font-semibold text-xl mb-2">Chọn ngày:</label>
         <Form.Item name="date">
-        <DatePicker
-  style={{ width: 300, height: 50 }}
-  format="DD/MM/YYYY" 
-  value={selectedDate ? moment(selectedDate, "DD/MM/YYYY") : null} 
-  onChange={(date, dateString) => {
+  <DatePicker
+    style={{ width: 300, height: 50 }}
+    format="DD/MM/YYYY"
+    value={selectedDate ? moment(selectedDate, "DD/MM/YYYY") : null}
+    disabledDate={(current) => current && current < moment().startOf("day")} // Chặn ngày trong quá khứ
+    onChange={(date, dateString) => {
       console.log("📅 Ngày đã chọn:", dateString);
-      setSelectedDate(dateString); 
-  }}
-/>
+      setSelectedDate(dateString);
+    }}
+  />
 </Form.Item>
+
 
       </div>
     )}
