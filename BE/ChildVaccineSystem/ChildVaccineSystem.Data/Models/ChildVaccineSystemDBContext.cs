@@ -31,10 +31,11 @@ namespace ChildVaccineSystem.Data.Models
 		public DbSet<Staff> Staff { get; set; }
 		public DbSet<StaffSchedule> StaffSchedules { get; set; }
 		public DbSet<InjectionSchedule> InjectionSchedules { get; set; }
-        public DbSet<VaccineTransactionHistory> VaccineTransactions { get; set; }
+		public DbSet<VaccineTransactionHistory> VaccineTransactions { get; set; }
 		public DbSet<Wallet> Wallets { get; set; }
 		public DbSet<WalletTransaction> WalletTransactions { get; set; }
 		public DbSet<RefundRequest> RefundRequests { get; set; }
+		public DbSet<WalletDeposit> WalletDeposits { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -348,12 +349,12 @@ namespace ChildVaccineSystem.Data.Models
 				.HasForeignKey(t => t.BookingId)
 				.OnDelete(DeleteBehavior.Restrict);
 
-            //VaccineTransactionHistory
-            modelBuilder.Entity<VaccineTransactionHistory>()
-            .HasOne(vth => vth.VaccineInventory)
-            .WithMany(vi => vi.TransactionHistories)
-            .HasForeignKey(vth => vth.VaccineInventoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+			//VaccineTransactionHistory
+			modelBuilder.Entity<VaccineTransactionHistory>()
+			.HasOne(vth => vth.VaccineInventory)
+			.WithMany(vi => vi.TransactionHistories)
+			.HasForeignKey(vth => vth.VaccineInventoryId)
+			.OnDelete(DeleteBehavior.Cascade);
 
 			// Wallet
 			modelBuilder.Entity<Wallet>()
@@ -395,6 +396,13 @@ namespace ChildVaccineSystem.Data.Models
 				.HasForeignKey(t => t.RefundRequestId)
 				.IsRequired(false)
 				.OnDelete(DeleteBehavior.Restrict);
+
+			//WalletDeposit
+			modelBuilder.Entity<WalletDeposit>()
+				.HasOne(wd => wd.User)
+				.WithMany()
+				.HasForeignKey(wd => wd.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
 		}
-    }
+	}
 }
