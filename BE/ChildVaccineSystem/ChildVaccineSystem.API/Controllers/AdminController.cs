@@ -211,7 +211,7 @@ namespace ChildVaccineSystem.API.Controllers
         }
 
         [HttpGet("getAllDoctors")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin, Staff")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAllDoctors()
         {
             try
@@ -255,7 +255,7 @@ namespace ChildVaccineSystem.API.Controllers
         }
 
         [HttpGet("getAllRoles")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAllRoles()
         {
             try
