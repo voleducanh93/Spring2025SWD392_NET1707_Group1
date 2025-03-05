@@ -29,8 +29,11 @@ namespace ChildVaccineSystem.Service
 			services.AddTransient<IVnPaymentService, VnPaymentService>();
 			services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<IFeedbackService, FeedbackService>();
+			services.AddTransient<IWalletService, WalletService>();
+			services.AddTransient<IRefundService, RefundService>();
+			services.AddTransient<IPaymentService, PaymentService>();
 
-            return services;
+			return services;
         }
     }
 }
