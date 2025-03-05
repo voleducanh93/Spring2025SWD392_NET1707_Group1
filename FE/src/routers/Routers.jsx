@@ -24,7 +24,7 @@ import ChuyengiaPage from "../pages/ChuyengiaPage/ChuyengiaPage";
 import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import UserProfile from "../pages/ProfilePage/UserProfile";
-import AccountSetting from "../pages/ProfilePage/UserProfile";
+
 
 
 export const router = createBrowserRouter([
@@ -78,7 +78,8 @@ export const router = createBrowserRouter([
     element: (     
         <AuthPage />
     ),
-  },  
+  },
+  
   {
     path: "/admin",
     element: <AdminPage />,

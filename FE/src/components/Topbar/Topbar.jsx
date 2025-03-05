@@ -22,6 +22,7 @@ import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
+import { EventNote } from "@mui/icons-material";
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -63,12 +64,12 @@ export default function Topbar() {
             onClick={() => navigate("/")}
           >
             <img
-              src="src/assets/logo-vnvc-tet-nguyen-dan.png"
+              src="src/assets/logo.webp"
               alt="VNVC Logo"
               className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
             />
             <span className="text-orange-500 text-2xl font-bold tracking-wide drop-shadow-md">
-              VNVC
+              CVSTS
             </span>
           </motion.div>
 
@@ -89,11 +90,9 @@ export default function Topbar() {
               transition={{ type: "spring", stiffness: 200 }}
               className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <Link
-                to="/Booking"
-              >
-              <CalendarMonthIcon />
-              <span className="font-medium">ĐĂNG KÝ TIÊM</span>
+              <Link to="/Booking">
+                <CalendarMonthIcon />
+                <span className="font-medium">ĐĂNG KÝ TIÊM</span>
               </Link>
             </motion.div>
 
@@ -162,13 +161,13 @@ export default function Topbar() {
                   <Divider />
 
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/mybooking")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <ListItemIcon>
-                      <PersonAdd fontSize="small" />
+                      <EventNote fontSize="small" />
                     </ListItemIcon>
-                    Thêm tài khoản
+                    Danh sách lịch hẹn
                   </MenuItem>
 
                   <MenuItem
