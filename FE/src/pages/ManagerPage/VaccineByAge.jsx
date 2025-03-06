@@ -88,10 +88,10 @@ const VaccineByAge = () => {
       const vaccineScheduleDetails = selectedVaccines.map((vaccineId) => {
         const schedules = injectionSchedules[vaccineId] || [];
   
-        // Ensure that the number of injections for each vaccine is correct
+        
         const requiredInjections = availableVaccines.find((v) => v.vaccineId === vaccineId)?.injectionsCount || 0;
   
-        // If there are no injection schedules, add the required number of injections
+        
         while (schedules.length < requiredInjections) {
           schedules.push({
             doseNumber: schedules.length + 1,

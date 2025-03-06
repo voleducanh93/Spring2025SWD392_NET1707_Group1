@@ -15,30 +15,31 @@ const DepositResult = () => {
   const errorCode = searchParams.get("errorCode");
 
   useEffect(() => {
-    if (hasRun) return; 
-    setHasRun(true);
+    // if (hasRun) return; 
+    // setHasRun(true);
 
     if (depositAmount) {
       
       refreshWalletBalance();
     }
 
-    toast.info("🔄 Trang sẽ tự động đóng sau 10 giây...");
+    toast.info("🔄 Trang sẽ tự động đóng sau 5 giây...", {
+      autoClose: 5000, // Hiển thị toast trong 5 giây
+      position: "top-right",
+      pauseOnHover: false,
+    });
 
     // ⏳ Tự động đóng trang sau 10 giây
     const timeout = setTimeout(() => {
-      if (window.opener) {
-        window.close();
-      } else {
+      
         navigate(depositAmount ? "/" : "/wallet");
-      }
-    }, 10000);
+    }, 5000);
 
     return () => clearTimeout(timeout);
-  }, [searchParams, depositAmount, errorCode, navigate, hasRun]);
+  }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center">
       {depositAmount ? (
         <Result
           status="success"

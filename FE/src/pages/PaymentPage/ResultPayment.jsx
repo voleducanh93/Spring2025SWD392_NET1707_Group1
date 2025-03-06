@@ -36,6 +36,7 @@ const ResultPayment = () => {
           Xem lịch hẹn của tôi
         </Button>,
       ]}
+      className="h-auto"
     />
   ) : (
     // ❌ Giao diện khi thanh toán thất bại

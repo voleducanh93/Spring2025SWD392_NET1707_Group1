@@ -15,13 +15,14 @@ const DepositModal = ({ isOpen, onClose }) => {
       toast.error("❌ Vui lòng nhập số tiền hợp lệ!");
       return;
     }
-
+    console.log(amount);
+    
     if (amount < 10000 || amount > 100000000) {
       toast.error("❌ Số tiền phải từ 10,000 đến 100,000,000 VND!");
       return;
     }
 
-    depositMoney({ amount });
+    depositMoney(amount);
 
     setDepositAmount(""); 
     onClose(); 
@@ -49,7 +50,7 @@ const DepositModal = ({ isOpen, onClose }) => {
         value={depositAmount}
         onChange={(e) => {
           const value = e.target.value;
-          if (value === "" || /^[0-9]+$/.test(value)) { // Chỉ cho nhập số
+          if (value === "" || /^[0-9]+$/.test(value)) {
             setDepositAmount(value);
           }
         }}

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import http from "../../utils/http";
+//import http from "../../utils/http";
 import axios from "axios";
-const BASE_URL = "/Booking";
+//const BASE_URL = "/Booking";
 
 // Async thunk để tạo booking mới
 export const createBooking = createAsyncThunk("booking/create", async (bookingData, { rejectWithValue }) => {

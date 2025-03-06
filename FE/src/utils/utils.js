@@ -80,6 +80,4 @@ export const useQueryString = () => {
 
   return queryParams;
 };
-// // Lấy URL ảnh đại diện
-// export const getAvatarUrl = (avatarName) =>
-//   avatarName ? `${config.baseUrl}images/${avatarName}` : userImage;
+
