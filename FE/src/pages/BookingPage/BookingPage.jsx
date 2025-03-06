@@ -398,7 +398,7 @@ const toggleSelection = (item) => {
   !isComboSelected && <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
 )}
 
-<DepositModal isOpen={isDepositModalOpen} onClose={() => setIsDepositModalOpen(false)} />;
+
 
 {/* 2. Thông báo khi không có vaccine đơn */}
 { !isComboSelected && vaccinationSchedule?.length === 0 && (
@@ -450,7 +450,7 @@ const toggleSelection = (item) => {
   <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
 )}
 
-
+<DepositModal isOpen={isDepositModalOpen} onClose={() => setIsDepositModalOpen(false)} />;
   </div>
         
         <div className="border border-[#dcdfe6] w-full md:w-1/3 !p-8 rounded-2xl shadow-xl bg-white">
@@ -493,6 +493,7 @@ const toggleSelection = (item) => {
           )}
         </div>
       </div>
+      
 </div>
 </div>
 
