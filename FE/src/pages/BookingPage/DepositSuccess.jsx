@@ -1,51 +1,59 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useContext } from "react";
-
 import { toast } from "react-toastify";
-import { Button, Result } from "antd";
-import { useQueryClient } from "@tanstack/react-query";
 import { AppContext } from "../../contexts/app.context";
+import { Result } from "antd";
 
-const DepositSuccess = () => {
+const DepositResult = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setWalletBalance, walletBalance,getUser } = useContext(AppContext);
-  const queryClient = useQueryClient();
+  const { refreshWalletBalance } = useContext(AppContext);
+  const [hasRun, setHasRun] = useState(false); 
+
+  const depositAmount = Number(searchParams.get("amount")); 
+  const errorCode = searchParams.get("errorCode");
+
   useEffect(() => {
-    const depositAmount = Number(searchParams.get("amount"));
+    if (hasRun) return; 
+    setHasRun(true);
+
     if (depositAmount) {
-      // Cập nhật số dư ví
-      queryClient.invalidateQueries(["wallet", getUser]); 
-      toast.success(`💰 Nạp thành công ${depositAmount.toLocaleString()} VND!`);
+      
+      refreshWalletBalance();
     }
-  }, [searchParams, setWalletBalance, walletBalance]);
+
+    toast.info("🔄 Trang sẽ tự động đóng sau 10 giây...");
+
+    // ⏳ Tự động đóng trang sau 10 giây
+    const timeout = setTimeout(() => {
+      if (window.opener) {
+        window.close();
+      } else {
+        navigate(depositAmount ? "/" : "/wallet");
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [searchParams, depositAmount, errorCode, navigate, hasRun]);
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <Result
-        status="success"
-        title="🎉 Nạp tiền thành công!"
-        subTitle="Mời bạn quay về trang chủ để tiếp tục mua hàng."
-        extra={[
-            <Button
-            type="primary"
-            key="home"
-            onClick={() => {
-              if (window.opener) {
-                window.close(); // Nếu trang mở từ `window.open`, đóng nó
-              } else {
-                navigate("/"); // Nếu không, chuyển hướng về trang chủ
-              }
-            }}
-          >
-            Quay về trang chủ
-          </Button>
-          
-        ]}
-      />
+      {depositAmount ? (
+        <Result
+          status="success"
+          title="🎉 Nạp tiền thành công!"
+          subTitle="Mời bạn quay về trang chủ để tiếp tục mua hàng."
+        />
+      ) : (
+        <Result
+          status="error"
+          title="❌ Nạp tiền thất bại!"
+          subTitle="Vui lòng thử lại hoặc kiểm tra tài khoản."
+        />
+      )}
     </div>
   );
 };
 
-export default DepositSuccess;
+export default DepositResult;

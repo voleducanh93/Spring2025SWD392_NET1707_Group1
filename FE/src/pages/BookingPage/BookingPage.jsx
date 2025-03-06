@@ -14,13 +14,11 @@ import { useBooking } from "../../hooks/useBooking";
 import { usePayment } from "../../hooks/usePayment";
 import { AppContext } from "../../contexts/app.context";
 import { useProcessWalletPayment } from "../../hooks/useWallet";
-import { useQueryClient } from "@tanstack/react-query";
 import DepositModal from "../../components/Composit/DepositModal";
 
 
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
-
   const { vaccines: children, addChildren } = useChildren();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
@@ -28,10 +26,9 @@ const BookingPage = () => {
   const { addBooking } = useBooking();
   const { fetchPaymentUrl} = usePayment();
   const [selectedDate, setSelectedDate] = useState(null);
-  const queryClient = useQueryClient();
 const [isComboSelected, setIsComboSelected] = useState(false);
 const [comboVaccines, setComboVaccines] = useState([]);
-const { walletBalance,getUser } = useContext(AppContext);
+const { walletBalance,refreshWalletBalance } = useContext(AppContext);
   const openAddChildModal = () => {
     setIsModalVisible(true);
   };
@@ -153,7 +150,7 @@ const handleOpenDepositModal = () => {
  
   
     if (walletBalance < totalCost) {
-      toast.error("⚠️ Số dư không đủ để thanh toán! Vui lòng nạp thêm tiền.");
+     
       handleOpenDepositModal();
       return false; 
     }
@@ -184,9 +181,11 @@ const handleOpenDepositModal = () => {
           onSuccess: () => {           
             toast.success("💰 Thanh toán thành công bằng ví!");
            
-            setSelectedDate(null);
-        // setVaccinationSchedule(null);
-            queryClient.invalidateQueries(["wallet", getUser]); 
+    setSelectedVaccines([]); 
+    setSelectedChild(null);
+    setSelectedDate(null);
+    setVaccinationSchedule(null);
+        refreshWalletBalance();
           },
           onError: (walletError) => {
             console.error("❌ Lỗi khi thanh toán bằng ví:", walletError);

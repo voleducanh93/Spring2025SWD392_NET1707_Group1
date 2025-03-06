@@ -69,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: "wallet/deposit-success",
         element: <DepositSuccess />,
+      },
+      {
+        path: "wallet/deposit-failure",
+        element: <DepositSuccess />,
       }
      
     ],

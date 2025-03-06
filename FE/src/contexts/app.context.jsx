@@ -1,43 +1,69 @@
 import { createContext, useEffect, useState } from "react";
 import { getAccessTokenFromLS, getUserIdLS } from "../utils/auth";
-import { useGetWallet } from "../hooks/useWallet"; // ✅ Import useGetWallet
+import { useGetWallet } from "../hooks/useWallet"; // ✅ Import hook lấy số dư
+import { useQueryClient } from "@tanstack/react-query"; // ✅ Import queryClient
 
 export const AppContext = createContext({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
   getUser: "",
   setGetUser: () => {},
-  walletBalance: 0, 
+  walletBalance: 0,
   setWalletBalance: () => {},
+  refreshWalletBalance: () => {},
 });
 
 export const AppProvider = ({ children }) => {
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAccessTokenFromLS()));
   const [getUser, setGetUser] = useState("");
-  const [walletBalance, setWalletBalance] = useState(0); 
+  const [walletBalance, setWalletBalance] = useState(0);
 
+  // ✅ Lấy userId từ localStorage khi đăng nhập
   useEffect(() => {
     const storedUserId = getUserIdLS();
-    console.log(storedUserId);
-    
     if (storedUserId) {
       setGetUser(storedUserId);
     }
   }, [isAuthenticated]);
 
-  // ✅ Gọi API lấy số dư ví
+  
+  const refreshWalletBalance = () => {
+    if (getUser) {
+      queryClient.invalidateQueries(["wallet", getUser]); 
+    }
+  };
+
+  
   const { data: walletData } = useGetWallet(getUser);
 
   useEffect(() => {
     if (walletData?.balance !== undefined) {
-      console.log(walletData?.balance);
-      
-      setWalletBalance(walletData.balance); 
+      setWalletBalance(walletData.balance);
     }
   }, [walletData]);
 
+ 
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshWalletBalance();
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [getUser]);
+
   return (
-    <AppContext.Provider value={{ isAuthenticated, setIsAuthenticated, getUser, setGetUser, walletBalance, setWalletBalance }}>
+    <AppContext.Provider
+      value={{
+        isAuthenticated,
+        setIsAuthenticated,
+        getUser,
+        setGetUser,
+        walletBalance,
+        setWalletBalance,
+        refreshWalletBalance, 
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
