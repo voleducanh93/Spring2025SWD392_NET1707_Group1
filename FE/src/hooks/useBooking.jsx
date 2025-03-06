@@ -6,16 +6,14 @@ import { toast } from "react-toastify";
 
 export const useBooking = () => {
   const { getUser } = useContext(AppContext);
-  console.log(getUser);
+  
   const addBooking = useMutation({
    
     
     mutationFn: (data) => createBooking(getUser, data),
-    onSuccess: () => {
-      toast.success("✅ Đặt lịch tiêm thành công!");
-    },
+    
     onError: (error) => {
-      console.error("❌ Lỗi khi đặt lịch:", error);
+      //console.error("❌ Lỗi khi đặt lịch:", error);
       toast.error(error || "⚠️ Đặt lịch thất bại!");
     },
   });

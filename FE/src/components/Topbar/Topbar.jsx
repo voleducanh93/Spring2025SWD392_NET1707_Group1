@@ -15,8 +15,7 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Container } from "@mui/material";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
+import WalletIcon from '@mui/icons-material/Wallet';
 import Logout from "@mui/icons-material/Logout";
 import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
@@ -24,9 +23,12 @@ import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
 import { EventNote } from "@mui/icons-material";
 
+
 export default function Topbar() {
   const navigate = useNavigate();
-  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, isAuthenticated,walletBalance} = useContext(AppContext);
+  console.log(walletBalance);
+  
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -171,14 +173,21 @@ export default function Topbar() {
                   </MenuItem>
 
                   <MenuItem
-                    onClick={handleClose}
-                    className="hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Cài đặt
-                  </MenuItem>
+  onClick={handleClose}
+  className="hover:bg-gray-100 transition-all duration-200"
+>
+  <ListItemIcon>
+  <WalletIcon/>
+  </ListItemIcon>
+  <div className="flex flex-col">
+    
+    <span>
+    Ví tiền: {walletBalance ? walletBalance.toLocaleString() : "0"} VND
+    </span>
+  </div>
+</MenuItem>
+
+
 
                   <MenuItem
                     onClick={handleLogout}

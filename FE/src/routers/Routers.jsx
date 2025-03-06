@@ -24,6 +24,7 @@ import ChuyengiaPage from "../pages/ChuyengiaPage/ChuyengiaPage";
 import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import UserProfile from "../pages/ProfilePage/UserProfile";
+import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 
 
 
@@ -66,11 +67,10 @@ export const router = createBrowserRouter([
       </PrivateRoute>,
       },
       {
-        path: "/user-profile",
-        element: <PrivateRoute>
-       <UserProfile/>
-      </PrivateRoute>,
+        path: "wallet/deposit-success",
+        element: <DepositSuccess />,
       }
+     
     ],
   },
   {

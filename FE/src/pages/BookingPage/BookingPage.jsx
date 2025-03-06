@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import SellIcon from "@mui/icons-material/Sell";
 
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
@@ -12,6 +12,11 @@ import { toast } from "react-toastify";
 import { getVaccinesAndCombo } from "../../api/vaccineSchedule.api";
 import { useBooking } from "../../hooks/useBooking";
 import { usePayment } from "../../hooks/usePayment";
+import { AppContext } from "../../contexts/app.context";
+import { useProcessWalletPayment } from "../../hooks/useWallet";
+import { useQueryClient } from "@tanstack/react-query";
+import DepositModal from "../../components/Composit/DepositModal";
+
 
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
@@ -21,11 +26,12 @@ const BookingPage = () => {
   const [selectedChild, setSelectedChild] = useState(null);
   const [vaccinationSchedule, setVaccinationSchedule] = useState(null);
   const { addBooking } = useBooking();
-  const { fetchPaymentUrl, isLoading: isPaymentLoading } = usePayment();
+  const { fetchPaymentUrl} = usePayment();
   const [selectedDate, setSelectedDate] = useState(null);
-const [loading, setLoading] = useState(isPaymentLoading);
+  const queryClient = useQueryClient();
 const [isComboSelected, setIsComboSelected] = useState(false);
 const [comboVaccines, setComboVaccines] = useState([]);
+const { walletBalance,getUser } = useContext(AppContext);
   const openAddChildModal = () => {
     setIsModalVisible(true);
   };
@@ -63,98 +69,140 @@ const [comboVaccines, setComboVaccines] = useState([]);
     }
   };
   
-
-  const handleBooking = () => {
-   
-    
-
-    if (!selectedVaccines || selectedVaccines.length === 0){
-      
-        toast.error("Vui lòng chọn ít nhất một vaccine hoặc combo vaccine.");
-        return;
+  const createBookingData = () => {
+    if (!selectedVaccines || selectedVaccines.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một vaccine hoặc combo vaccine.");
+      return null;
     }
-    if(!selectedDate){
-     
-      toast.error("Vui lòng chọn ngày đặt lịch.");
-      return;
-    }
-
-    const bookingDetails = [];
-
-    
-    if (selectedVaccines && selectedVaccines.length > 0) {
-      selectedVaccines.forEach(item => {
-          console.log(item.comboId);
-          
-          if (isComboSelected && item.comboId) {
-              
-              bookingDetails.push({
-                  comboVaccineId: item.comboId,
-              });
-          } else if (item.vaccineId) {
-             
-              bookingDetails.push({
-                  vaccineId: item.vaccineId,
-              });
-          }
-      });
-  }
   
-  const bookingDate = moment(selectedDate, "DD/MM/YYYY", true);
-  if (!bookingDate.isValid()) {
+    if (!selectedDate) {
+      toast.error("Vui lòng chọn ngày đặt lịch.");
+      return null;
+    }
+  
+    const bookingDetails = [];
+  
+    selectedVaccines.forEach((item) => {
+      if (isComboSelected && item.comboId) {
+        bookingDetails.push({ comboVaccineId: item.comboId });
+      } else if (item.vaccineId) {
+        bookingDetails.push({ vaccineId: item.vaccineId });
+      }
+    });
+  
+    const bookingDate = moment(selectedDate, "DD/MM/YYYY", true);
+    if (!bookingDate.isValid()) {
       console.error("❌ Ngày không hợp lệ!");
       toast.error("⚠️ Ngày không hợp lệ, vui lòng chọn lại.");
-      return;
-  }
+      return null;
+    }
   
-  const formattedDate = bookingDate.format("YYYY-MM-DD");
+    const formattedDate = bookingDate.format("YYYY-MM-DD");
   
-  
-  
-    const bookingData = {
-        childId: selectedChild, 
-        bookingDate: formattedDate,
-        notes: "Đặt lịch tiêm chủng",
-        bookingDetails: bookingDetails
+    return {
+      childId: selectedChild,
+      bookingDate: formattedDate,
+      notes: "Đặt lịch tiêm chủng",
+      bookingDetails: bookingDetails,
     };
-    console.log(bookingData);
-    
+  };
+  
+  const handleBooking = () => {
+    const bookingData = createBookingData();
+    if (!bookingData) return; 
+  
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
         console.log("✅ Booking Created:", response);
-        if (!response || !response.result || !response.result.bookingId) {
-          console.error("❌ Lỗi: Không lấy được bookingId!");
+  
+        if (!response?.result?.bookingId) {
+         
           toast.error("⚠️ Lỗi hệ thống. Vui lòng thử lại!");
-          setLoading(false);
           return;
         }
-    
+  
         const bookingId = response.result.bookingId;
-        console.log("📌 Booking ID:", bookingId);
-    
+       
         setSelectedVaccines([]);
         setSelectedChild(null);
         setSelectedDate(null);
         setVaccinationSchedule(null);
+  
+        
         fetchPaymentUrl(bookingId);
-        setLoading(false);
       },
-    
       onError: (error) => {
         console.error("❌ Lỗi khi tạo booking:", error);
-    
-        // ✅ Kiểm tra nếu có errorMessages từ API trả về
-        if (error?.response?.data?.errorMessages?.length > 0) {
-          const errorMessage = error.response.data.errorMessages[0]; // Lấy thông báo lỗi đầu tiên
-          toast.error(`${errorMessage}`);
-        } else {
-          toast.error("⚠️ Đặt lịch thất bại! Vui lòng thử lại.");
-        }
-    
-        setLoading(false);
+  
+        const errorMessage = error?.response?.data?.errorMessages?.[0] || "⚠️ Đặt lịch thất bại! Vui lòng thử lại.";
+        toast.error(errorMessage);
       },
     });
+  };
+  const processWalletPayment = useProcessWalletPayment();
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+
+// Mở modal nhập số tiền nạp
+const handleOpenDepositModal = () => {
+  setIsDepositModalOpen(true);
 };
+  const checkWalletBalance = () => {
+    const totalCost = selectedVaccines.reduce((acc, item) => {
+      return acc + (item.price || item.totalPrice || 0);
+    }, 0);
+ 
+  
+    if (walletBalance < totalCost) {
+      toast.error("⚠️ Số dư không đủ để thanh toán! Vui lòng nạp thêm tiền.");
+      handleOpenDepositModal();
+      return false; 
+    }
+  
+    return true; 
+  }
+  
+  const handleWallet = () => {
+    if (!checkWalletBalance()) return;
+    const bookingData = createBookingData();
+    if (!bookingData) return;
+  
+    addBooking.mutate(bookingData, {
+      onSuccess: (response) => {
+        console.log("✅ Booking Created:", response);
+  
+        if (!response?.result?.bookingId) {
+          console.error("❌ Lỗi: Không lấy được bookingId!");
+          toast.error("⚠️ Lỗi hệ thống. Vui lòng thử lại!");
+          return;
+        }
+  
+        const bookingId = response.result.bookingId;
+       
+  
+       
+        processWalletPayment.mutate({ bookingId }, {
+          onSuccess: () => {           
+            toast.success("💰 Thanh toán thành công bằng ví!");
+           
+            setSelectedDate(null);
+        // setVaccinationSchedule(null);
+            queryClient.invalidateQueries(["wallet", getUser]); 
+          },
+          onError: (walletError) => {
+            console.error("❌ Lỗi khi thanh toán bằng ví:", walletError);
+            toast.error("⚠️ Thanh toán thất bại! Vui lòng kiểm tra số dư.");
+          }
+        });
+      },
+      onError: (error) => {
+        console.error("❌ Lỗi khi tạo booking:", error);
+  
+        const errorMessage = error?.response?.data?.errorMessages?.[0] || "⚠️ Đặt lịch thất bại! Vui lòng thử lại.";
+        toast.error(errorMessage);
+      },
+    });
+  };
+  
 
 const toggleSelection = (item) => {
   setSelectedVaccines((prev) => {
@@ -208,7 +256,9 @@ const toggleSelection = (item) => {
   console.log(isComboSelected);
  }
 
+
   return (
+    
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
       <div className="max-w-full bg-[#252A6F] rounded-3xl">
         <h2 className="!m-3 text-4xl font-medium flex justify-center text-[#F9AA1A]">
@@ -235,6 +285,12 @@ const toggleSelection = (item) => {
           </div>
         </div>
       </div>
+      <div className="flex flex-col items-start w-1/2">
+      <label className="font-semibold text-xl">Số dư ví:</label>
+          <span className="text-lg font-bold text-green-600">
+            💰 {walletBalance.toLocaleString()} VND
+          </span>
+        </div>
       {/* Filter Dropdown */}
       <div className="flex items-center justify-between gap-6 w-full">
         <div className="flex items-center gap-4 w-1/2">
@@ -343,7 +399,7 @@ const toggleSelection = (item) => {
   !isComboSelected && <div className="flex items-center justify-center text-2xl font-semibold text-red-500">Không có dữ liệu vắc-xin</div>
 )}
 
-
+<DepositModal isOpen={isDepositModalOpen} onClose={() => setIsDepositModalOpen(false)} />;
 
 {/* 2. Thông báo khi không có vaccine đơn */}
 { !isComboSelected && vaccinationSchedule?.length === 0 && (
@@ -427,7 +483,10 @@ const toggleSelection = (item) => {
                 </div>
               ))}
               <button className="!mt-5 w-full bg-orange-500 text-white !p-3 rounded-lg" onClick={handleBooking  }>
-                ĐĂNG KÝ MŨI TIÊM
+                THANH TOÁN TRỰC TIẾP
+              </button>
+              <button className="!mt-5 w-full bg-amber-300 text-white !p-3 rounded-lg" onClick={handleWallet  }>
+                THANH TOÁN BẰNG VÍ
               </button>
             </div>
           ) : (
