@@ -25,6 +25,7 @@ import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import UserProfile from "../pages/ProfilePage/UserProfile";
 import DepositSuccess from "../pages/BookingPage/DepositSuccess";
+import Wallet from "../pages/WalletPage/Wallet";
 
 
 
@@ -73,8 +74,11 @@ export const router = createBrowserRouter([
       {
         path: "wallet/deposit-failure",
         element: <DepositSuccess />,
+      },
+      {
+        path: "/mywallet",
+        element: <Wallet />,
       }
-     
     ],
   },
   {
