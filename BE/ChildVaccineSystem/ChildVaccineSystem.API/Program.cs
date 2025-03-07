@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,10 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
+
+	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+	options.IncludeXmlComments(xmlPath);
 });
 
 builder.Services.AddDbContext<ChildVaccineSystemDBContext>(options =>
@@ -126,9 +131,10 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+	var walletService = scope.ServiceProvider.GetRequiredService<IWalletService>();
 
-    // Define default roles
-    var roles = new[] { "Admin", "Staff", "Manager", "Customer", "Doctor" };
+	// Define default roles
+	var roles = new[] { "Admin", "Staff", "Manager", "Customer", "Doctor" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -152,9 +158,13 @@ using (var scope = app.Services.CreateScope())
         var result = await userManager.CreateAsync(newUser, "Admin12345@");
         if (result.Succeeded)
         {
-            await userManager.AddToRoleAsync(newUser, "Admin");
-        }
-    }
+			adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+			await userManager.AddToRoleAsync(newUser, "Admin");
+
+			await walletService.CreateAdminWalletAsync(adminUser.Id);
+		}
+	}
 }
 
 // Configure the HTTP request pipeline.

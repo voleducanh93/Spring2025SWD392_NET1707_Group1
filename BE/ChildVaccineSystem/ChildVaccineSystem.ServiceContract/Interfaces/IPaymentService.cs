@@ -4,6 +4,6 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
 {
 	public interface IPaymentService
 	{
-		Task<WalletPaymentResponseDTO> ProcessWalletPaymentAsync(string userId, WalletPaymentDTO paymentDto);
+		Task<WalletPaymentResponseDTO> ProcessWalletPaymentAsync(string userId, int bookingId);
 	}
 }
