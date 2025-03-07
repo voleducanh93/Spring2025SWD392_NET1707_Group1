@@ -30,12 +30,12 @@ export const AppProvider = ({ children }) => {
   
   const refreshWalletBalance = () => {
     if (getUser) {
-      queryClient.invalidateQueries(["wallet", getUser]); 
+      queryClient.invalidateQueries("wallet"); 
     }
   };
 
   
-  const { data: walletData } = useGetWallet(getUser);
+  const { data: walletData } = useGetWallet();
 
   useEffect(() => {
     if (walletData?.balance !== undefined) {

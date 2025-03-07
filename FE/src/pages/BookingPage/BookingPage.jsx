@@ -172,7 +172,7 @@ const BookingPage = () => {
         const bookingId = response.result.bookingId;
 
         processWalletPayment.mutate(
-          { bookingId },
+           bookingId ,
           {
             onSuccess: () => {
               toast.success("💰 Thanh toán thành công bằng ví!");

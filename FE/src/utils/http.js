@@ -128,9 +128,12 @@ class Http {
       });
 
       if (response.data && response.data.data) {
+        console.log(this.refreshToken+"refreshtoken");
+        
         const { access_token } = response.data.data;
         setAccessTokenToLS(access_token);
         this.accessToken = access_token;
+        console.log(this.refreshToken+"refreshtoken12");
         return access_token;
       }
 

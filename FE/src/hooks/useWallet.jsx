@@ -2,11 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { depositMoney, getWalletByUser, proccessWallet } from "../api/wallet.api";
 import { toast } from "react-toastify";
 
-export const useGetWallet = (userId) => {
+export const useGetWallet = () => {
   return useQuery({
-    queryKey: ["wallet", userId],
-    queryFn: () => getWalletByUser(userId),
-    enabled: !!userId, 
+    queryKey: ["wallet"],
+    queryFn: () => getWalletByUser(),
+    
     staleTime: 1000 * 60 * 5,
     onError: (error) => {
       const errorMessage = error.response?.data?.errorMessages?.length
