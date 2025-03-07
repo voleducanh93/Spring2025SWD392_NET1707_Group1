@@ -21,7 +21,13 @@ namespace ChildVaccineSystem.API.Controllers
 			_response = response;
 		}
 
+		/// <summary>
+		/// lấy list yêu cầu refund theo status
+		/// </summary>
+		/// <param name="status"></param>
+		/// <returns></returns>
 		[HttpGet("requests")]
+		[Authorize(Roles = "Admin")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<APIResponse>> GetAllRefundRequests([FromQuery] string status = null)
@@ -44,7 +50,12 @@ namespace ChildVaccineSystem.API.Controllers
 			}
 		}
 
+		/// <summary>
+		/// Lấy yêu cầu refund của customer
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("requests/my")]
+		[Authorize(Roles = "Customer")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -78,6 +89,7 @@ namespace ChildVaccineSystem.API.Controllers
 		}
 
 		[HttpGet("requests/{id}")]
+		[Authorize(Roles = "Admin")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -120,8 +132,13 @@ namespace ChildVaccineSystem.API.Controllers
 			}
 		}
 
+		/// <summary>
+		/// Tạo yêu cầu refund 
+		/// </summary>
+		/// <param name="createDto"></param>
+		/// <returns></returns>
 		[HttpPost("request")]
-		[Authorize]
+		[Authorize(Roles = "Customer")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
