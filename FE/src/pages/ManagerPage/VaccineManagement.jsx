@@ -146,9 +146,8 @@ const VaccineManagement = () => {
   ];
 
   return (
-    <div className="p-5">
-      <h2 className="text-2xl font-bold mb-4">Quản lý Vaccine</h2>
-      <Button type="primary" onClick={() => showModal()} className="mb-3">
+    <div>
+      <Button type="primary" onClick={() => showModal()} className="!mb-3">
         Thêm Vaccine
       </Button>
       <Table columns={columns} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({

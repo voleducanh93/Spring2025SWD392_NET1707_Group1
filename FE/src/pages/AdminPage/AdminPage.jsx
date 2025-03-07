@@ -1,11 +1,11 @@
 // import Admin from "../../components/Admin/Admin";
 
-import Sidebar from "../../components/Sidebar/Sidebar";
+import SidebarAdmin from "../../components/Sidebar/SidebarAdmin";
 
 export default function AdminPage() {
   return (
     <div className="">
-      <Sidebar />
+      <SidebarAdmin />
       {/* <AdminReal /> */}
     </div>
   );

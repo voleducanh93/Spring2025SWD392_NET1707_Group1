@@ -25,7 +25,7 @@ import {
 import AdminReal from "../Admin/AdminReal";
 
 const { Header, Sider, Content } = Layout;
-const Sidebar = () => {
+const SidebarAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -214,4 +214,4 @@ const Sidebar = () => {
     </Layout>
   );
 };
-export default Sidebar;
+export default SidebarAdmin;

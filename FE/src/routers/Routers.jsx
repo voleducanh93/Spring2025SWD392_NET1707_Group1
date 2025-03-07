@@ -42,7 +42,6 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },
-      { path: "/manager", element: <ManagerPage /> },
       { path: "/vaccine", element: <VaccineManagement /> },
       { path: "/children", element: <UploadForm /> },
       { path: "/children", element: <RegistrationForm /> },
@@ -96,4 +95,5 @@ export const router = createBrowserRouter([
     path: "/staff",
     element: <StaffPage />,
   },
+  { path: "/manager", element: <ManagerPage /> },
 ]);
