@@ -5,6 +5,7 @@ using ChildVaccineSystem.Data.DTO.Email;
 using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.Service.Services;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -178,6 +179,24 @@ namespace ChildVaccineSystem.API.Controllers
 				_response.IsSuccess = false;
 				_response.ErrorMessages.Add(ex.Message);
 				return BadRequest(_response);
+			}
+		}
+		[AllowAnonymous]
+		[HttpPost("loginGG")]
+		public async Task<IActionResult> Login([FromBody] string request)
+		{
+			try
+			{
+				// ✅ Xác minh idToken từ Firebase
+				var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request);
+				var uid = decodedToken.Uid;
+				var email = decodedToken.Claims.ContainsKey("email") ? decodedToken.Claims["email"].ToString() : null;
+
+				return Ok(new { uid, email });
+			}
+			catch (FirebaseAuthException ex)
+			{
+				return Unauthorized(new { message = "Invalid ID Token", error = ex.Message });
 			}
 		}
 

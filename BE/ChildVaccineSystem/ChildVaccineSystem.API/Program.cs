@@ -5,7 +5,10 @@ using ChildVaccineSystem.Repository;
 using ChildVaccineSystem.Service;
 using ChildVaccineSystem.Service.Services;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +53,18 @@ builder.Services.AddSwaggerGen(options =>
 	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 	options.IncludeXmlComments(xmlPath);
+});
+
+var firebaseConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase-config.json");
+if (!File.Exists(firebaseConfigPath))
+{
+	throw new FileNotFoundException("Không tìm thấy file firebase-config.json!", firebaseConfigPath);
+}
+
+// ✅ Khởi tạo Firebase Admin SDK
+FirebaseApp.Create(new AppOptions()
+{
+	Credential = GoogleCredential.FromFile(firebaseConfigPath)
 });
 
 builder.Services.AddDbContext<ChildVaccineSystemDBContext>(options =>

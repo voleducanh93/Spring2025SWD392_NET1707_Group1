@@ -2,10 +2,42 @@ import { useState } from "react";
 import { Form, Input, Button, Modal } from "antd";
 import { Link } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../config/firebaseAuthConfig";
 
 const SignInForm = ({ onFinish, isLoading, handleSubmitForgot }) => {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false); 
-  const [email, setEmail] = useState(""); // Để lưu giá trị email nhập vào
+  const [email, setEmail] = useState(""); 
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken(); // Lấy Firebase ID Token
+  
+      console.log("ID Token:", idToken);
+      console.log("User Info:", result.user);
+  
+      // Gửi idToken lên backend để xác thực
+      // const response = await fetch("https://localhost:7134/api/Auth/loginGG", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify( idToken ),
+      // });
+  
+      // const data = await response.json();
+      // console.log(data);
+      
+      // if (response.ok) {
+      //   console.log("Đăng nhập thành công:", data);
+      //   localStorage.setItem("token", data.token); // Lưu JWT token vào localStorage
+      //   window.location.reload(); // Reload trang để cập nhật state đăng nhập
+      // } else {
+      //   console.error("Đăng nhập thất bại:", data);
+      // }
+    } catch (error) {
+      console.error("Lỗi đăng nhập Google:", error);
+    }
+  };
+  
 
   // Xử lý gửi email reset mật khẩu
   const handleResetPassword = () => {
@@ -85,7 +117,7 @@ const SignInForm = ({ onFinish, isLoading, handleSubmitForgot }) => {
       <p className="text-center mt-4">Hoặc đăng nhập bằng các nền tảng xã hội</p>
 
       <div className="mt-4 flex items-center justify-center">
-        <button
+        <button onClick={handleGoogleLogin}
           type="button"
           className="w-full flex justify-center items-center gap-2 bg-white text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 transition-colors duration-300"
         >
