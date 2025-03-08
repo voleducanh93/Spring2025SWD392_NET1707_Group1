@@ -77,13 +77,15 @@ namespace ChildVaccineSystem.Service.Services
                 var bookingDetail = _mapper.Map<BookingDetail>(detailDto);
 
                 if (detailDto.VaccineId.HasValue)
-                {
-                    var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detailDto.VaccineId);
+				{
+					booking.BookingType = BookingType.singleVaccine;
+					var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detailDto.VaccineId);
                     bookingDetail.Price = vaccine.Price;
                 }
                 else
                 {
-                    var comboVaccine = await _unitOfWork.ComboVaccines.GetAsync(cv => cv.ComboId == detailDto.ComboVaccineId);
+					booking.BookingType = BookingType.comboVacinne;
+					var comboVaccine = await _unitOfWork.ComboVaccines.GetAsync(cv => cv.ComboId == detailDto.ComboVaccineId);
                     bookingDetail.Price = comboVaccine.TotalPrice;
                 }
 

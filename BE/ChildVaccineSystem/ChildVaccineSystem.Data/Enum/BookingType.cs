@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ChildVaccineSystem.Data.Enum
 {
-    public enum BookingType
-    {
-        comboVacinne,
-        singleVaccine
-    }
+	public enum BookingType
+	{
+		singleVaccine,
+		comboVacinne
+	}
 }
