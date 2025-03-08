@@ -50,7 +50,7 @@ export const AppProvider = ({ children }) => {
     };
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [getUser]);
+  }, [getUser,isAuthenticated]);
 
   return (
     <AppContext.Provider

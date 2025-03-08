@@ -1,21 +1,26 @@
-import AppContext from 'antd/es/app/context';
-import React, { useContext, useEffect, useState } from 'react';
+import AppContext from "antd/es/app/context";
+import React, { useContext, useEffect, useState } from "react";
+import { getWalletByUser } from "../../api/wallet.api";
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { getUser } = useContext(AppContext)
+  const { getUser } = useContext(AppContext);
   const userId = "d661e3d4-68c7-4cb6-ba75-beabd150bec5"; // Thay thế bằng user ID thực tế
 
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const response = await fetch(`https://localhost:7134/api/Wallet/user`);
-        const data = await response.json();
-        setWalletData(data.result);
+        const response = await getWalletByUser();
+        console.log(response);
+
+        //const data = await response.json();
+        setWalletData(response);
+        console.log(walletData);
+
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching wallet data:', error);
+        console.error("Error fetching wallet data:", error);
         setIsLoading(false);
       }
     };
@@ -34,7 +39,9 @@ export default function Wallet() {
   if (!walletData) {
     return (
       <div className="!flex !items-center !justify-center !min-h-screen">
-        <div className="!text-red-500 !text-lg !font-semibold">Error loading wallet data</div>
+        <div className="!text-red-500 !text-lg !font-semibold">
+          Error loading wallet data
+        </div>
       </div>
     );
   }
@@ -75,7 +82,9 @@ export default function Wallet() {
 
         {/* Recent Transactions */}
         <div className="!bg-white !rounded-2xl !shadow-xl !p-8">
-          <h2 className="!text-2xl !font-bold !text-gray-800 !mb-6">Recent Transactions</h2>
+          <h2 className="!text-2xl !font-bold !text-gray-800 !mb-6">
+            Recent Transactions
+          </h2>
           {walletData.recentTransactions.length === 0 ? (
             <div className="!text-center !text-gray-500 !py-8">
               <p className="!text-lg">No recent transactions</p>
@@ -92,14 +101,18 @@ export default function Wallet() {
                       {transaction.description}
                     </h3>
                     <p className="!text-sm !text-gray-500">
-                      {new Date(transaction.date).toLocaleDateString()}
+                      {new Date(transaction.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div
                     className={`!text-xl !font-semibold 
-                      ${transaction.amount > 0 ? '!text-green-600' : '!text-red-600'}`}
+                      ${
+                        transaction.amount > 0
+                          ? "!text-green-600"
+                          : "!text-red-600"
+                      }`}
                   >
-                    {transaction.amount.toFixed(2)} VND
+                    {transaction.amount.toLocaleString()} VND
                   </div>
                 </div>
               ))}

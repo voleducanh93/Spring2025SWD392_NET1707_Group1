@@ -170,7 +170,8 @@ const BookingPage = () => {
         }
 
         const bookingId = response.result.bookingId;
-
+        console.log(bookingId);
+        
         processWalletPayment.mutate(
            bookingId ,
           {

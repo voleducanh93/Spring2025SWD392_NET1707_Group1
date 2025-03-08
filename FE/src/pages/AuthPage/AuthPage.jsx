@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, Form, Modal, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
@@ -6,6 +6,7 @@ import { useRegister, useLogin, useForgotPassword } from "../../hooks/useAuth";
 import { useLocationData } from "./useLocationData";
 import SignInForm from "../../components/Auth/SignInForm";
 import SignUpForm from "../../components/Auth/SignUpForm";
+import { AppContext } from "../../contexts/app.context";
 
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
@@ -37,7 +38,7 @@ function AuthPage() {
   const { mutate: registerMutate, isSuccess: isRegisterSuccess, isError: isRegisterError } = useRegister();
   const { mutate: loginMutate, isSuccess: isLoginSuccess, isError: isLoginError } = useLogin();
   const { mutate: forgotPasswordMutate } = useForgotPassword();
-
+ 
   
   useEffect(() => {
     if (isRegisterSuccess) {
@@ -83,6 +84,7 @@ function AuthPage() {
         username: values.email,
         password: values.password,
       });
+     
     }
   };
   const handleSubmitForgot = (email) => {

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { AppContext } from "../../contexts/app.context";
 import { Button, Modal, Input } from "antd";
 import { useRequestRefund } from "../../hooks/useRefund";
-
+import dayjs from "dayjs";
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
@@ -17,7 +17,9 @@ export default function MyBooking() {
 
     const fetchBookings = async () => {
       try {
-        const response = await fetch(`https://localhost:7134/api/Booking/user/${getUser}`);
+        const response = await fetch(
+          `https://localhost:7134/api/Booking/user/${getUser}`
+        );
         const data = await response.json();
         if (data.isSuccess) {
           setBookings(data.result);
@@ -48,7 +50,7 @@ export default function MyBooking() {
     if (!refundReason.trim()) {
       return alert("Vui lòng nhập lý do hoàn tiền!");
     }
-    
+
     requestRefund(
       { bookingId: selectedBookingId, reason: refundReason },
       {
@@ -75,11 +77,21 @@ export default function MyBooking() {
           <table className="w-full bg-white border border-gray-300 rounded-2xl shadow-2xl overflow-hidden">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">Tên trẻ</th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">Ngày đặt</th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">Tổng giá (VND)</th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">Trạng thái</th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">Hoàn tiền</th>
+                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
+                  Tên trẻ
+                </th>
+                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
+                  Ngày đặt
+                </th>
+                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
+                  Tổng giá (VND)
+                </th>
+                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
+                  Trạng thái
+                </th>
+                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
+                  Hoàn tiền
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -88,8 +100,12 @@ export default function MyBooking() {
                   key={booking.bookingId}
                   className="border-t border-gray-200 hover:bg-blue-50 transition duration-300 ease-in-out"
                 >
-                  <td className="py-4 px-6 text-gray-900 font-semibold">{booking.childName}</td>
-                  <td className="py-4 px-6 text-gray-800">{formatDate(booking.bookingDate)}</td>
+                  <td className="py-4 px-6 text-gray-900 font-semibold">
+                    {booking.childName}
+                  </td>
+                  <td className="py-4 px-6 text-gray-800">
+                    {formatDate(booking.bookingDate)}
+                  </td>
                   <td className="py-4 px-6 text-gray-900 font-bold">
                     {booking.totalPrice.toLocaleString()} VND
                   </td>
@@ -109,11 +125,17 @@ export default function MyBooking() {
                       : booking.status}
                   </td>
                   <td className="py-4 px-6">
-                    {booking.status === "Completed" && (
-                      <Button type="primary" danger onClick={() => openRefundModal(booking.bookingId)}>
-                        Hoàn tiền
-                      </Button>
-                    )}
+                    {booking.bookingDate &&
+                      dayjs(booking.bookingDate).diff(dayjs(), "hour") >=
+                        24 && (
+                        <Button
+                          type="primary"
+                          danger
+                          onClick={() => openRefundModal(booking.bookingId)}
+                        >
+                          Hoàn tiền
+                        </Button>
+                      )}
                   </td>
                 </tr>
               ))}
@@ -131,7 +153,13 @@ export default function MyBooking() {
           <Button key="cancel" onClick={() => setModalVisible(false)}>
             Hủy
           </Button>,
-          <Button key="submit" type="primary" danger loading={isLoading} onClick={handleRefundRequest}>
+          <Button
+            key="submit"
+            type="primary"
+            danger
+            loading={isLoading}
+            onClick={handleRefundRequest}
+          >
             Gửi yêu cầu
           </Button>,
         ]}
