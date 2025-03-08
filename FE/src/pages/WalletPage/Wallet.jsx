@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import AppContext from 'antd/es/app/context';
+import React, { useContext, useEffect, useState } from 'react';
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { getUser } = useContext(AppContext)
   const userId = "d661e3d4-68c7-4cb6-ba75-beabd150bec5"; // Thay thế bằng user ID thực tế
 
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const response = await fetch(`https://localhost:7134/api/Wallet/user/${userId}`);
+        const response = await fetch(`https://localhost:7134/api/Wallet/user`);
         const data = await response.json();
         setWalletData(data.result);
         setIsLoading(false);
