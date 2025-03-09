@@ -436,6 +436,21 @@ namespace ChildVaccineSystem.Service.Services
                 Supplier = vi.Supplier
             }).ToList();
         }
+
+        public async Task<int> GetAvailableInventoryForVaccineAsync(int vaccineId)
+        {
+            var inventory = await _unitOfWork.VaccineInventories
+                .GetAllAsync(vi => vi.VaccineId == vaccineId && vi.QuantityInStock > 0);
+
+            var selectedInventory = inventory.OrderBy(vi => vi.ExpiryDate).FirstOrDefault();
+            if (selectedInventory == null) throw new Exception("No available vaccine batch.");
+
+            // Giảm số lượng trong kho
+            selectedInventory.QuantityInStock -= 1;
+            await _unitOfWork.CompleteAsync();
+
+            return selectedInventory.VaccineInventoryId;
+        }
     }
 }
 
