@@ -52,9 +52,6 @@ builder.Services.AddSwaggerGen(options =>
 	options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddDbContext<ChildVaccineSystemDBContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // Add EmailSettings
 builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
 
