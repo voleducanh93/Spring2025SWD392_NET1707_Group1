@@ -12,26 +12,26 @@ namespace ChildVaccineSystem.Data.Entities
 
         [ForeignKey("BookingDetail")]
         public int BookingDetailId { get; set; }
-        public BookingDetail BookingDetail { get; set; } = new BookingDetail();
+        public BookingDetail BookingDetail { get; set; }
 
 		[ForeignKey("User")]
-        public string UserId { get; set; } = string.Empty;
-		public User User { get; set; } = new User();
+        public string UserId { get; set; }
+		public User User { get; set; }
 
 		[ForeignKey("Children")]
         public int ChildId { get; set; }
-        public Children Child { get; set; } = new Children();
+        public Children Child { get; set; }
 
 		[ForeignKey("Vaccine")]
         public int VaccineId { get; set; }
-        public Vaccine Vaccine { get; set; } = new Vaccine();
+        public Vaccine Vaccine { get; set; }
 
 		[Required]
         public DateTime VaccinationDate { get; set; } = DateTime.UtcNow;
 
 		[ForeignKey("VaccineInventory")]
         public int VaccineInventoryId { get; set; }
-        public VaccineInventory VaccineInventory { get; set; } = new VaccineInventory();
+        public VaccineInventory VaccineInventory { get; set; }
 
 		[Required]
         public decimal DoseAmount { get; set; }
