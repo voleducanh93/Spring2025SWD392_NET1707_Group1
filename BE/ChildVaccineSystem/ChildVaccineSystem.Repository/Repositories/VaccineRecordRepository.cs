@@ -69,5 +69,19 @@ namespace ChildVaccineSystem.Repository.Repositories
         {
             await _context.SaveChangesAsync();
         }
-    }
+		public async Task<VaccinationRecord?> GetByIdAsync(int id, string? includeProperties = null)
+		{
+			IQueryable<VaccinationRecord> query = _context.VaccinationRecords;
+
+			if (!string.IsNullOrEmpty(includeProperties))
+			{
+				foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+				{
+					query = query.Include(includeProperty);
+				}
+			}
+
+			return await query.FirstOrDefaultAsync(vr => vr.VaccinationRecordId == id);
+		}
+	}
 }

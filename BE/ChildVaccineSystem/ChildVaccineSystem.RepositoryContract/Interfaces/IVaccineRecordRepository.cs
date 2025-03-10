@@ -16,5 +16,7 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         void Update(VaccinationRecord record);
         void Delete(VaccinationRecord record);
         Task SaveChangesAsync();
-    }
+        Task<VaccinationRecord?> GetByIdAsync(int id, string? includeProperties = null);
+
+	}
 }

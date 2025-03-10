@@ -11,7 +11,7 @@ namespace ChildVaccineSystem.Data.Enum
         Pending,   // Chờ tiêm
         Completed, // Đã tiêm
         Canceled,  // Đã hủy
-        Observing  // Cần theo dõi phản ứng
+        Deleted  // Xóa 
     }
 
 }

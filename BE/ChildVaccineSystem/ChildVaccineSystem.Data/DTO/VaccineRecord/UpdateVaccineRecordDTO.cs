@@ -9,8 +9,8 @@ namespace ChildVaccineSystem.Data.DTO.VaccineRecord
 {
     public class UpdateVaccineRecordDTO
     {
-        public string Notes { get; set; }
-        public VaccineRecordStatus Status { get; set; }
+        public string? Notes { get; set; }
+        public VaccineRecordStatus? Status { get; set; }
         public DateTime? NextDoseDate { get; set; }
     }
 }

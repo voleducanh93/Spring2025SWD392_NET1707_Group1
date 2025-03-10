@@ -12,38 +12,38 @@ namespace ChildVaccineSystem.Data.Entities
 
         [ForeignKey("BookingDetail")]
         public int BookingDetailId { get; set; }
-        public BookingDetail BookingDetail { get; set; }
+        public BookingDetail BookingDetail { get; set; } = new BookingDetail();
 
-        [ForeignKey("User")]
-        public string UserId { get; set; }
-        public User User { get; set; }
+		[ForeignKey("User")]
+        public string UserId { get; set; } = string.Empty;
+		public User User { get; set; } = new User();
 
-        [ForeignKey("Children")]
+		[ForeignKey("Children")]
         public int ChildId { get; set; }
-        public Children Child { get; set; }
+        public Children Child { get; set; } = new Children();
 
-        [ForeignKey("Vaccine")]
+		[ForeignKey("Vaccine")]
         public int VaccineId { get; set; }
-        public Vaccine Vaccine { get; set; }
+        public Vaccine Vaccine { get; set; } = new Vaccine();
 
-        [Required]
-        public DateTime VaccinationDate { get; set; }
+		[Required]
+        public DateTime VaccinationDate { get; set; } = DateTime.UtcNow;
 
-        [ForeignKey("VaccineInventory")]
+		[ForeignKey("VaccineInventory")]
         public int VaccineInventoryId { get; set; }
-        public VaccineInventory VaccineInventory { get; set; }
+        public VaccineInventory VaccineInventory { get; set; } = new VaccineInventory();
 
-        [Required]
+		[Required]
         public decimal DoseAmount { get; set; }
 
-        public int Sequence { get; set; }
+        public int Sequence { get; set; } = 1;
 
-        public DateTime? NextDoseDate { get; set; }
+        public DateTime? NextDoseDate { get; set; } = null;
 
-        public VaccineRecordStatus Status { get; set; } = VaccineRecordStatus.Pending;
+		public VaccineRecordStatus Status { get; set; } = VaccineRecordStatus.Pending;
 
-        public string Notes { get; set; }
+        public string Notes { get; set; } = string.Empty;
 
-        public string BatchNumber { get; set; }
-    }
+		public string BatchNumber { get; set; } = string.Empty;
+	}
 }
