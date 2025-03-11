@@ -27,12 +27,34 @@ namespace ChildVaccineSystem.Service.Services
 
         public async Task<BookingDTO> GetByIdAsync(int id)
         {
-            var booking = await _unitOfWork.Bookings.GetAsync(b => b.BookingId == id, includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User");
+            var booking = await _unitOfWork.Bookings.GetAsync(
+                b => b.BookingId == id,
+                includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User"
+            );
+
             if (booking == null)
                 throw new ArgumentException($"Booking with ID {id} not found");
 
-            return _mapper.Map<BookingDTO>(booking);
+            var bookingDTO = _mapper.Map<BookingDTO>(booking);
+
+            // Ánh xạ tên Vaccine và tên Combo Vaccine
+            foreach (var detail in bookingDTO.BookingDetails)
+            {
+                if (detail.VaccineId.HasValue)
+                {
+                    var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detail.VaccineId.Value);
+                    detail.VaccineName = vaccine?.Name; // ✅ Lấy tên Vaccine
+                }
+                else if (detail.ComboVaccineId.HasValue)
+                {
+                    var comboVaccine = await _unitOfWork.ComboVaccines.GetAsync(cv => cv.ComboId == detail.ComboVaccineId.Value);
+                    detail.ComboVaccineName = comboVaccine?.ComboName; // ✅ Lấy tên Combo Vaccine
+                }
+            }
+
+            return bookingDTO;
         }
+
 
         public async Task<BookingDTO> CreateAsync(string userId, CreateBookingDTO bookingDto)
         {
@@ -78,11 +100,23 @@ namespace ChildVaccineSystem.Service.Services
 
                 if (detailDto.VaccineId.HasValue)
                 {
+                    booking.BookingType = BookingType.singleVaccine;
                     var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detailDto.VaccineId);
                     bookingDetail.Price = vaccine.Price;
+                    // Lấy VaccineInventoryId phù hợp với VaccineId
+                    var vaccineInventory = await _unitOfWork.VaccineInventories
+                        .GetAsync(vi => vi.VaccineId == vaccine.VaccineId);
+
+                    if (vaccineInventory == null)
+                    {
+                        throw new ArgumentException($"No inventory found for VaccineId {vaccine.VaccineId}");
+                    }
+
+                    bookingDetail.VaccineInventoryId = vaccineInventory.VaccineInventoryId;
                 }
                 else
                 {
+                    booking.BookingType = BookingType.comboVacinne;
                     var comboVaccine = await _unitOfWork.ComboVaccines.GetAsync(cv => cv.ComboId == detailDto.ComboVaccineId);
                     bookingDetail.Price = comboVaccine.TotalPrice;
                 }
@@ -107,7 +141,6 @@ namespace ChildVaccineSystem.Service.Services
             return await GetByIdAsync(booking.BookingId);
         }
 
-
         private async Task<PricingPolicy> GetPricingPolicyForBookingAsync(DateTime bookingDate)
         {
             // Calculate the difference in days between the current date and the booking date
@@ -126,9 +159,33 @@ namespace ChildVaccineSystem.Service.Services
 
         public async Task<List<BookingDTO>> GetUserBookingsAsync(string userId)
         {
-            var bookings = await _unitOfWork.Bookings.GetAllAsync(b => b.UserId == userId, includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User");
-            return _mapper.Map<List<BookingDTO>>(bookings);
+            var bookings = await _unitOfWork.Bookings.GetAllAsync(
+                b => b.UserId == userId,
+                includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User"
+            );
+
+            var result = _mapper.Map<List<BookingDTO>>(bookings);
+
+            foreach (var booking in result)
+            {
+                foreach (var detail in booking.BookingDetails)
+                {
+                    if (detail.VaccineId.HasValue)
+                    {
+                        var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detail.VaccineId.Value);
+                        detail.VaccineName = vaccine?.Name;
+                    }
+                    else if (detail.ComboVaccineId.HasValue)
+                    {
+                        var comboVaccine = await _unitOfWork.ComboVaccines.GetAsync(cv => cv.ComboId == detail.ComboVaccineId.Value);
+                        detail.ComboVaccineName = comboVaccine?.ComboName;
+                    }
+                }
+            }
+
+            return result;
         }
+
 
         private async Task ValidateBooking(string userId, CreateBookingDTO bookingDto)
         {
@@ -203,20 +260,10 @@ namespace ChildVaccineSystem.Service.Services
         {
             var booking = await _unitOfWork.Bookings.GetBookingWithDetailsAsync(bookingId);
             if (booking == null)
-            {
                 throw new ArgumentException("Booking not found.");
-            }
 
-            if (booking.BookingDetails == null || !booking.BookingDetails.Any())
-            {
-                throw new Exception("Booking does not contain any details.");
-            }
-
-            var doctor = await _unitOfWork.Users.GetAsync(u => u.Id == userId);
-            if (doctor == null)
-            {
-                throw new ArgumentException("Doctor not found.");
-            }
+            if (booking.Status != BookingStatus.Confirmed)
+                throw new ArgumentException("Only confirmed bookings can be assigned to a doctor.");
 
             var doctorSchedule = new DoctorWorkSchedule
             {
@@ -243,11 +290,12 @@ namespace ChildVaccineSystem.Service.Services
                 }
             }
 
-            booking.Status = BookingStatus.Completed;
+            booking.Status = BookingStatus.InProgress;
             await _unitOfWork.CompleteAsync();
 
             return true;
         }
+
 
         public async Task<List<BookingDTO>> GetDoctorBookingsAsync(string userId)
         {
@@ -261,38 +309,46 @@ namespace ChildVaccineSystem.Service.Services
 
             return _mapper.Map<List<BookingDTO>>(bookings);
         }
+        //public async Task<BookingDTO> CompleteBookingAsync(int bookingId, string userId)
+        //{
+        //    var booking = await _unitOfWork.Bookings.GetAsync(b => b.BookingId == bookingId);
+
+        //    if (booking == null)
+        //        throw new ArgumentException("Booking not found.");
+
+        //    if (booking.Status != BookingStatus.InProgress)
+        //        throw new ArgumentException("Only in-progress bookings can be marked as completed.");
+
+        //    // ✅ Kiểm tra userId thay cho doctorId
+        //    var doctorSchedule = await _unitOfWork.DoctorWorkSchedules.GetAsync(
+        //        ds => ds.BookingId == bookingId && ds.UserId == userId);
+
+        //    if (doctorSchedule == null)
+        //        throw new ArgumentException("You are not assigned to this booking.");
+
+        //    // ✅ Chuyển trạng thái sang Completed
+        //    booking.Status = BookingStatus.Completed;
+
+        //    await _unitOfWork.CompleteAsync();
+
+        //    return _mapper.Map<BookingDTO>(booking);
+        //}
+
+        public async Task<List<BookingDTO>> GetUnassignedBookingsAsync()
+        {
+            var unassignedBookings = await _unitOfWork.Bookings
+                .GetAllAsync(b => b.Status == BookingStatus.Confirmed,
+                             includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User");
+
+            return _mapper.Map<List<BookingDTO>>(unassignedBookings);
+        }
+
         public async Task<List<BookingDTO>> GetAllBookingsAsync()
         {
             var bookings = await _unitOfWork.Bookings.GetAllAsync(
                 includeProperties: "BookingDetails.Vaccine,BookingDetails.ComboVaccine,Children,User");
 
             return _mapper.Map<List<BookingDTO>>(bookings);
-        }
-        public async Task<BookingDTO> CompleteBookingAsync(int bookingId, string doctorId)
-        {
-            var booking = await _unitOfWork.Bookings.GetAsync(b => b.BookingId == bookingId, includeProperties: "BookingDetails,User");
-
-            if (booking == null)
-            {
-                throw new ArgumentException("Booking not found.");
-            }
-
-            var doctorSchedule = await _unitOfWork.DoctorWorkSchedules.GetAsync(ds => ds.BookingId == bookingId && ds.UserId == doctorId);
-            if (doctorSchedule == null)
-            {
-                throw new ArgumentException("You are not assigned to this booking.");
-            }
-
-            booking.Status = BookingStatus.Completed;
-
-            await _unitOfWork.CompleteAsync();
-
-            return _mapper.Map<BookingDTO>(booking);
-        }
-        public async Task<List<BookingDTO>> GetUnassignedBookingsAsync()
-        {
-            var unassignedBookings = await _unitOfWork.Bookings.GetUnassignedBookingsAsync();
-            return _mapper.Map<List<BookingDTO>>(unassignedBookings);
         }
     }
 }

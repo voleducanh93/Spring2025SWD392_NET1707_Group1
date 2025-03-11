@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Button, Form, Modal, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
@@ -6,7 +6,7 @@ import { useRegister, useLogin, useForgotPassword } from "../../hooks/useAuth";
 import { useLocationData } from "./useLocationData";
 import SignInForm from "../../components/Auth/SignInForm";
 import SignUpForm from "../../components/Auth/SignUpForm";
-import { AppContext } from "../../contexts/app.context";
+
 
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
@@ -91,7 +91,7 @@ function AuthPage() {
     
     forgotPasswordMutate({email: email}); 
     form.resetFields();
-    //setIsResetPasswordModalVisible(true);
+    
   };
 
   return (
@@ -104,11 +104,11 @@ function AuthPage() {
             </div>
           ) : (
             <>
-              {/* Add key prop to force re-render when switching between forms */}
+             
               {!isSignUpMode && <SignInForm key="signInForm" onFinish={handleOnFinish} handleSubmitForgot={handleSubmitForgot} />}
               {isSignUpMode && (
                 <SignUpForm
-                  key="signUpForm"  // Force re-render when switching forms
+                  key="signUpForm" 
                   form={form}
                   onFinish={handleOnFinish}
                   provinceList={provinceList}

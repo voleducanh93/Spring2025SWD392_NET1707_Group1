@@ -1,5 +1,6 @@
 ﻿using ChildVaccineSystem.Repository.Repositories;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,13 @@ using System.Threading.Tasks;
 
 namespace ChildVaccineSystem.Repository
 {
-    public static class DependencyInjcection
+	public static class DependencyInjcection
     {
-        public static IServiceCollection AddRepository(this IServiceCollection services)
+        public static IServiceCollection AddRepository(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IVaccineRepository, VaccineRepository>();
+			services.ConfigureDatabase(configuration);
+
+			services.AddTransient<IVaccineRepository, VaccineRepository>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IEmailRepository, EmailRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
@@ -35,9 +38,10 @@ namespace ChildVaccineSystem.Repository
 			services.AddTransient<IWalletRepository, WalletRepository>();
 			services.AddTransient<IRefundRequestRepository, RefundRequestRepository>();
 			services.AddTransient<IWalletDepositRepository, WalletDepositRepository>();
+            services.AddTransient<IVaccineRecordRepository, VaccineRecordRepository>();
 
-			//DI Unit Of Work
-			services.AddTransient<IUnitOfWork, UnitOfWork>();
+            //DI Unit Of Work
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             return services;
 
 

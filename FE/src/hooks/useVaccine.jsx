@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getVaccines, createVaccine, updateVaccine, deleteVaccine } from "../api/vaccine.api";
 
-// Export hook với tên useVaccine
+
 export const useVaccine = () => {
   const queryClient = useQueryClient();
 
-  // Fetch danh sách vaccine
+  
   const { data: vaccines, isLoading, isError, error } = useQuery({
     queryKey: ["vaccines"],
     queryFn: getVaccines,
@@ -15,7 +15,7 @@ export const useVaccine = () => {
     },
   });
 
-  // Thêm vaccine
+ 
   const addVaccine = useMutation({
     mutationFn: createVaccine,
     onSuccess: () => {
@@ -26,7 +26,7 @@ export const useVaccine = () => {
     },
   });
 
-  // Cập nhật vaccine
+ 
   const editVaccine = useMutation({
     mutationFn: ({ id, data }) => updateVaccine(id, data),
     onSuccess: () => {
@@ -37,7 +37,7 @@ export const useVaccine = () => {
     },
   });
 
-  // Xóa vaccine
+  
   const removeVaccine = useMutation({
     mutationFn: deleteVaccine,
     onSuccess: () => {

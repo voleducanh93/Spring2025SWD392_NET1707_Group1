@@ -24,6 +24,7 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task<string> SoftDeleteVaccineInventoryAsync(int vaccineInventoryId);
         Task<IEnumerable<VaccineInventoryDTO>> GetVaccineInventoryByVaccineInventoryIdAsync(int vaccineInventoryId);
         Task<IEnumerable<VaccineInventoryDTO>> GetExportVaccinesAsync();
+        Task<int> GetAvailableInventoryForVaccineAsync(int vaccineId);
 
     }
 }

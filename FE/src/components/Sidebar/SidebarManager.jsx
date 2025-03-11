@@ -6,45 +6,42 @@ import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  Layout,
-  Menu,
-  Space,
-  theme,
-} from "antd";
+import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
 
 import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
 import StaffManagement from "../../pages/ManagerPage/StaffManagement";
 import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
-
+import ComboManagement from "../../pages/ManagerPage/Combo/ComboManagement";
 
 const { Header, Sider, Content } = Layout;
+
 const SidebarManager = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const [selectedTab, setSelectedTab] = useState("1");
+
   const handleMenuClick = (e) => {
     setSelectedTab(e.key); // Cập nhật tab khi chọn
   };
 
-   // Nội dung tương ứng với mỗi tab
-   const renderContent = () => {
+  // Nội dung tương ứng với mỗi tab
+  const renderContent = () => {
     switch (selectedTab) {
       case "1":
-        return <StaffManagement/>
+        return <StaffManagement />;
       case "2":
         return <DoctorManagement />;
       case "3":
         return <InventoryManagement />;
       case "4":
-        return <VaccineManagement />; // Giả sử tab này cũng hiển thị VaccineManagement
+        return <VaccineManagement />;
+      case "5":
+        return <ComboManagement />;
       default:
         return <VaccineManagement />;
     }
@@ -62,33 +59,29 @@ const SidebarManager = () => {
     {
       key: "2",
       label: "Profile",
-      extra: "⌘P",
     },
     {
       key: "3",
       label: "Billing",
-      extra: "⌘B",
     },
     {
       key: "4",
       label: "Settings",
       icon: <SettingOutlined />,
-      extra: "⌘S",
     },
   ];
+
   return (
     <Layout className="h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div
-          className="demo-logo-vertical"
-          style={{ textAlign: "center", marginTop: "20px" }}
-        >
+        <div className="demo-logo-vertical" style={{ textAlign: "center", marginTop: "20px" }}>
           <img
             src="src/assets/logo-vnvc-tet-nguyen-dan.png"
             alt="VNVC Logo"
             className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
           />
         </div>
+
         <Menu
           theme="dark"
           mode="inline"
@@ -116,19 +109,24 @@ const SidebarManager = () => {
               key: "4",
               icon: <UploadOutlined />,
               label: "Quản lý vaccine",
-
+            },
+            {
+              key: "5",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý Combo Vaccine",
             },
           ]}
         />
       </Sider>
+
       <Layout>
         <Header
           style={{
             padding: 0,
             background: colorBgContainer,
             display: "flex",
-            justifyContent: "space-between", // Căn giữa các phần tử với không gian
-            alignItems: "center", // Căn chỉnh các phần tử theo chiều dọc
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           {/* Nút Collapse */}
@@ -144,25 +142,18 @@ const SidebarManager = () => {
               }}
             />
           </div>
+
           <div style={{ marginRight: "1rem" }}>
-            <Dropdown
-              menu={{
-                items,
-              }}
-            >
+            <Dropdown menu={{ items }}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: "#87d068",
-                    }}
-                    icon={<UserOutlined />}
-                  />
+                  <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />
                 </Space>
               </a>
             </Dropdown>
           </div>
         </Header>
+
         <Content
           style={{
             margin: "24px 16px",
@@ -178,4 +169,5 @@ const SidebarManager = () => {
     </Layout>
   );
 };
+
 export default SidebarManager;

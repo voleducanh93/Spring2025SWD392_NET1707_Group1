@@ -149,8 +149,13 @@ namespace ChildVaccineSystem.Data.Models
 				.HasForeignKey(vr => vr.BookingDetailId)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			//Vaccine
-			modelBuilder.Entity<Vaccine>()
+            modelBuilder.Entity<BookingDetail>()
+               .HasOne(bd => bd.VaccineInventory)
+               .WithMany()
+               .HasForeignKey(bd => bd.VaccineInventoryId)
+               .OnDelete(DeleteBehavior.Restrict);
+            //Vaccine
+            modelBuilder.Entity<Vaccine>()
 				.HasMany<ComboDetail>()
 				.WithOne(cd => cd.Vaccine)
 				.HasForeignKey(cd => cd.VaccineId)
@@ -194,8 +199,14 @@ namespace ChildVaccineSystem.Data.Models
 			   .HasForeignKey(vr => vr.VaccineInventoryId)
 			   .OnDelete(DeleteBehavior.Restrict);
 
-			// Vaccine Inventory constraints
-			modelBuilder.Entity<VaccineInventory>()
+            modelBuilder.Entity<VaccinationRecord>()
+              .HasOne(vr => vr.Child)
+              .WithMany(c => c.VaccinationRecords)
+              .HasForeignKey(vr => vr.ChildId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            // Vaccine Inventory constraints
+            modelBuilder.Entity<VaccineInventory>()
 				.HasIndex(vi => vi.BatchNumber)
 				.IsUnique();
 
@@ -219,8 +230,15 @@ namespace ChildVaccineSystem.Data.Models
 				.HasForeignKey(cd => cd.VaccineId)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			//Children
-			modelBuilder.Entity<Children>()
+            // ComboDetail - VaccineInventory relationship
+            modelBuilder.Entity<ComboDetail>()
+                .HasOne(cd => cd.VaccineInventory)
+                .WithMany()
+                .HasForeignKey(cd => cd.VaccineInventoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Children
+            modelBuilder.Entity<Children>()
 				.HasOne(c => c.User)
 				.WithMany(u => u.Children)
 				.HasForeignKey(c => c.UserId)

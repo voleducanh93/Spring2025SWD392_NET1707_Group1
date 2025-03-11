@@ -1,7 +1,9 @@
 ﻿using ChildVaccineSystem.Common.Helper;
+using ChildVaccineSystem.Repository;
 using ChildVaccineSystem.Service.Services;
 using ChildVaccineSystem.ServiceContract.Interfaces;
 using ChildVaccineSystem.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,11 @@ namespace ChildVaccineSystem.Service
 {
     public static class DependencyInjcection
     {
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IVaccineService, VaccineService>();
+			services.AddRepository(configuration);
+
+			services.AddTransient<IVaccineService, VaccineService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<APIResponse>();
             services.AddTransient<IAuthService, AuthService>();
@@ -33,8 +37,9 @@ namespace ChildVaccineSystem.Service
 			services.AddTransient<IRefundService, RefundService>();
 			services.AddTransient<IPaymentService, PaymentService>();
 			services.AddTransient<IWalletDepositService, WalletDepositService>();
+            services.AddTransient<IVaccineRecordService, VaccineRecordService>();
 
-			return services;
+            return services;
         }
     }
 }

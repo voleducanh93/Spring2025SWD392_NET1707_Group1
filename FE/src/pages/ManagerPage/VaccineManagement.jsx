@@ -4,6 +4,7 @@ import { useVaccine } from '../../hooks/useVaccine'; // Sử dụng hook lấy d
 import { UploadOutlined } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../../config/firebase';
+import VaccineDetailModal from '../../components/VaccineShow/VaccineDetailModal';
 
 const VaccineManagement = () => {
   const { vaccines, isLoading, addVaccine, editVaccine, removeVaccine } = useVaccine();
@@ -66,32 +67,32 @@ const VaccineManagement = () => {
   const handleFileChange = ({ file }) => {
     setSelectedFile(file);
     console.log(selectedFile);
-     // Lưu file khi chọn
+    
   };
-  // Thêm hoặc cập nhật vaccine
+  
  const handleOk = async () => {
   try {
-    // Validate form fields
+   
     await form.validateFields();
     console.log(selectedFile);
 
-    // Ensure file is uploaded and get the URL
+    
     let url = '';
     if (selectedFile) {
-      url = await uploadFile(selectedFile);  // Wait for the file to upload and get the URL
+      url = await uploadFile(selectedFile);  
       console.log("Uploaded Image URL:", url);
     }
 
-    // Prepare the vaccine data
+   
     const vaccineData = {
       ...form.getFieldsValue(),
-      image: url,  // Store the uploaded image URL
+      image: url,  
       price: parseFloat(form.getFieldValue('price')),
-      status: true,  // Default status is active
-      isNecessary: true,  // Default to necessary for multiple injections
+      status: true,  
+      isNecessary: true,  
     };
 
-    // If editing existing vaccine, update it
+   
     if (editingVaccine) {
       const vaccineId = editingVaccine.vaccineId;
       editVaccine.mutate({ id: vaccineId, data: vaccineData }, {
@@ -138,52 +139,46 @@ const VaccineManagement = () => {
       key: 'action',
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => showModal(record)}>Sửa</Button>
-          <Button type="link" danger onClick={() => handleDelete(record.vaccineId)}>Xóa</Button>
+          <Button
+  onClick={() => showModal(record)}
+  className="border border-green-500 text-green-500 px-3 py-1 rounded hover:bg-green-500 hover:text-white transition flex items-center gap-1"
+>
+  📝 Chỉnh sửa
+</Button>
+
+<Button
+  onClick={() => handleDelete(record.vaccineId)}
+  className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition flex items-center gap-1"
+>
+  🗑️ Xóa
+</Button>
+
+
+
+        
         </Space>
       ),
     },
   ];
 
   return (
-    <div>
-      <Button type="primary" onClick={() => showModal()} className="!mb-3">
-        Thêm Vaccine
-      </Button>
-      <Table columns={columns} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
+    <div className="bg-white p-6 rounded-lg shadow-md">
+  {/* Tiêu đề & nút thêm */}
+  <div className="flex justify-between items-center mb-4">
+    <h1 className="text-2xl font-semibold">Quản Lý Vaccine</h1>
+    <Button 
+      type="primary"
+      onClick={() => showModal()}
+      className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+    >
+      ➕ Thêm Vaccine
+    </Button>
+  </div>
+      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
         onClick: () => showDetailModal(record),
       })} />
 
-      {/* Modal chi tiết vaccine */}
-      <Modal
-        title="Chi Tiết Vaccine"
-        visible={isDetailModalOpen}
-        onCancel={handleDetailCancel}
-        footer={[
-          <Button key="back" onClick={handleDetailCancel}>
-            Đóng
-          </Button>,
-        ]}
-      >
-        {selectedVaccine && (
-          <div>
-            <p><strong>Tên Vaccine:</strong> {selectedVaccine.name}</p>
-            <p><strong>Mô Tả:</strong> {selectedVaccine.description}</p>
-            <p><strong>Nhà Sản Xuất:</strong> {selectedVaccine.manufacturer}</p>
-            <p><strong>Tác Dụng Phụ:</strong> {selectedVaccine.sideEffect}</p>
-            <p><strong>Bệnh Phòng Tránh:</strong> {selectedVaccine.diseasePrevented}</p>
-            <p><strong>Giá:</strong> {selectedVaccine.price.toLocaleString()} VND</p>
-            <p><strong>Trạng Thái:</strong> {selectedVaccine.status ? 'Hoạt động' : 'Không hoạt động'}</p>
-            <p><strong>Cần Tiêm Nhiều Mũi:</strong> {selectedVaccine.isNecessary ? 'Có' : 'Không'}</p>
-            <p><strong>Vị Trí Tiêm:</strong> {selectedVaccine.injectionSite}</p>
-            <p><strong>Ghi Chú:</strong> {selectedVaccine.notes}</p>
-            <p><strong>Phản Ứng Không Mong Muốn:</strong> {selectedVaccine.undesirableEffects}</p>
-            <p><strong>Cách Bảo Quản:</strong> {selectedVaccine.preserve}</p>
-            <p><strong>Số Mũi Tiêm:</strong> {selectedVaccine.injectionsCount}</p>
-            <img src={`/path_to_images/${selectedVaccine.image}`} alt="Vaccine" style={{ width: '100px' }} />
-          </div>
-        )}
-      </Modal>
+     
 
       {/* Modal thêm/sửa vaccine */}
       <Modal
@@ -191,7 +186,8 @@ const VaccineManagement = () => {
       open={isModalOpen}
       onOk={handleOk}
       onCancel={() => setIsModalOpen(false)}
-      width={800} // Tăng độ rộng modal
+      height={1100}
+      width={1300} // Tăng độ rộng modal
     >
       <Form form={form} layout="vertical">
         <Row gutter={16}>
@@ -260,6 +256,8 @@ const VaccineManagement = () => {
         </Row>
       </Form>
     </Modal>
+    <VaccineDetailModal isOpen={isDetailModalOpen} handleClose={handleDetailCancel} selectedVaccine={selectedVaccine} />
+    
     </div>
   );
 };

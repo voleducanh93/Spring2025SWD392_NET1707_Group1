@@ -23,7 +23,6 @@ import MyBooking from "../pages/BookingPage/MyBooking";
 import ChuyengiaPage from "../pages/ChuyengiaPage/ChuyengiaPage";
 import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
-import UserProfile from "../pages/ProfilePage/UserProfile";
 import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 import Wallet from "../pages/WalletPage/Wallet";
 import Doctor from "../pages/DoctorPage/Doctor";
@@ -34,12 +33,12 @@ export const router = createBrowserRouter([
   {
     path: PATH_NAME.HOME,
     element: (
-      // <PrivateRoute>
+      
       <MainLayout />
-      // </PrivateRoute>
+      
     ),
     children: [
-      // index: true
+    
       { index: true, element: <HomePage /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/vaccineSchedule", element: <VaccineByAge /> },

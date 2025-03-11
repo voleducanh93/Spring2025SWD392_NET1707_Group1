@@ -35,7 +35,7 @@ if (!getUser) {
 
         
         if (error?.response?.data?.errorMessages?.length > 0) {
-            const errorMessage = error.response.data.errorMessages[0]; // Lấy thông báo lỗi đầu tiên
+            const errorMessage = error.response.data.errorMessages[0]; 
             toast.error(`⚠️ ${errorMessage}`);
         } else {
             toast.error("⚠️ Thêm trẻ thất bại! Vui lòng thử lại.");

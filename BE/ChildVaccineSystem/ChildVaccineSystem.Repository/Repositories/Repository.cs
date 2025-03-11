@@ -1,6 +1,7 @@
 ﻿using ChildVaccineSystem.Data.Models;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,5 +77,9 @@ namespace ChildVaccineSystem.Repository.Repositories
             return entity;
         }
 
-    }
+		public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+		{
+			return await dbSet.AnyAsync(predicate);
+		}
+	}
 }

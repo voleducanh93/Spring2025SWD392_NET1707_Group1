@@ -52,20 +52,11 @@ builder.Services.AddSwaggerGen(options =>
 	options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddDbContext<ChildVaccineSystemDBContext>(options =>
-   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // Add EmailSettings
 builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
 
-// Add Repositories and Services to DI Container
-builder.Services.AddRepository();
-builder.Services.AddServices();
-
-// Add Identity services
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<ChildVaccineSystemDBContext>()
-    .AddDefaultTokenProviders();
+// Add AddServices
+builder.Services.AddServices(builder.Configuration);
 
 // Add UserManager and SignInManager for dependency injection
 builder.Services.AddScoped<UserManager<User>>();

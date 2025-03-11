@@ -9,6 +9,6 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
 {
     public interface IChildrenRepository : IRepository<Children>
     {
-
+        Task<Children> GetByIdAsync(int id);
     }
 }

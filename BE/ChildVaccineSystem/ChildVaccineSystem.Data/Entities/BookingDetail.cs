@@ -24,6 +24,10 @@ namespace ChildVaccineSystem.Data.Entities
         public int? ComboVaccineId { get; set; }
         public ComboVaccine ComboVaccine { get; set; }
 
+        [ForeignKey("VaccineInventory")]
+        public int? VaccineInventoryId { get; set; }
+        public VaccineInventory VaccineInventory { get; set; }
+
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
