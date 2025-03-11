@@ -25,6 +25,7 @@ import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 import Wallet from "../pages/WalletPage/Wallet";
+import Doctor from "../pages/DoctorPage/Doctor";
 
 
 
@@ -95,4 +96,5 @@ export const router = createBrowserRouter([
     element: <StaffPage />,
   },
   { path: "/manager", element: <ManagerPage /> },
+  { path: "/doctor", element: <Doctor /> },
 ]);

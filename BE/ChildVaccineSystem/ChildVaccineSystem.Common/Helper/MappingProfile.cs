@@ -205,7 +205,8 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.Message, opt => opt.MapFrom(src => "Vaccine record processed successfully"));
 
             CreateMap<VaccinationRecord, VaccineRecordDetailDTO>()
-                .ForMember(dest => dest.VaccineName, opt => opt.MapFrom(src => src.Vaccine.Name))
+				.ForMember(dest => dest.VaccinationRecordId, opt => opt.MapFrom(src => src.VaccinationRecordId))
+				.ForMember(dest => dest.VaccineName, opt => opt.MapFrom(src => src.Vaccine.Name))
                 .ForMember(dest => dest.DoseAmount, opt => opt.MapFrom(src => src.Vaccine.DoseAmount))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Vaccine.Price))
                 .ForMember(dest => dest.NextDoseDate, opt => opt.MapFrom(src => src.NextDoseDate))
