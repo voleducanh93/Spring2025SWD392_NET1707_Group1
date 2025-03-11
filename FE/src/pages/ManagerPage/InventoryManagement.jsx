@@ -1,114 +1,145 @@
-import { useState } from "react";
-import { Table, Button, Modal, Form, Input, DatePicker, Space, Select, Popconfirm } from "antd";
-import { useInventory } from "../../hooks/useInventory";
+import { useEffect, useState } from "react";
+import { Table, Button, Space, Modal, Form, Input, DatePicker } from "antd";
 import { useVaccine } from "../../hooks/useVaccine";
-import dayjs from "dayjs"; // ✅ Sử dụng dayjs thay vì moment.js
-import customParseFormat from "dayjs/plugin/customParseFormat";
+import VaccineInventoryModal from "../../components/VaccineShow/VaccineInventoryModal";
+import { getInventoryByVaccineId, createInventory } from "../../api/VaccineInventory.api";
+import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
-dayjs.extend(customParseFormat);
-
 const InventoryManagement = () => {
-  const { inventory, isLoading, addInventory, editInventory, removeInventory } = useInventory();
-  console.log(inventory);
-  
-  const { vaccines } = useVaccine(); // Lấy danh sách vaccine để chọn khi tạo mới
+  const { vaccines, isLoading } = useVaccine();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingInventory, setEditingInventory] = useState(null);
+  const [selectedVaccine, setSelectedVaccine] = useState(null);
+  const [vaccineStock, setVaccineStock] = useState({});
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedVaccineForAdd, setSelectedVaccineForAdd] = useState(null);
   const [form] = Form.useForm();
 
-  // ✅ Mở modal thêm/sửa Vaccine Inventory
-  const showModal = (record = null) => {
-    setEditingInventory(record);
-    form.setFieldsValue(
-      record
-        ? {
-            ...record,
-            manufacturingDate: dayjs(record.manufacturingDate),
-            expiryDate: dayjs(record.expiryDate),
+  // 🏷️ Lấy dữ liệu tồn kho cho từng vaccine
+  useEffect(() => {
+    if (!vaccines) return;
+
+    const fetchStockData = async () => {
+      const stockData = await Promise.all(
+        vaccines.map(async (vaccine) => {
+          try {
+            const inventoryData = await getInventoryByVaccineId(vaccine.vaccineId);
+            const totalStock = inventoryData?.reduce((sum, item) => sum + item.quantityInStock, 0) || 0;
+            return { vaccineId: vaccine.vaccineId, totalStock };
+          } catch (error) {
+            console.error(`Lỗi lấy dữ liệu tồn kho vaccine ID ${vaccine.vaccineId}:`, error);
+            return { vaccineId: vaccine.vaccineId, totalStock: 0 };
           }
-        : {
-            vaccineId: null,
-            batchNumber: "",
-            manufacturingDate: null,
-            expiryDate: null,
-            initialQuantity: 0,
-            supplier: "",
-          }
-    );
+        })
+      );
+
+      const stockMap = stockData.reduce((acc, item) => {
+        acc[item.vaccineId] = item.totalStock;
+        return acc;
+      }, {});
+
+      setVaccineStock(stockMap);
+    };
+
+    fetchStockData();
+  }, [vaccines]);
+
+  // 📝 Xem chi tiết lô vaccine
+  const showDetailModal = (vaccine) => {
+    setSelectedVaccine(vaccine);
     setIsModalOpen(true);
   };
 
-  // ✅ Xóa vaccine inventory
-  const handleDelete = (id) => {
-   
-        removeInventory.mutate(id);
-      
+  const handleDetailCancel = () => {
+    setIsModalOpen(false);
+    setSelectedVaccine(null);
   };
 
-  // ✅ Xử lý khi nhấn OK trong modal
-  const handleOk = async () => {
+  // ➕ Mở modal thêm lô vaccine
+  const showAddModal = (vaccine) => {
+    setSelectedVaccineForAdd(vaccine);
+    form.setFieldsValue({
+      vaccineId: vaccine.vaccineId,
+      batchNumber: "",
+      manufacturingDate: null,
+      expiryDate: null,
+      initialQuantity: 0,
+      supplier: "",
+    });
+    setIsAddModalOpen(true);
+  };
+
+  // 🏷️ Đóng modal thêm
+  const handleAddCancel = () => {
+    setIsAddModalOpen(false);
+    form.resetFields();
+  };
+
+  // ✅ Thêm vaccine mới
+  const handleAddOk = async () => {
     try {
       await form.validateFields();
-      const formData = {
-        ...form.getFieldsValue(),
-        manufacturingDate: dayjs(form.getFieldValue("manufacturingDate")).toISOString(),
-        expiryDate: dayjs(form.getFieldValue("expiryDate")).toISOString(),
-      };
+      const values = form.getFieldsValue();
 
-      if (editingInventory) {
-        editInventory.mutate(
-          { id: editingInventory.vaccineInventoryId, data: formData }
-        );
-      } else {
-        addInventory.mutate(formData);
+      const manufacturingDate = dayjs(values.manufacturingDate);
+      const expiryDate = dayjs(values.expiryDate);
+      const today = dayjs();
+
+      // 🛑 Kiểm tra ngày hợp lệ
+      if (manufacturingDate.isBefore(today, "day")) {
+        return toast.error("⚠️ Ngày sản xuất không thể trong quá khứ!");
+      }
+      if (expiryDate.isBefore(manufacturingDate, "day")) {
+        return toast.error("⚠️ Ngày hết hạn phải sau ngày sản xuất!");
       }
 
-      setIsModalOpen(false);
+      const newInventoryData = {
+        vaccineId: selectedVaccineForAdd.vaccineId,
+        batchNumber: values.batchNumber,
+        manufacturingDate: manufacturingDate.toISOString(),
+        expiryDate: expiryDate.toISOString(),
+        initialQuantity: values.initialQuantity,
+        supplier: values.supplier,
+      };
+
+      await createInventory(newInventoryData);
+      toast.success("✅ Thêm lô vaccine thành công!");
+
+      // 🔄 Cập nhật số lượng tồn kho ngay
+      setVaccineStock((prev) => ({
+        ...prev,
+        [selectedVaccineForAdd.vaccineId]:
+          (prev[selectedVaccineForAdd.vaccineId] || 0) + newInventoryData.initialQuantity,
+      }));
+
+      setIsAddModalOpen(false);
       form.resetFields();
     } catch (error) {
-      console.error("Lỗi khi tạo/cập nhật lô vaccine:", error);
-      toast.error("⚠️ Đã xảy ra lỗi. Vui lòng kiểm tra lại!");
+      console.error("Lỗi khi thêm lô vaccine:", error);
+      toast.error("⚠️ Không thể thêm lô vaccine. Vui lòng kiểm tra lại!");
     }
   };
 
-  // ✅ Cấu hình cột cho bảng
+  // 📌 Cấu hình cột danh sách vaccine
   const columns = [
     { title: "Tên Vaccine", dataIndex: "name", key: "name" },
-    { title: "Lô Vaccine", dataIndex: "batchNumber", key: "batchNumber" },
     { title: "Nhà Sản Xuất", dataIndex: "manufacturer", key: "manufacturer" },
     {
-      title: "Ngày Sản Xuất",
-      dataIndex: "manufacturingDate",
-      key: "manufacturingDate",
-      render: (text) => dayjs(text).format("YYYY-MM-DD"),
+      title: "Còn hàng",
+      key: "stock",
+      render: (_, record) => (vaccineStock[record.vaccineId] > 0 ? `${vaccineStock[record.vaccineId]} liều` : "Hết hàng"),
     },
     {
-      title: "Hạn Sử Dụng",
-      dataIndex: "expiryDate",
-      key: "expiryDate",
-      render: (text) => dayjs(text).format("YYYY-MM-DD"),
-    },
-    { title: "Nhà Cung Cấp", dataIndex: "supplier", key: "supplier" },
-    { title: "Số Lượng Ban Đầu", dataIndex: "initialQuantity", key: "initialQuantity" },
-    {
-      title: "Hành Động",
+      title: "Thao tác",
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => showModal(record)}>
-            Sửa
+          <Button type="primary" onClick={() => showDetailModal(record)}>
+            Chi tiết
           </Button>
-          <Popconfirm
-      title="Bạn có chắc chắn muốn xóa lô vaccine này?"
-      onConfirm={() => handleDelete(record.vaccineInventoryId)} // Thay 1 bằng ID thực tế
-      okText="Có"
-      cancelText="Không"
-    >
-      <Button type="link" danger >
-        Xóa 
-      </Button>
-    </Popconfirm>
+          <Button type="default" onClick={() => showAddModal(record)}>
+            Thêm lô vaccine
+          </Button>
         </Space>
       ),
     },
@@ -117,30 +148,21 @@ const InventoryManagement = () => {
   return (
     <div className="p-5">
       <h2 className="text-2xl font-bold mb-4">Quản lý tồn kho Vaccine</h2>
-      <Button type="primary" onClick={() => showModal()} className="mb-3">
-        Thêm Lô Vaccine
-      </Button>
-      <Table columns={columns} dataSource={inventory} loading={isLoading} rowKey="vaccineInventoryId" />
+      <Table columns={columns} dataSource={vaccines} loading={isLoading} rowKey="vaccineId" />
 
-      {/* ✅ Modal thêm/sửa Vaccine Inventory */}
-      <Modal title={editingInventory ? "Cập nhật lô vaccine" : "Thêm lô vaccine"} open={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
+      {/* ✅ Modal Chi Tiết Kho Vaccine */}
+      <VaccineInventoryModal isOpen={isModalOpen} handleClose={handleDetailCancel} selectedVaccine={selectedVaccine} />
+
+      {/* ✅ Modal Thêm Lô Vaccine */}
+      <Modal title="Thêm Lô Vaccine" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
         <Form form={form} layout="vertical">
-          <Form.Item name="vaccineId" label="Chọn Vaccine" rules={[{ required: true, message: "Vui lòng chọn vaccine!" }]}>
-            <Select placeholder="Chọn vaccine">
-              {vaccines?.map((vaccine) => (
-                <Select.Option key={vaccine.vaccineId} value={vaccine.vaccineId}>
-                  {vaccine.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item name="batchNumber" label="Lô Vaccine" rules={[{ required: true, message: "Vui lòng nhập lô vaccine!" }]}>
+          <Form.Item name="batchNumber" label="Số Hiệu Lô" rules={[{ required: true, message: "Vui lòng nhập số hiệu lô!" }]}>
             <Input />
           </Form.Item>
           <Form.Item name="manufacturingDate" label="Ngày Sản Xuất" rules={[{ required: true, message: "Vui lòng chọn ngày sản xuất!" }]}>
             <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="expiryDate" label="Hạn Sử Dụng" rules={[{ required: true, message: "Vui lòng chọn hạn sử dụng!" }]}>
+          <Form.Item name="expiryDate" label="Ngày Hết Hạn" rules={[{ required: true, message: "Vui lòng chọn ngày hết hạn!" }]}>
             <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item name="initialQuantity" label="Số Lượng Ban Đầu" rules={[{ required: true, message: "Vui lòng nhập số lượng!" }]}>

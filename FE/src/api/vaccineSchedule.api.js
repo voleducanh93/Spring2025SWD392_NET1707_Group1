@@ -22,6 +22,10 @@ export const updateVaccine = async (id, data) => {
   return response.data;
 };
 
+export const VaccineById = async (id) => {
+  const response = await http.get(`${BASE_URL}/${id}`);
+  return response.data.result;
+};
 
 export const deleteVaccine = async (id) => {
   const response = await http.delete(`${BASE_URL}/${id}`);

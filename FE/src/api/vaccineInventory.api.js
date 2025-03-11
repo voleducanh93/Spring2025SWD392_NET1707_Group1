@@ -7,7 +7,10 @@ export const getInventory = async () => {
   return response.data.result;
 };
 
-
+export const getInventoryByVaccineId = async (id) => {
+  const response = await http.get(`${BASE_URL}/stockByVaccineId/${id}`);
+  return response.data.result;
+};
 
 export const createInventory = async (inventoryData) => {
   const response = await http.post(`${BASE_URL}/add`, inventoryData);

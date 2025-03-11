@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getVaccines, createVaccine, updateVaccine, deleteVaccine } from "../api/vaccineSchedule.api";
+import { getVaccines, createVaccine, updateVaccine, deleteVaccine, VaccineById } from "../api/vaccineSchedule.api";
 import { toast } from 'react-toastify'; // Import toast
+
 
 export const useVaccineSchedule = () => {
   const queryClient = useQueryClient();
@@ -10,6 +11,8 @@ export const useVaccineSchedule = () => {
     queryFn: getVaccines,
     refetchOnWindowFocus: false,
   });
+
+  
 
   const addVaccine = useMutation({
     mutationFn: createVaccine,
@@ -49,4 +52,13 @@ export const useVaccineSchedule = () => {
   
 
   return { vaccines, isLoading, isError, error, addVaccine, editVaccine, removeVaccine };
+};
+
+export const useVaccineScheduleById = (id) => {
+  return useQuery({
+    queryKey: ["vaccineScheduleID", id],
+    queryFn: () => VaccineById(id),
+    enabled: !!id, 
+    refetchOnWindowFocus: false,
+  });
 };

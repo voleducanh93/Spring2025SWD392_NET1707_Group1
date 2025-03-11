@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createInventory, deleteInventory, getInventory, updateInventory } from "../api/VaccineInventory.api";
+import { createInventory, deleteInventory, getInventory, getInventoryByVaccineId, updateInventory } from "../api/VaccineInventory.api";
 import { toast } from "react-toastify";
 
 export const useInventory = () => {
@@ -53,4 +53,13 @@ export const useInventory = () => {
     editInventory,
     removeInventory,
   };
+};
+
+export const useVaccineinvetoryById = (id) => {
+  return useQuery({
+    queryKey: ["vaccineinvetoryID", id],
+    queryFn: () => getInventoryByVaccineId(id),
+    enabled: !!id, 
+    refetchOnWindowFocus: false,
+  });
 };
