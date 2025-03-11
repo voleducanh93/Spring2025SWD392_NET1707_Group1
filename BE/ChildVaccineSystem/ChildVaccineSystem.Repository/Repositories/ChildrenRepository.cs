@@ -18,6 +18,9 @@ namespace ChildVaccineSystem.Repository.Repositories
         {
             _context = context;
         }
-
+        public async Task<Children> GetByIdAsync(int id)
+        {
+            return await _context.Children.FirstOrDefaultAsync(c => c.ChildId == id);
+        }
     }
 }
