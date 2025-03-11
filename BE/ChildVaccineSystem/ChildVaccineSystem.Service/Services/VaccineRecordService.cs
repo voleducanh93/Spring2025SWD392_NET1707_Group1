@@ -113,9 +113,11 @@ namespace ChildVaccineSystem.Service.Services
 							};
 
 							await _vaccineRecordRepository.AddAsync(vaccinationRecord);
+							await _unitOfWork.CompleteAsync();
 
 							vaccineRecords.Add(new VaccineRecordDetailDTO
 							{
+								VaccinationRecordId = vaccinationRecord.VaccinationRecordId,
 								VaccineName = vaccine.Name,
 								DoseAmount = vaccine.DoseAmount,
 								Price = 0, // Giá vaccine mặc định 0 nếu không lấy từ hệ thống
