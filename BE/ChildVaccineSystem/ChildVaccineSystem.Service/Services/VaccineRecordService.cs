@@ -255,6 +255,7 @@ namespace ChildVaccineSystem.Service.Services
 		{
 			new VaccineRecordDetailDTO
 			{
+				VaccinationRecordId = record.VaccinationRecordId,
 				VaccineName = record.Vaccine.Name,
 				DoseAmount = record.DoseAmount,
 				BatchNumber = record.BatchNumber,
