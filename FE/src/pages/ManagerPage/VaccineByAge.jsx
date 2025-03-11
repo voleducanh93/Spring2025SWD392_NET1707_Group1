@@ -170,16 +170,26 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
       const vaccine = availableVaccines.find((v) => v.vaccineId === vaccineId);
       const injectionsCount = vaccine?.injectionsCount || 0;
   
+      const ageRangeStart = form.getFieldValue("ageRangeStart"); 
+      const ageRangeEnd = form.getFieldValue("ageRangeEnd"); 
+  
       const newSchedules = [];
   
       for (let i = 0; i < injectionsCount; i++) {
-        let injectionMonth = values[`dose${i + 1}Month`];
+        let injectionMonth = Number(values[`dose${i + 1}Month`]); 
   
-        // Kiểm tra xem tháng tiêm có hợp lệ hay không cho vaccine BCG
-        if (vaccine.name === 'BCG' && (injectionMonth < 1 || injectionMonth > 6)) {
-          // Sử dụng toast để thông báo lỗi
-          toast.error("Tháng tiêm cho vaccine BCG phải nằm trong khoảng 1 đến 6 tháng!");
-          return; // Dừng lại nếu tháng tiêm không hợp lệ
+       
+        if (injectionMonth < ageRangeStart || injectionMonth > ageRangeEnd) {
+          toast.error(
+            `Tháng tiêm phải nằm trong khoảng ${ageRangeStart} đến ${ageRangeEnd} tháng!`
+          );
+          return; 
+        }
+  
+        
+        if (i > 0 && injectionMonth <= newSchedules[i - 1].injectionMonth) {
+          toast.error(`Mũi ${i + 1} phải có tháng lớn hơn mũi ${i}!`);
+          return;
         }
   
         newSchedules.push({
@@ -190,20 +200,19 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
         });
       }
   
-      // Cập nhật lại dữ liệu injection schedules
+      
       setInjectionSchedules((prevState) => ({
         ...prevState,
         [vaccineId]: newSchedules,
       }));
   
       setIsInjectionAdded(true);
-      setIsInjectionModalOpen(false);
-      injectionForm.resetFields();
-  
-      // Thông báo thành công
+      setIsInjectionModalOpen(false); 
+      injectionForm.resetFields(); 
       toast.success("Injection schedule has been successfully added!");
     });
   };
+  
   
   const showModalDetail = (record) => {
     setSelectedSchedule(record); 
