@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getVaccines, createVaccine, updateVaccine, deleteVaccine, getVaccinesAndCombo } from "../api/vaccineSchedule.api";
+import { getVaccines, createVaccine, updateVaccine, deleteVaccine } from "../api/vaccineSchedule.api";
 import { toast } from 'react-toastify'; // Import toast
 
 export const useVaccineSchedule = () => {
@@ -27,11 +27,11 @@ export const useVaccineSchedule = () => {
     mutationFn: ({ id, data }) => updateVaccine(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vaccineSchedule"] });
-      toast.success("Vaccine đã được cập nhật thành công!"); // Thông báo thành công
+      toast.success("Vaccine đã được cập nhật thành công!"); 
     },
     onError: (error) => {
       console.error("❌ Lỗi khi cập nhật vaccine:", error);
-      toast.error(`Cập nhật vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      toast.error(`Cập nhật vaccine thất bại: ${error.message || "Lỗi không xác định"}`); 
     },
   });
 
@@ -39,11 +39,11 @@ export const useVaccineSchedule = () => {
     mutationFn: deleteVaccine,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vaccineSchedule"] });
-      toast.success("Vaccine đã được xóa thành công!"); // Thông báo thành công
+      toast.success("Vaccine đã được xóa thành công!"); 
     },
     onError: (error) => {
       console.error("❌ Lỗi khi xóa vaccine:", error);
-      toast.error(`Xóa vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      toast.error(`Xóa vaccine thất bại: ${error.message || "Lỗi không xác định"}`);
     },
   });
   

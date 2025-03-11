@@ -112,7 +112,7 @@ export const useGetProfile = () => {
     queryFn: userApi.getUserProfile,
     enabled: isAuthenticated, 
     onError: (error) => {
-      // Kiểm tra nếu API trả về danh sách lỗi
+      
       const errorMessage = error.response?.data?.errorMessages?.length
         ? error.response.data.errorMessages.join(", ") 
         : "❌ Đăng ký thất bại! Vui lòng thử lại.";
@@ -124,7 +124,7 @@ export const useGetProfile = () => {
 
 export const useUpdateProfile = () => {
   return useMutation({
-    mutationFn: (data) => userApi.updateProfile(data), // Gọi đúng hàm updateProfile
+    mutationFn: (data) => userApi.updateProfile(data), 
     onSuccess: (response) => {
       toast.success(response.message || "✅ Hồ sơ cập nhật thành công!");
     },

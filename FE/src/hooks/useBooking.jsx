@@ -13,7 +13,7 @@ export const useBooking = () => {
     mutationFn: (data) => createBooking(getUser, data),
     
     onError: (error) => {
-      //console.error("❌ Lỗi khi đặt lịch:", error);
+      
       toast.error(error || "⚠️ Đặt lịch thất bại!");
     },
   });

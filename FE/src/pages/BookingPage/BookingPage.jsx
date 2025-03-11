@@ -39,11 +39,11 @@ const BookingPage = () => {
   const handleAddChild = (newChild) => {
     addChildren.mutateAsync(newChild);
   };
-  // Khi người dùng chọn trẻ
+  
   const handleSelectChild = async (value) => {
     setSelectedChild(value.childId);
     setSelectedVaccines([]);
-    //setIsComboSelected(false);
+    
 
     try {
       const result = await getVaccinesAndCombo(value.childId);
