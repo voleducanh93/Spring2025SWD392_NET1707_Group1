@@ -22,7 +22,7 @@ export const useVaccineSchedule = () => {
     },
     onError: (error) => {
       console.error("❌ Lỗi khi thêm vaccine:", error);
-      toast.error(`Thêm vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      toast.error(`Thêm vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`); // Thông báo lỗi
     },
   });
 
@@ -34,7 +34,7 @@ export const useVaccineSchedule = () => {
     },
     onError: (error) => {
       console.error("❌ Lỗi khi cập nhật vaccine:", error);
-      toast.error(`Cập nhật vaccine thất bại: ${error.message || "Lỗi không xác định"}`); 
+      toast.error(`Cập nhật vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`); 
     },
   });
 
@@ -46,7 +46,7 @@ export const useVaccineSchedule = () => {
     },
     onError: (error) => {
       console.error("❌ Lỗi khi xóa vaccine:", error);
-      toast.error(`Xóa vaccine thất bại: ${error.message || "Lỗi không xác định"}`);
+      toast.error(`Xóa vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`);
     },
   });
   

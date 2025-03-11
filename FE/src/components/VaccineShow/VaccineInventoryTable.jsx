@@ -45,7 +45,7 @@ const VaccineInventoryTable = ({ vaccineId }) => {
   return (
     <div>
       <h3 className="text-lg font-bold">Thông Tin Kho Vaccine - {inventory[0]?.name}</h3>
-      <Table columns={columns} dataSource={inventory} rowKey="vaccineInventoryId" pagination={false} />
+      <Table columns={columns}  dataSource={inventory} rowKey="vaccineInventoryId" pagination={false} />
     </div>
   );
 };

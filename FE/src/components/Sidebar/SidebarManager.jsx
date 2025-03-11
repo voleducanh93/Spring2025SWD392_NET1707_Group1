@@ -15,6 +15,7 @@ import StaffManagement from "../../pages/ManagerPage/StaffManagement";
 import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
 import ComboManagement from "../../pages/ManagerPage/Combo/ComboManagement";
+import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
 
 const { Header, Sider, Content } = Layout;
 
@@ -42,6 +43,8 @@ const SidebarManager = () => {
         return <VaccineManagement />;
       case "5":
         return <ComboManagement />;
+        case "6":
+        return <VaccineByAge />;
       default:
         return <VaccineManagement />;
     }
@@ -114,6 +117,11 @@ const SidebarManager = () => {
               key: "5",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý Combo Vaccine",
+            },
+            {
+              key: "6",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý lịch tiêm cho Vaccine",
             },
           ]}
         />

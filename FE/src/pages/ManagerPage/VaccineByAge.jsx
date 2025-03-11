@@ -3,6 +3,7 @@ import { Table, Button, Modal, Form, Input, Space, Select, notification } from "
 import { useVaccineSchedule } from "../../hooks/useVaccineSchedule";
 import { useVaccine } from "../../hooks/useVaccine";
 import { toast } from "react-toastify";
+import VaccinationScheduleTable from "../../components/VaccineShow/VaccinationScheduleTable";
 
 const VaccineByAge = () => {
   const {
@@ -25,6 +26,8 @@ const VaccineByAge = () => {
   const [currentVaccine, setCurrentVaccine] = useState(null);
   const [isInjectionAdded, setIsInjectionAdded] = useState(false);  // Track if injection has been added
   const [editingVaccine, setEditingVaccine] = useState(null); // Track for editing mode
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+const [selectedSchedule, setSelectedSchedule] = useState(null);
 
   useEffect(() => {
     if (selectedVaccines.length > 0) {
@@ -202,30 +205,23 @@ const VaccineByAge = () => {
     });
   };
   
+  const showModalDetail = (record) => {
+    setSelectedSchedule(record); 
+    setIsDetailModalOpen(true); 
+  };
   
 
   const columns = [
     { title: "Tuổi Bắt Đầu", dataIndex: "ageRangeStart", key: "ageRangeStart" },
     { title: "Tuổi Kết Thúc", dataIndex: "ageRangeEnd", key: "ageRangeEnd" },
     { title: "Ghi Chú", dataIndex: "notes", key: "notes" },
-    {
-      title: "Vắc-xin",
-      key: "vaccines",
-      render: (_, record) => (
-        <div>
-          {record.vaccineScheduleDetails?.map((vaccine) => (
-            <div key={`vaccine-${vaccine.vaccineId}`}>
-              <strong>{vaccine.vaccineName}</strong> - {vaccine.injectionSchedules.length} Mũi
-            </div>
-          ))}
-        </div>
-      ),
-    },
+    
     {
       title: "Hành Động",
       key: "action",
       render: (_, record) => (
         <Space>
+           <Button type="link" onClick={() => showModalDetail(record)}>Chi tiết</Button>
           <Button type="link" onClick={() => showModal(record)}>Sửa</Button>
           <Button type="link" danger onClick={() => handleDelete(record.scheduleId)}>Xóa</Button>
         </Space>
@@ -235,105 +231,192 @@ const VaccineByAge = () => {
 
   return (
     <div className="p-5">
-      <Button type="primary" onClick={() => showModal()} className="mb-3">Thêm Vaccine</Button>
-      <Table columns={columns} dataSource={scheduleVaccines} loading={isLoadingSchedules} rowKey="scheduleId" />
 
+<Button type="primary" onClick={() => showModal()} className="mb-3">
+        Thêm Vaccine
+      </Button>
+
+      
+      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={scheduleVaccines} loading={isLoadingSchedules} rowKey="scheduleId" />
+      <Modal
+  title="Chi tiết Lịch Tiêm Chủng"
+  open={isDetailModalOpen}
+  onCancel={() => setIsDetailModalOpen(false)}
+  footer={null} // Không có nút footer
+>
+  {selectedSchedule ? (
+    <VaccinationScheduleTable vaccinationSchedule={selectedSchedule} />
+  ) : (
+    <p>Không có dữ liệu.</p>
+  )}
+</Modal>
       {/* Main Modal */}
       <Modal
-        title={editingVaccine ? "Cập nhật vaccine" : "Thêm vaccine"}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={() => setIsModalOpen(false)}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="ageRangeStart" label="Tuổi Bắt Đầu" rules={[{ required: true, message: "Vui lòng nhập tuổi bắt đầu!" }]}>
-            <Input type="number" />
-          </Form.Item>
+  title={editingVaccine ? "Cập nhật vaccine" : "Thêm vaccine"}
+  open={isModalOpen}
+  onOk={handleOk}
+  onCancel={() => setIsModalOpen(false)}
+>
+  <Form form={form} layout="vertical">
+    {/* ✅ Bổ sung validation cho tuổi bắt đầu */}
+    <Form.Item
+      name="ageRangeStart"
+      label="Tuổi Bắt Đầu"
+      rules={[
+        { required: true, message: "Vui lòng nhập tuổi bắt đầu!" },
+       
+      ]}
+    >
+      <Input type="number" />
+    </Form.Item>
 
-          <Form.Item name="ageRangeEnd" label="Tuổi Kết Thúc" rules={[{ required: true, message: "Vui lòng nhập tuổi kết thúc!" }]}>
-            <Input type="number" />
-          </Form.Item>
+    {/* ✅ Bổ sung validation cho tuổi kết thúc */}
+    <Form.Item
+      name="ageRangeEnd"
+      label="Tuổi Kết Thúc"
+      dependencies={["ageRangeStart"]}
+      rules={[
+        { required: true, message: "Vui lòng nhập tuổi kết thúc!" },
+        ({ getFieldValue }) => ({
+          validator(_, value) {
+            if (value <= getFieldValue("ageRangeStart")) {
+              return Promise.reject(new Error("Tuổi kết thúc phải lớn hơn tuổi bắt đầu!"));
+            }
+            return Promise.resolve();
+          },
+        }),
+      ]}
+    >
+      <Input type="number" />
+    </Form.Item>
 
-          <Form.Item name="notes" label="Ghi Chú">
-            <Input.TextArea />
-          </Form.Item>
+    <Form.Item name="notes" label="Ghi Chú">
+      <Input.TextArea />
+    </Form.Item>
 
-          <Form.Item name="selectedVaccines" label="Chọn Vắc-xin" rules={[{ required: true, message: "Vui lòng chọn vắc-xin!" }]}>
-            <Select
-              mode="multiple"
-              placeholder="Chọn vắc-xin"
-              allowClear
-              loading={isLoadingVaccines}
-              onChange={handleVaccineSelect}
+    {/* ✅ Validation bắt buộc chọn ít nhất một vaccine */}
+    <Form.Item
+      name="selectedVaccines"
+      label="Chọn Vắc-xin"
+      rules={[{ required: true, message: "Vui lòng chọn ít nhất một vắc-xin!" }]}
+    >
+      <Select mode="multiple" placeholder="Chọn vắc-xin" allowClear loading={isLoadingVaccines} onChange={handleVaccineSelect}>
+        {availableVaccines?.map((vaccine) => (
+          <Select.Option key={`vaccine-${vaccine.vaccineId}`} value={vaccine.vaccineId}>
+            {vaccine.name}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
+
+    {/* ✅ Giữ nguyên nút "Thêm Mũi Tiêm" */}
+    <div>
+      {selectedVaccines.map((vaccineId) => {
+        const vaccine = availableVaccines.find((v) => v.vaccineId === vaccineId);
+        return (
+          <div key={vaccineId} style={{ marginBottom: "10px" }}>
+            <strong>{vaccine.name}</strong>
+            <Button
+              type="link"
+              onClick={() => {
+                setCurrentVaccineId(vaccineId);
+                setCurrentVaccine(vaccine);
+                setIsInjectionModalOpen(true);
+              }}
+              disabled={isInjectionAdded} // Giữ nguyên logic của bạn
             >
-              {availableVaccines?.map((vaccine) => (
-                <Select.Option key={`vaccine-${vaccine.vaccineId}`} value={vaccine.vaccineId}>
-                  {vaccine.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          {/* List of selected vaccines with "Add Injection" button */}
-          <div>
-            {selectedVaccines.map((vaccineId) => {
-              const vaccine = availableVaccines.find((v) => v.vaccineId === vaccineId);
-              return (
-                <div key={vaccineId} style={{ marginBottom: "10px" }}>
-                  <strong>{vaccine.name}</strong>
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      setCurrentVaccineId(vaccineId);
-                      setCurrentVaccine(vaccine);
-                      setIsInjectionModalOpen(true);
-                    }}
-                    disabled={isInjectionAdded} // Disable if injection has been added
-                  >
-                    Thêm Mũi Tiêm
-                  </Button>
-                </div>
-              );
-            })}
+              Thêm Mũi Tiêm
+            </Button>
           </div>
-        </Form>
-      </Modal>
+        );
+      })}
+    </div>
+  </Form>
+</Modal>
+
 
       {/* Injection Schedule Modal */}
       <Modal
-        title="Thêm Mũi Tiêm"
-        open={isInjectionModalOpen}
-        onOk={handleInjectionOk}
-        onCancel={() => setIsInjectionModalOpen(false)}
-      >
-        <Form form={injectionForm} layout="vertical">
-          <Form.Item name="vaccineId" label="Vắc-xin" initialValue={currentVaccineId} hidden>
-            <Input />
+  title="Thêm Mũi Tiêm"
+  open={isInjectionModalOpen}
+  onOk={handleInjectionOk}
+  onCancel={() => setIsInjectionModalOpen(false)}
+>
+  <Form form={injectionForm} layout="vertical">
+    <Form.Item name="vaccineId" label="Vắc-xin" initialValue={currentVaccineId} hidden>
+      <Input />
+    </Form.Item>
+
+    {currentVaccine?.injectionsCount &&
+      [...Array(currentVaccine.injectionsCount)].map((_, index) => (
+        <div key={index}>
+          <Form.Item
+            name={`dose${index + 1}Month`}
+            label={`Mũi ${index + 1} - Tháng Tiêm`}
+            rules={[
+              { required: true, message: `Vui lòng nhập tháng tiêm cho mũi ${index + 1}` },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const monthValue = Number(value); // ✅ Chuyển thành số
+                  const ageRangeStart = getFieldValue("ageRangeStart"); // 1 tuổi
+                  const ageRangeEnd = getFieldValue("ageRangeEnd"); // 4 tuổi
+
+                  if (!Number.isInteger(monthValue) || monthValue <= 0) {
+                    return Promise.reject(new Error("Tháng tiêm phải là số nguyên dương!"));
+                  }
+                  if (monthValue < ageRangeStart || monthValue > ageRangeEnd) {
+                    return Promise.reject(
+                      new Error(`Tháng tiêm phải từ ${ageRangeStart} đến ${ageRangeEnd} tháng!`)
+                    );
+                  }
+                  if (index > 0) {
+                    const prevDoseValue = Number(getFieldValue(`dose${index}Month`));
+                    if (monthValue <= prevDoseValue) {
+                      return Promise.reject(new Error(`Mũi ${index + 1} phải lớn hơn mũi ${index}`));
+                    }
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <Input
+              type="number"
+              placeholder="Nhập tháng tiêm"
+              onChange={(e) => {
+                let value = Number(e.target.value.replace(/\D/g, "")); // ✅ Chỉ cho nhập số
+                const ageRangeStart = form.getFieldValue("ageRangeStart");
+                const ageRangeEnd = form.getFieldValue("ageRangeEnd");
+
+                if (value > ageRangeEnd) {
+                  value = ageRangeEnd; // ✅ Nếu lớn hơn max, tự động về max
+                } else if (value < ageRangeStart) {
+                  value = ageRangeStart; // ✅ Nếu nhỏ hơn min, tự động về min
+                }
+
+                form.setFieldsValue({ [`dose${index + 1}Month`]: value });
+              }}
+            />
           </Form.Item>
 
-          {/* Dynamically create the number of injection fields based on `injectionsCount` */}
-          {currentVaccine?.injectionsCount && [...Array(currentVaccine.injectionsCount)].map((_, index) => (
-            <div key={index}>
-              <Form.Item
-                name={`dose${index + 1}Month`}
-                label={`Mũi ${index + 1} - Tháng Tiêm`}
-                initialValue={injectionSchedules[currentVaccineId]?.[index]?.injectionMonth || ''}
-                rules={[{ required: true, message: `Vui lòng nhập tháng tiêm cho mũi ${index + 1}` }]}
-              >
-                <Input type="number" placeholder="Nhập tháng tiêm" />
-              </Form.Item>
+          <Form.Item
+            name={`dose${index + 1}Notes`}
+            label={`Mũi ${index + 1} - Ghi Chú`}
+            initialValue={injectionSchedules[currentVaccineId]?.[index]?.notes || ""}
+          >
+            <Input.TextArea placeholder="Nhập ghi chú" />
+          </Form.Item>
+        </div>
+      ))}
+  </Form>
+</Modal>
 
-              <Form.Item
-                name={`dose${index + 1}Notes`}
-                label={`Mũi ${index + 1} - Ghi Chú`}
-                initialValue={injectionSchedules[currentVaccineId]?.[index]?.notes || ''}
-              >
-                <Input.TextArea placeholder="Nhập ghi chú" />
-              </Form.Item>
-            </div>
-          ))}
-        </Form>
-      </Modal>
+
+
+
+
+
+
     </div>
   );
 };
