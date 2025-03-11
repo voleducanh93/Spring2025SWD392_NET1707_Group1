@@ -113,9 +113,11 @@ namespace ChildVaccineSystem.Service.Services
 							};
 
 							await _vaccineRecordRepository.AddAsync(vaccinationRecord);
+							await _unitOfWork.CompleteAsync();
 
 							vaccineRecords.Add(new VaccineRecordDetailDTO
 							{
+								VaccinationRecordId = vaccinationRecord.VaccinationRecordId,
 								VaccineName = vaccine.Name,
 								DoseAmount = vaccine.DoseAmount,
 								Price = 0, // Giá vaccine mặc định 0 nếu không lấy từ hệ thống
@@ -130,8 +132,8 @@ namespace ChildVaccineSystem.Service.Services
 				}
 
 				// Cập nhật trạng thái booking thành COMPLETED
-				booking.Status = BookingStatus.Completed;
-				_unitOfWork.Bookings.UpdateAsync(booking);
+				//booking.Status = BookingStatus.Completed;
+				//_unitOfWork.Bookings.UpdateAsync(booking);
 
 				await _unitOfWork.CompleteAsync();
 
@@ -253,6 +255,7 @@ namespace ChildVaccineSystem.Service.Services
 		{
 			new VaccineRecordDetailDTO
 			{
+				VaccinationRecordId = record.VaccinationRecordId,
 				VaccineName = record.Vaccine.Name,
 				DoseAmount = record.DoseAmount,
 				BatchNumber = record.BatchNumber,
@@ -413,6 +416,7 @@ namespace ChildVaccineSystem.Service.Services
 				Weight = records.First().Child.Weight,
 				VaccineRecords = records.Select(record => new VaccineRecordDetailDTO
 				{
+					VaccinationRecordId = record.VaccinationRecordId,
 					VaccineName = record.Vaccine.Name,
 					DoseAmount = record.DoseAmount,
 					BatchNumber = record.BatchNumber,
