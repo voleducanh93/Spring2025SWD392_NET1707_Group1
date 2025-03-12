@@ -331,6 +331,7 @@ namespace ChildVaccineSystem.Service.Services
 						VaccineName = record.Vaccine.Name,
 						DoseAmount = record.DoseAmount,
 						BatchNumber = record.BatchNumber,
+						Price = Convert.ToDecimal(record.Price),
 						StatusEnum = record.Status,
 						NextDoseDate = record.NextDoseDate,
 						Notes = record.Notes
