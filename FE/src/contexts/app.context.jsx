@@ -18,7 +18,7 @@ export const AppProvider = ({ children }) => {
   const [getUser, setGetUser] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
 
-  // ✅ Lấy userId từ localStorage khi đăng nhập
+
   useEffect(() => {
     const storedUserId = getUserIdLS();
     if (storedUserId) {

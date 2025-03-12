@@ -174,7 +174,7 @@ const VaccineManagement = () => {
       ➕ Thêm Vaccine
     </Button>
   </div>
-      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
+      <Table columns={columns} pagination={{ pageSize: 6, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
         onClick: () => showDetailModal(record),
       })} />
 
