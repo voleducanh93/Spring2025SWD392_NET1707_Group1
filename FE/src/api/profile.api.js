@@ -13,7 +13,7 @@ const userApi = {
     return response.data.result; 
     },
     async changePassword(data) {
-        const response = await http.put(URL_CHANGE_PASSWORD, data);
+        const response = await http.post(URL_CHANGE_PASSWORD, data);
         return response.data;
       }
 }

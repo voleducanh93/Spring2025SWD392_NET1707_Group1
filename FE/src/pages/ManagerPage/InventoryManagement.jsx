@@ -148,7 +148,7 @@ const InventoryManagement = () => {
   return (
     <div className="p-5">
       <h2 className="text-2xl font-bold mb-4">Quản lý tồn kho Vaccine</h2>
-      <Table columns={columns} dataSource={vaccines} loading={isLoading} rowKey="vaccineId" />
+      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="vaccineId" />
 
       {/* ✅ Modal Chi Tiết Kho Vaccine */}
       <VaccineInventoryModal isOpen={isModalOpen} handleClose={handleDetailCancel} selectedVaccine={selectedVaccine} />

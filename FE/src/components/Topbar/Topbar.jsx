@@ -143,7 +143,7 @@ export default function Topbar() {
                   }}
                 >
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/user-profile")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <Avatar /> Tài Khoản Của Tôi

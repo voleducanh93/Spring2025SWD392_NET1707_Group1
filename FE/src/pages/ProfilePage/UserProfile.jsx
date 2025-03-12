@@ -5,6 +5,7 @@ import moment from "moment";
 import { useLocationData } from "../AuthPage/useLocationData"; // Import hook lấy địa chỉ
 import { useChangePassword, useGetProfile, useUpdateProfile } from "../../hooks/useAuth";
 import { toast } from "react-toastify";
+import { uploadFile } from "../../config/firebase";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -14,8 +15,8 @@ const UserProfile = () => {
   const [passwordForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState(null);
-
-  // Sử dụng hook useLocationData
+  const [url,setUrl ] = useState(null);
+ 
   const {
     provinceList,
     districtList,
@@ -35,47 +36,55 @@ const UserProfile = () => {
   useEffect(() => {
     if (userProfile) {
       console.log("User Profile API Data:", userProfile);
+  
+     
+      const nameParts = userProfile.fullName ? userProfile.fullName.split(" ") : [];
+      const firstName = nameParts.slice(0, -1).join(" ") || "";
+      const lastName = nameParts.slice(-1).join(" ") || ""; 
+ 
+  
       const formattedData = {
-        fullName: userProfile.fullName,
-        email: userProfile.email,
-        phoneNumber: userProfile.phoneNumber,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: userProfile.phoneNumber || "",
         dateOfBirth: userProfile.dateOfBirth ? moment(userProfile.dateOfBirth) : null,
-        address: userProfile.address,
-        imageUrl: userProfile.imageUrl,
+        address: userProfile.address || "",
+        imageUrl: userProfile.imageUrl || "",
       };
-
-      setUserData(formattedData); // Cập nhật state userData
-      form.setFieldsValue(formattedData); // Đổ dữ liệu vào form
-
-      // Xử lý địa chỉ từ API
+  
+      setUserData(formattedData);
+      form.setFieldsValue(formattedData);
+  
+     
       if (userProfile.address) {
         const addressParts = userProfile.address.split(", ");
         if (addressParts.length === 4) {
           setSpecificAddress(addressParts[0]);
-          setSelectedWard(wardList.find((w) => w.name_with_type === addressParts[1])?.code);
-          setSelectedDistrict(districtList.find((d) => d.name_with_type === addressParts[2])?.code);
-          setSelectedProvince(provinceList.find((p) => p.name_with_type === addressParts[3])?.code);
+          setSelectedWard(wardList.find((w) => w.name_with_type === addressParts[1])?.code || null);
+          setSelectedDistrict(districtList.find((d) => d.name_with_type === addressParts[2])?.code || null);
+          setSelectedProvince(provinceList.find((p) => p.name_with_type === addressParts[3])?.code || null);
         }
       }
     }
   }, [form, userProfile, provinceList, districtList, wardList]);
+  
   const updateProfileMutation = useUpdateProfile(); 
 
   const handleFormSubmit = (values) => {
     setLoading(true);
   
     const updatedData = {
-      id: userProfile?.id, // ✅ Lấy ID từ userProfile
-      fullName: values.fullName,
-      userName: userProfile?.userName, // ✅ Lấy userName từ API
-      email: values.email,
+      id: userProfile?.id, 
+      fullName: values.firstName + " " +values.lastName ,
+      userName: userProfile?.userName,      
       phoneNumber: values.phoneNumber,
-      address: buildFullAddress() || userProfile?.address, // ✅ Không để trống Address
-      imageUrl: userProfile?.imageUrl || "", // ✅ Không để trống ImageUrl
+      address: buildFullAddress() || userProfile?.address, 
+      imageUrl: url? url : "",
       dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null,
     };
+    
   
-    console.log("Data gửi lên API:", updatedData);
+  
   
     updateProfileMutation.mutate(updatedData, {
       onSuccess: () => {
@@ -114,6 +123,16 @@ const changePasswordMutation = useChangePassword();
       },
     });
   };
+  const handleFileChange = async ({ file }) => {
+    try {
+     
+      const url = await uploadFile(file); 
+      setUrl(url);
+    } catch (error) {
+      console.error("❌ Upload failed:", error);
+    }
+  };
+  
   
 
   return (
@@ -129,7 +148,7 @@ const changePasswordMutation = useChangePassword();
             style={{ border: "2px solid #ddd" }}
           />
           <div className="mt-2">
-            <Upload showUploadList={false}>
+            <Upload showUploadList={false} onChange={handleFileChange}>
               <Button icon={<UploadOutlined />}>Change Avatar</Button>
             </Upload>
           </div>
@@ -139,21 +158,21 @@ const changePasswordMutation = useChangePassword();
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Full Name" name="fullName" rules={[{ required: true, message: "Please enter your full name" }]}>
+              <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please enter your full name" }]}>
                 <Input placeholder="Enter full name" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select your date of birth!" }]}>
-                <DatePicker className="w-full" format="YYYY-MM-DD" />
+            <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please enter your full name" }]}>
+                <Input placeholder="Enter full name" />
               </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Email" name="email" rules={[{ type: "email", message: "Please enter a valid email" }]}>
-                <Input placeholder="Enter email" />
+            <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select your date of birth!" }]}>
+                <DatePicker className="w-full" format="YYYY-MM-DD" />
               </Form.Item>
             </Col>
             <Col span={12}>

@@ -10,11 +10,9 @@ import ChildProfile from "../pages/ProfilePage/ChildProfile";
 import EditChildProfile from "../pages/ProfilePage/EditChildProfile";
 import BookingPage from "../pages/BookingPage/BookingPage";
 import PrivateRoute from "./PrivateRoute";
-
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
 import UploadForm from "../pages/AuthPage/upload";
-
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
 import StaffPage from "../pages/StaffPage/StaffPage";
@@ -25,7 +23,7 @@ import ConfirmEmailPage from "../pages/AuthPage/confirmEmail";
 import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 import Wallet from "../pages/WalletPage/Wallet";
-import Doctor from "../pages/DoctorPage/Doctor";
+import UserProfile from "../pages/ProfilePage/UserProfile";
 
 
 
@@ -48,18 +46,13 @@ export const router = createBrowserRouter([
       { path:"/vaccine/:id", element: <VaccineDetailPage /> },
       { path: "/child-profile", element: <ChildProfile /> },
       { path: "/edit-child/:childId", element: <EditChildProfile /> },
-      {
-        path: "/payment-success",
-        element: <ResultPayment />,
-      },
-      {
-        path: "/payment-failure",
-        element: <ResultPayment />,
-      },
+      { path: "/payment-success", element: <ResultPayment />,},
+      {path: "/payment-failure",element: <ResultPayment />,},
       { path: "/mybooking", element: <MyBooking /> },
       { path: "/chuyen-gia", element: <ChuyengiaPage/>},
       { path: "/confirm-email", element: <ConfirmEmailPage/>},
       { path: "/invetory", element: <InventoryManagement/>},
+      { path: "/user-profile", element: <UserProfile/>},
       {
         path: "/booking",
         element: <PrivateRoute>
@@ -96,5 +89,4 @@ export const router = createBrowserRouter([
     element: <StaffPage />,
   },
   { path: "/manager", element: <ManagerPage /> },
-  { path: "/doctor", element: <Doctor /> },
 ]);
