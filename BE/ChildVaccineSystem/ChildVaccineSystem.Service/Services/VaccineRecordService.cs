@@ -133,8 +133,8 @@ namespace ChildVaccineSystem.Service.Services
 				}
 
 				// Cập nhật trạng thái booking thành COMPLETED
-				//booking.Status = BookingStatus.Completed;
-				//_unitOfWork.Bookings.UpdateAsync(booking);
+				booking.Status = BookingStatus.Completed;
+				_unitOfWork.Bookings.UpdateAsync(booking);
 
 				await _unitOfWork.CompleteAsync();
 
@@ -242,6 +242,7 @@ namespace ChildVaccineSystem.Service.Services
 			// ✅ Kiểm tra trong bảng DoctorWorkSchedules xem bác sĩ có được gán cho BookingId này không
 			var isDoctorAssigned = await _unitOfWork.DoctorWorkSchedules
 				.AnyAsync(dws => dws.BookingId == record.BookingDetail.BookingId && dws.UserId == doctorId);
+			
 
 			if (!isDoctorAssigned)
 				throw new UnauthorizedAccessException("Bạn không có quyền truy cập hồ sơ này.");
