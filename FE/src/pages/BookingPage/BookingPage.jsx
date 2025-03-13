@@ -28,7 +28,7 @@ const BookingPage = () => {
   const [isComboSelected, setIsComboSelected] = useState(false);
   const [comboVaccines, setComboVaccines] = useState([]);
   const { walletBalance, refreshWalletBalance } = useContext(AppContext);
-  const [isLoading, setIsLoading] = useState(false)
+  
   const openAddChildModal = () => {
     setIsModalVisible(true);
   };

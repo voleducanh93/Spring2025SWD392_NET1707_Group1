@@ -1,4 +1,4 @@
-import React from "react";
+import  { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useChildren } from "../../hooks/useChildren";
@@ -19,11 +19,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CakeIcon from "@mui/icons-material/Cake";
 import HeightIcon from "@mui/icons-material/Height";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import AddChildModal from "../../components/ChildrenInput/CreateChildren";
 
 const ChildProfile = () => {
-  const { vaccines: children, isLoading, isError, error, removeChildren } = useChildren();
+  const { vaccines: children,addChildren, isLoading, isError, error, removeChildren } = useChildren();
   const navigate = useNavigate();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const handleAddChild = (newChild) => {
+    addChildren.mutateAsync(newChild);
+  };
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -60,11 +65,11 @@ const ChildProfile = () => {
           color="primary"
           startIcon={<AddCircleIcon />}
           className="!bg-blue-500 hover:!bg-blue-600 hover:scale-105 transition-all !rounded-xl"
+          onClick={() => setIsModalOpen(true)}
         >
           Đăng ký trẻ
         </Button>
       </div>
-
       {/* Child List */}
       <Grid container spacing={4}>
         {children.map((child) => (
@@ -125,6 +130,7 @@ const ChildProfile = () => {
           </Grid>
         ))}
       </Grid>
+      <AddChildModal visible={isModalOpen} onClose={() => setIsModalOpen(false)} onAddChild={handleAddChild} />
     </div>
   );
 };

@@ -25,3 +25,8 @@ export const createBooking = async ( id, bookingData) => {
     return response.data;
   };
   
+  export const getBoookingByDoctor = async (id) => {
+    const response = await http.get(`${BASE_URL}/doctor/${id}/bookings`)
+    return response.data.result;
+  }
+  
