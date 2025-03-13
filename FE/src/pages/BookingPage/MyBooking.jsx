@@ -1,16 +1,16 @@
 import { useState, useEffect, useContext } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import { AppContext } from "../../contexts/app.context";
-import { Button, Modal, Input } from "antd";
-import { useRequestRefund } from "../../hooks/useRefund";
+import { Modal } from "antd";
 import dayjs from "dayjs";
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
-  const { getUser } = useContext(AppContext);
-  const { mutate: requestRefund, isLoading } = useRequestRefund();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedBookings, setSelectedBookings] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [refundReason, setRefundReason] = useState("");
-  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const { getUser } = useContext(AppContext);
 
   useEffect(() => {
     if (!getUser) return;
@@ -34,143 +34,111 @@ export default function MyBooking() {
     fetchBookings();
   }, [getUser]);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  };
-
-  // Xử lý mở Modal
-  const openRefundModal = (bookingId) => {
-    setSelectedBookingId(bookingId);
+  const handleDateClick = (date) => {
+    setSelectedDate(date);
+    const filteredBookings = bookings.filter((b) =>
+      dayjs(b.bookingDate).isSame(dayjs(date), "day")
+    );
+    setSelectedBookings(filteredBookings);
     setModalVisible(true);
   };
 
-  // Xử lý yêu cầu hoàn tiền
-  const handleRefundRequest = () => {
-    if (!refundReason.trim()) {
-      return alert("Vui lòng nhập lý do hoàn tiền!");
-    }
-
-    requestRefund(
-      { bookingId: selectedBookingId, reason: refundReason },
-      {
-        onSuccess: () => {
-          setModalVisible(false);
-          setRefundReason("");
-        },
-      }
+  const getTileContent = ({ date }) => {
+    const dateString = dayjs(date).format("YYYY-MM-DD");
+    const dayBookings = bookings.filter((b) =>
+      dayjs(b.bookingDate).isSame(dateString, "day")
     );
+
+    if (dayBookings.length > 0) {
+      return (
+        <div className="!bg-blue-500 !text-white !text-xs !font-semibold !rounded-md !p-1 !mt-1 !text-center">
+          {dayBookings.length} đơn
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const statusMapping = {
+    Pending: "Chờ xác nhận",
+    Confirmed: "Đã xác nhận",
+    InProgress: "Đang thực hiện",
+    Completed: "Đã hoàn thành",
+    Cancelled: "Đã hủy",
+    RequestRefund: "Yêu cầu hoàn tiền",
   };
 
   return (
-    <div className="container mx-auto p-8 font-['Be_Vietnam_Pro']">
-      <h1 className="text-4xl font-extrabold text-center text-blue-600 mb-10">
-        Danh sách lịch đặt hẹn vắc-xin
+    <div className="!w-full !h-screen !flex !flex-col !items-center !bg-gray-100 !p-6">
+      <h1 className="!text-2xl !font-bold !text-blue-700 !border-b-2 !border-blue-700 !pb-2 !mb-4">
+        ĐƠN TIÊM CHỦNG CỦA BẠN
       </h1>
-
-      {bookings.length === 0 ? (
-        <p className="text-center text-lg text-gray-500 italic">
-          Không có lịch đặt nào.
-        </p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full bg-white border border-gray-300 rounded-2xl shadow-2xl overflow-hidden">
-            <thead>
-              <tr className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
-                  Tên trẻ
-                </th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
-                  Ngày đặt
-                </th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
-                  Tổng giá (VND)
-                </th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
-                  Trạng thái
-                </th>
-                <th className="py-5 px-6 text-left text-lg font-bold uppercase">
-                  Hoàn tiền
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr
-                  key={booking.bookingId}
-                  className="border-t border-gray-200 hover:bg-blue-50 transition duration-300 ease-in-out"
-                >
-                  <td className="py-4 px-6 text-gray-900 font-semibold">
-                    {booking.childName}
-                  </td>
-                  <td className="py-4 px-6 text-gray-800">
-                    {formatDate(booking.bookingDate)}
-                  </td>
-                  <td className="py-4 px-6 text-gray-900 font-bold">
-                    {booking.totalPrice.toLocaleString()} VND
-                  </td>
-                  <td
-                    className={`py-3 px-5 text-sm font-bold rounded-full text-center w-40 uppercase shadow-lg border-2 ${
-                      booking.status === "Confirmed"
-                        ? "bg-green-100 text-green-700 border-green-400"
-                        : booking.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700 border-yellow-400"
-                        : "bg-red-100 text-red-700 border-red-400"
-                    }`}
-                  >
-                    {booking.status === "Confirmed"
-                      ? "Đã xác nhận"
-                      : booking.status === "Pending"
-                      ? "Chờ xác nhận"
-                      : booking.status}
-                  </td>
-                  <td className="py-4 px-6">
-                    {booking.bookingDate &&
-                      dayjs(booking.bookingDate).diff(dayjs(), "hour") >=
-                        24 && (
-                        <Button
-                          type="primary"
-                          danger
-                          onClick={() => openRefundModal(booking.bookingId)}
-                        >
-                          Hoàn tiền
-                        </Button>
-                      )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Modal nhập lý do hoàn tiền */}
-      <Modal
-        title="Yêu cầu hoàn tiền"
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Hủy
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            danger
-            loading={isLoading}
-            onClick={handleRefundRequest}
-          >
-            Gửi yêu cầu
-          </Button>,
-        ]}
-      >
-        <p>Vui lòng nhập lý do hoàn tiền:</p>
-        <Input.TextArea
-          rows={4}
-          placeholder="Nhập lý do..."
-          value={refundReason}
-          onChange={(e) => setRefundReason(e.target.value)}
+      <div className="!bg-white !shadow-md !rounded-lg !p-4 !w-full !max-w">
+        <Calendar
+          onClickDay={handleDateClick}
+          tileContent={getTileContent}
+          className="!w-full !h-full !text-lg !border !rounded-md"
         />
+      </div>
+
+      {/* Modal hiển thị chi tiết */}
+      <Modal
+        title={
+          selectedDate
+            ? `Chi tiết đặt lịch ngày ${dayjs(selectedDate).format(
+                "DD/MM/YYYY"
+              )}`
+            : ""
+        }
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+      >
+        {selectedBookings.length > 0 ? (
+          <div className="!space-y-4">
+            {selectedBookings.map((b) => (
+              <div
+                key={b.bookingId}
+                className="!p-4 !bg-gray-50 !rounded-md !shadow"
+              >
+                <p>
+                  <strong>Mã đặt lịch:</strong> {b.bookingId}
+                </p>
+                <p>
+                  <strong>Loại đặt lịch:</strong>{" "}
+                  {b.bookingType === "singleVaccine"
+                    ? "Đặt lẻ Vaccine"
+                    : "Gói Vaccine"}
+                </p>
+                <p>
+                  <strong>Chi tiết:</strong>{" "}
+                  {b.bookingDetails
+                    .map((d) => d.vaccineName || d.comboVaccineName)
+                    .join(", ")}
+                </p>
+                <p>
+                  <strong>Ghi chú:</strong> {b.notes || "Không có ghi chú"}
+                </p>
+                <p>
+                  <strong>Tổng tiền:</strong>{" "}
+                  <span className="!text-yellow-500">
+                    {b.totalPrice.toLocaleString()} VND
+                  </span>
+                </p>
+                <p>
+                  <strong>Trạng thái:</strong>
+                  <span className="!bg-blue-500 !text-white !px-2 !py-1 !rounded">
+                    {statusMapping[b.status] || "Không xác định"}
+                  </span>
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="!text-gray-500">
+            Không có đơn đặt lịch nào vào ngày này.
+          </p>
+        )}
       </Modal>
     </div>
   );
