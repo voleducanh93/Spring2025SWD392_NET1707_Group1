@@ -1,35 +1,55 @@
 import { useState } from "react";
 import {
-  ArrowDownOutlined,
-  ArrowUpOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Layout,
-  Menu,
-  Row,
-  Space,
-  Statistic,
-  theme,
-} from "antd";
-import AdminReal from "../Admin/AdminReal";
+import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
+
+import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
+import StaffManagement from "../../pages/ManagerPage/StaffManagement";
+import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
+import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
+import ComboManagement from "../../pages/ManagerPage/Combo/ComboManagement";
+import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
+import Dashboard from "../Admin/Dashboard";
 
 const { Header, Sider, Content } = Layout;
+
 const SidebarAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const [selectedTab, setSelectedTab] = useState("1");
+
+  const handleMenuClick = (e) => {
+    setSelectedTab(e.key); // Cập nhật tab khi chọn
+  };
+
+  // Nội dung tương ứng với mỗi tab
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "1":
+        return <Dashboard />;
+      case "2":
+        return <DoctorManagement />;
+      case "3":
+        return <InventoryManagement />;
+      case "4":
+        return <VaccineManagement />;
+      case "5":
+        return <ComboManagement />;
+        case "6":
+        return <VaccineByAge />;
+      default:
+        return <VaccineManagement />;
+    }
+  };
 
   const items = [
     {
@@ -43,65 +63,79 @@ const SidebarAdmin = () => {
     {
       key: "2",
       label: "Profile",
-      extra: "⌘P",
     },
     {
       key: "3",
       label: "Billing",
-      extra: "⌘B",
     },
     {
       key: "4",
       label: "Settings",
       icon: <SettingOutlined />,
-      extra: "⌘S",
     },
   ];
+
   return (
     <Layout className="h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div
-          className="demo-logo-vertical"
-          style={{ textAlign: "center", marginTop: "20px" }}
-        >
+        <div className="demo-logo-vertical" style={{ textAlign: "center", marginTop: "20px" }}>
           <img
             src="src/assets/logo-vnvc-tet-nguyen-dan.png"
             alt="VNVC Logo"
             className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
           />
         </div>
+
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
           style={{ marginTop: "40px" }}
+          onClick={handleMenuClick} // Xử lý sự kiện khi chọn tab
+          selectedKeys={[selectedTab]}
           items={[
             {
               key: "1",
               icon: <UserOutlined />,
-              label: "nav 1",
+              label: "Quản lý nhân viên",
             },
             {
               key: "2",
               icon: <VideoCameraOutlined />,
-              label: "nav 2",
+              label: "Quản lý bác sĩ",
             },
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "nav 3",
+              label: "Quản lý kho vaccine",
+            },
+            {
+              key: "4",
+              icon: <UploadOutlined />,
+              label: "Quản lý vaccine",
+            },
+            {
+              key: "5",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý Combo Vaccine",
+            },
+            {
+              key: "6",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý lịch tiêm cho Vaccine",
             },
           ]}
         />
       </Sider>
+
       <Layout>
         <Header
           style={{
             padding: 0,
             background: colorBgContainer,
             display: "flex",
-            justifyContent: "space-between", // Căn giữa các phần tử với không gian
-            alignItems: "center", // Căn chỉnh các phần tử theo chiều dọc
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           {/* Nút Collapse */}
@@ -117,88 +151,18 @@ const SidebarAdmin = () => {
               }}
             />
           </div>
+
           <div style={{ marginRight: "1rem" }}>
-            <Dropdown
-              menu={{
-                items,
-              }}
-            >
+            <Dropdown menu={{ items }}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: "#87d068",
-                    }}
-                    icon={<UserOutlined />}
-                  />
+                  <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />
                 </Space>
               </a>
             </Dropdown>
           </div>
         </Header>
-        <Row
-          gutter={16}
-          style={{
-            margin: "30px 10px 24px",
-          }}
-        >
-          <Col span={6}>
-            <Card variant="borderless">
-              <Statistic
-                title="Active"
-                value={11.28}
-                precision={2}
-                valueStyle={{
-                  color: "#3f8600",
-                }}
-                prefix={<ArrowUpOutlined />}
-                suffix="%"
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card variant="borderless">
-              <Statistic
-                title="Idle"
-                value={9.3}
-                precision={2}
-                valueStyle={{
-                  color: "#cf1322",
-                }}
-                prefix={<ArrowDownOutlined />}
-                suffix="%"
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card variant="borderless">
-              <Statistic
-                title="Active"
-                value={11.28}
-                precision={2}
-                valueStyle={{
-                  color: "#3f8600",
-                }}
-                prefix={<ArrowUpOutlined />}
-                suffix="%"
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card variant="borderless">
-              <Statistic
-                title="Idle"
-                value={9.3}
-                precision={2}
-                valueStyle={{
-                  color: "#cf1322",
-                }}
-                prefix={<ArrowDownOutlined />}
-                suffix="%"
-              />
-            </Card>
-          </Col>
-        </Row>
+
         <Content
           style={{
             margin: "24px 16px",
@@ -208,10 +172,11 @@ const SidebarAdmin = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          <AdminReal />
+          {renderContent()}
         </Content>
       </Layout>
     </Layout>
   );
 };
+
 export default SidebarAdmin;

@@ -125,17 +125,27 @@ export default function StaffPage() {
         return "bg-red-500 text-white"; // Red for cancelled
       case "InProgress":
         return "bg-blue-500 text-white"; // Blue for in-progress
+      case "Completed":
+        return "bg-purple-500 text-white"; // Purple for completed
+      case "RequestRefund":
+        return "bg-orange-500 text-white"; // Orange for refund request
       default:
         return "bg-gray-400 text-gray-800"; // Default gray color for other statuses
     }
-  };
+};
 
-  const filteredBookings = bookings.filter((booking) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "pending") return booking.status !== "Confirmed";
-    if (activeTab === "paid") return booking.status === "Confirmed";
-    return true;
-  });
+
+const filteredBookings = bookings.filter((booking) => {
+  if (activeTab === "all") return true;
+  if (activeTab === "pending") return booking.status === "Pending";
+  if (activeTab === "paid") return booking.status === "Confirmed";
+  if (activeTab === "cancelled") return booking.status === "Cancelled";
+  if (activeTab === "in-progress") return booking.status === "InProgress";
+  if (activeTab === "completed") return booking.status === "Completed";
+  if (activeTab === "request-refund") return booking.status === "RequestRefund";
+  return true;
+});
+
 
   return (
     <div className="container mx-auto p-10 font-sans">
@@ -147,38 +157,79 @@ export default function StaffPage() {
       </h1>
 
       {/* Tab Navigation with better line-height and spacing */}
-      <div className="flex justify-center !gap-6 !mb-8">
-        <button
-          className={`!px-8 !py-4 font-semibold rounded-lg text-lg ${
-            activeTab === "all"
-              ? "bg-teal-500 text-white shadow-lg"
-              : "bg-gray-200 text-gray-700"
-          } hover:scale-105 transition-transform duration-300`}
-          onClick={() => setActiveTab("all")}
-        >
-          Tất cả lịch hẹn
-        </button>
-        <button
-          className={`!px-8 !py-4 font-semibold rounded-lg text-lg ${
-            activeTab === "pending"
-              ? "bg-teal-500 text-white shadow-lg"
-              : "bg-gray-200 text-gray-700"
-          } hover:scale-105 transition-transform duration-300`}
-          onClick={() => setActiveTab("pending")}
-        >
-          Lịch hẹn chưa thanh toán
-        </button>
-        <button
-          className={`!px-8 !py-4 font-semibold rounded-lg text-lg ${
-            activeTab === "paid"
-              ? "bg-teal-500 text-white shadow-lg"
-              : "bg-gray-200 text-gray-700"
-          } hover:scale-105 transition-transform duration-300`}
-          onClick={() => setActiveTab("paid")}
-        >
-          Lịch hẹn đã thanh toán
-        </button>
-      </div>
+      <div className="flex justify-center !gap-6 !mb-8 flex-wrap">
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "all"
+        ? "bg-teal-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("all")}
+  >
+    Tất cả lịch hẹn
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "pending"
+        ? "bg-yellow-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("pending")}
+  >
+    Chưa thanh toán
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "paid"
+        ? "bg-green-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("paid")}
+  >
+    Đã thanh toán
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "in-progress"
+        ? "bg-blue-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("in-progress")}
+  >
+    Đang thực hiện
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "completed"
+        ? "bg-purple-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("completed")}
+  >
+    Hoàn thành
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "cancelled"
+        ? "bg-red-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("cancelled")}
+  >
+    Đã hủy
+  </button>
+  <button
+    className={`!px-6 !py-3 font-semibold rounded-lg text-lg ${
+      activeTab === "request-refund"
+        ? "bg-orange-500 text-white shadow-lg"
+        : "bg-gray-200 text-gray-700"
+    } hover:scale-105 transition-transform duration-300`}
+    onClick={() => setActiveTab("request-refund")}
+  >
+    Yêu cầu hoàn tiền
+  </button>
+</div>
+
 
       {/* Table Section with better spacing between columns */}
       <div className="overflow-x-auto shadow-xl rounded-lg bg-white p-8">
