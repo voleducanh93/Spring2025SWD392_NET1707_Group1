@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Form, Input, Button, Row, Col, Upload, Avatar, Card, Typography, DatePicker, Select } from "antd";
 import { UploadOutlined, UserOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { useLocationData } from "../AuthPage/useLocationData"; // Import hook lấy địa chỉ
+import { useLocationData } from "../AuthPage/useLocationData"; 
 import { useChangePassword, useGetProfile, useUpdateProfile } from "../../hooks/useAuth";
 import { toast } from "react-toastify";
 import { uploadFile } from "../../config/firebase";
@@ -137,92 +137,71 @@ const changePasswordMutation = useChangePassword();
 
   return (
     <div className="p-6">
-      <Card className="mb-4" style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <Title level={4} className="text-center">User Profile</Title>
-
+    {/* Bố cục flex để đặt 2 khối cạnh nhau trên màn hình lớn */}
+    <div className="flex flex-col md:flex-row gap-6 justify-center">
+      
+      {/* Thông tin cá nhân */}
+      <Card className="w-full md:w-1/2">
+        <Title level={4} className="text-center">Thông tin cá nhân</Title>
+  
         <div className="text-center mb-4">
-          <Avatar
-            size={100}
-            icon={<UserOutlined />}
-            src={userData?.imageUrl || ""}
-            style={{ border: "2px solid #ddd" }}
-          />
+          <Avatar size={100} icon={<UserOutlined />} src={userData?.imageUrl || ""} className="border-2 border-gray-300" />
           <div className="mt-2">
             <Upload showUploadList={false} onChange={handleFileChange}>
-              <Button icon={<UploadOutlined />}>Change Avatar</Button>
+              <Button icon={<UploadOutlined />}>Thay đổi hình</Button>
             </Upload>
           </div>
         </div>
-
+  
         {/* Form Thông Tin Người Dùng */}
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please enter your full name" }]}>
-                <Input placeholder="Enter full name" />
+              <Form.Item label="Họ" name="firstName" rules={[{ required: true, message: "Vui lòng nhập họ của bạn" }]}>
+                <Input placeholder="Nhập họ" />
               </Form.Item>
             </Col>
             <Col span={12}>
-            <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please enter your full name" }]}>
-                <Input placeholder="Enter full name" />
+              <Form.Item label="Tên" name="lastName" rules={[{ required: true, message: "Vui lòng nhập tên của bạn" }]}>
+                <Input placeholder="Nhập tên" />
               </Form.Item>
             </Col>
           </Row>
-
+  
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select your date of birth!" }]}>
+              <Form.Item label="Ngày sinh" name="dateOfBirth" rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}>
                 <DatePicker className="w-full" format="YYYY-MM-DD" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Phone Number" name="phoneNumber">
-                <Input placeholder="Enter phone number" />
+              <Form.Item label="Số điện thoại" name="phoneNumber">
+                <Input placeholder="Nhập số điện thoại" />
               </Form.Item>
             </Col>
           </Row>
-
+  
           {/* Ô Địa Chỉ */}
           <Form.Item label="Địa chỉ">
             <div className="space-y-2">
-              <div className="grid grid-cols-3 gap-4">
-                <Select
-                  className="w-full"
-                  value={selectedProvince}
-                  placeholder="Chọn tỉnh/thành phố"
-                  onChange={setSelectedProvince}
-                  size="large"
-                >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Select className="w-full" value={selectedProvince} placeholder="Chọn tỉnh/thành phố" onChange={setSelectedProvince} size="large">
                   {provinceList.map((province) => (
                     <Option key={province.code} value={province.code}>
                       {province.name_with_type}
                     </Option>
                   ))}
                 </Select>
-
-                <Select
-                  className="w-full"
-                  value={selectedDistrict}
-                  placeholder="Chọn quận/huyện"
-                  onChange={setSelectedDistrict}
-                  size="large"
-                  disabled={!selectedProvince}
-                >
+  
+                <Select className="w-full" value={selectedDistrict} placeholder="Chọn quận/huyện" onChange={setSelectedDistrict} size="large" disabled={!selectedProvince}>
                   {districtList.map((district) => (
                     <Option key={district.code} value={district.code}>
                       {district.name_with_type}
                     </Option>
                   ))}
                 </Select>
-
-                <Select
-                  className="w-full"
-                  value={selectedWard}
-                  placeholder="Chọn phường/xã"
-                  onChange={setSelectedWard}
-                  size="large"
-                  disabled={!selectedDistrict}
-                >
+  
+                <Select className="w-full" value={selectedWard} placeholder="Chọn phường/xã" onChange={setSelectedWard} size="large" disabled={!selectedDistrict}>
                   {wardList.map((ward) => (
                     <Option key={ward.code} value={ward.code}>
                       {ward.name_with_type}
@@ -230,100 +209,56 @@ const changePasswordMutation = useChangePassword();
                   ))}
                 </Select>
               </div>
-
-              <Input
-                placeholder="Số nhà, tên đường"
-                value={specificAddress}
-                onChange={(e) => setSpecificAddress(e.target.value)}
-                className="w-full mt-2"
-              />
+  
+              <Input placeholder="Số nhà, tên đường" value={specificAddress} onChange={(e) => setSpecificAddress(e.target.value)} className="w-full mt-2" />
             </div>
           </Form.Item>
-
+  
           <Form.Item className="text-center">
-            <Button type="primary" htmlType="submit">Save Changes</Button>
+            <Button type="primary" htmlType="submit">Lưu thay đổi</Button>
           </Form.Item>
         </Form>
       </Card>
-
-      {/* Form Đổi Mật Khẩu */}
-      <Card className="mb-4" style={{ maxWidth: "800px", margin: "0 auto" }}>
-  <Title level={4} className="text-center">Change Password</Title>
-
-  <Form form={passwordForm} onFinish={handleChangePassword} layout="vertical">
-    {/* Current Password */}
-    <Form.Item
-      label="Current Password"
-      name="currentPassword"
-      rules={[
-        { required: true, message: "Please enter your current password!" },
-      ]}
-    >
-      <Input.Password
-        placeholder="Enter current password"
-        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-      />
-    </Form.Item>
-
-    {/* New Password & Confirm New Password (Cùng hàng) */}
-    <Row gutter={16}>
-  <Col span={12}>
-    <Form.Item
-      label="New Password"
-      name="newPassword"
-      rules={[
-        { required: true, message: "Please enter your new password!" },
-        { min: 8, message: "Password must be at least 8 characters long!" },
-        { pattern: /[A-Z]/, message: "Must contain at least one uppercase letter!" },
-        { pattern: /[0-9]/, message: "Must contain at least one number!" },
-        { pattern: /[^A-Za-z0-9]/, message: "Must contain at least one special character!" },
-        ({ getFieldValue }) => ({
-          validator(_, value) {
-            if (value && value === getFieldValue("currentPassword")) {
-              return Promise.reject(new Error("New password must not be the same as the current password!"));
-            }
-            return Promise.resolve();
-          },
-        }),
-      ]}
-    >
-      <Input.Password placeholder="Enter new password" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
-    </Form.Item>
-  </Col>
-
-  <Col span={12}>
-    <Form.Item
-      label="Confirm New Password"
-      name="confirmPassword"
-      dependencies={["newPassword"]}
-      rules={[
-        { required: true, message: "Please confirm your new password!" },
-        ({ getFieldValue }) => ({
-          validator(_, value) {
-            if (!value || getFieldValue("newPassword") === value) {
-              return Promise.resolve();
-            }
-            return Promise.reject(new Error("The two passwords do not match!"));
-          },
-        }),
-      ]}
-    >
-      <Input.Password placeholder="Confirm new password" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
-    </Form.Item>
-  </Col>
-</Row>
-
-<Form.Item className="text-center">
-  <Button type="primary" htmlType="submit" loading={loading}>
-    Save changes
-  </Button>
-</Form.Item>
-
-  </Form>
-</Card>
-
-
+  
+      {/* Đổi mật khẩu */}
+      <Card className="w-full md:w-1/2">
+        <Title level={4} className="text-center">Thay đổi mật khẩu</Title>
+  
+        <Form form={passwordForm} onFinish={handleChangePassword} layout="vertical">
+          <Form.Item label="Mật khẩu hiện tại" name="currentPassword" rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại!" }]}>
+            <Input.Password placeholder="Nhập mật khẩu hiện tại" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
+          </Form.Item>
+  
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Mật khẩu mới" name="newPassword" rules={[
+                { required: true, message: "Vui lòng nhập mật khẩu mới!" },
+                { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
+                { pattern: /[A-Z]/, message: "Phải chứa ít nhất một chữ cái in hoa!" },
+                { pattern: /[0-9]/, message: "Phải chứa ít nhất một số!" },
+                { pattern: /[^A-Za-z0-9]/, message: "Phải chứa ít nhất một ký tự đặc biệt!" },
+              ]}>
+                <Input.Password placeholder="Nhập mật khẩu mới" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Xác nhận mật khẩu mới" name="confirmPassword" dependencies={["newPassword"]} rules={[
+                { required: true, message: "Vui lòng xác nhận mật khẩu mới!" },
+              ]}>
+                <Input.Password placeholder="Xác nhận mật khẩu mới" iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)} />
+              </Form.Item>
+            </Col>
+          </Row>
+  
+          <Form.Item className="text-center">
+            <Button type="primary" htmlType="submit" loading={loading}>Lưu thay đổi</Button>
+          </Form.Item>
+        </Form>
+      </Card>
+  
     </div>
+  </div>
+  
   );
 };
 

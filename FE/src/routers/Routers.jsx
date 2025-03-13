@@ -24,6 +24,8 @@ import InventoryManagement from "../pages/ManagerPage/InventoryManagement";
 import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 import Wallet from "../pages/WalletPage/Wallet";
 import UserProfile from "../pages/ProfilePage/UserProfile";
+import DoctorManagement from "../pages/ManagerPage/DoctorManagement";
+import Doctor from "../pages/DoctorPage/Doctor";
 
 
 
@@ -53,6 +55,7 @@ export const router = createBrowserRouter([
       { path: "/confirm-email", element: <ConfirmEmailPage/>},
       { path: "/invetory", element: <InventoryManagement/>},
       { path: "/user-profile", element: <UserProfile/>},
+      { path: "/doctor", element: <Doctor/>},
       {
         path: "/booking",
         element: <PrivateRoute>

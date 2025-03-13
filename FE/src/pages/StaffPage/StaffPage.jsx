@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+
 import { toast } from "react-toastify";
+import {
+  assignDoctorToBooking,
+  getAllBookings,
+  getAllDoctors,
+} from "../../api/booking.api";
 
 export default function StaffPage() {
   const [bookings, setBookings] = useState([]);
@@ -10,45 +15,43 @@ export default function StaffPage() {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("https://localhost:7134/api/Admin/getAllDoctors")
-      .then((response) => {
-        if (response.data.isSuccess) {
+    getAllDoctors()
+      .then((data) => {
+        if (data.isSuccess) {
           setDoctors(
-            response.data.result.map((doctor) => ({
-              userId: doctor.id, // Lưu `userId`
-              fullName: doctor.fullName, // Lưu tên bác sĩ
+            data.result.map((doctor) => ({
+              userId: doctor.id,
+              fullName: doctor.fullName,
             }))
           );
         }
       })
       .catch((error) => {
-        console.error("Error fetching doctors:", error);
+        console.error("❌ Lỗi khi lấy danh sách bác sĩ:", error);
       });
   }, []);
-  
 
   useEffect(() => {
-    axios
-      .get("https://localhost:7134/api/Booking/all-bookings")
-      .then((response) => {
-        if (response.data.isSuccess) {
-          setBookings(response.data.result);
+    getAllBookings()
+      .then((data) => {
+        if (data.isSuccess) {
+          setBookings(data.result);
         }
+        console.log(bookings);
       })
       .catch((error) => {
-        console.error("Error fetching booking data:", error);
+        console.error("❌ Lỗi khi lấy danh sách đặt lịch:", error);
       });
   }, []);
 
   const handleDoctorChange = (bookingId, doctorId) => {
     const doctorData = doctors.find((doctor) => doctor.userId === doctorId);
-  
+
     if (!doctorData) {
       console.error("❌ Không tìm thấy bác sĩ với ID:", doctorId);
       return;
     }
-  
+
     setSelectedDoctor((prevState) => ({
       ...prevState,
       [bookingId]: {
@@ -57,45 +60,60 @@ export default function StaffPage() {
       },
     }));
   };
-  
-  
 
- 
-  const handleSaveDoctor = (bookingId) => {
+  const handleSaveDoctor = async (bookingId) => {
     const selectedDoctorData = selectedDoctor[bookingId];
-  
+
     if (!selectedDoctorData) {
-      toast.warn("Vui lòng chọn bác sĩ trước khi lưu!", { position: "top-right" });
+      toast.warn("Vui lòng chọn bác sĩ trước khi lưu!", {
+        position: "top-right",
+      });
       return;
     }
-  
-    const { userId, fullName } = selectedDoctorData;
-  
-    console.log(`🔍 Gán bác sĩ: ${fullName} (ID: ${userId}) cho lịch hẹn ID: ${bookingId}`);
-  
-    axios
-      .post(`https://localhost:7134/api/Booking/assign-doctor?bookingId=${bookingId}&userId=${userId}`)
-      .then((response) => {
-        if (response.data.isSuccess) {
-          setSavedDoctors((prevState) => ({
-            ...prevState,
-            [bookingId]: fullName,
-          }));
-  
-          toast.success(`✅ Bác sĩ ${fullName} đã được gán thành công!`, { position: "top-right" });
-        } else {
-          toast.error(`❌ Lỗi khi gán bác sĩ: ${response.data.errorMessages?.join(", ") || "Không xác định"}`, {
+
+    try {
+      // Gán bác sĩ cho lịch hẹn
+      const response = await assignDoctorToBooking(
+        bookingId,
+        selectedDoctorData.userId
+      );
+
+      if (response.isSuccess) {
+        // Cập nhật trạng thái đặt lịch thành InProgress sau khi gán bác sĩ
+        setBookings((prevBookings) =>
+          prevBookings.map((booking) =>
+            booking.bookingId === bookingId
+              ? { ...booking, status: "InProgress" }
+              : booking
+          )
+        );
+
+        setSavedDoctors((prevState) => ({
+          ...prevState,
+          [bookingId]: selectedDoctorData.fullName,
+        }));
+
+        toast.success(
+          `✅ Bác sĩ ${selectedDoctorData.fullName} đã được gán thành công!`,
+          { position: "top-right" }
+        );
+      } else {
+        toast.error(
+          `❌ Lỗi khi gán bác sĩ: ${
+            response.errorMessages?.join(", ") || "Không xác định"
+          }`,
+          {
             position: "top-right",
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("❌ Lỗi khi gọi API:", error);
-        toast.error("❌ Lỗi khi gán bác sĩ! Vui lòng thử lại.", { position: "top-right" });
+          }
+        );
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi gọi API:", error);
+      toast.error("❌ Lỗi khi gán bác sĩ! Vui lòng thử lại.", {
+        position: "top-right",
       });
+    }
   };
-  
-  
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -105,6 +123,8 @@ export default function StaffPage() {
         return "bg-yellow-500 text-white"; // Yellow for pending
       case "Cancelled":
         return "bg-red-500 text-white"; // Red for cancelled
+      case "InProgress":
+        return "bg-blue-500 text-white"; // Blue for in-progress
       default:
         return "bg-gray-400 text-gray-800"; // Default gray color for other statuses
     }
@@ -189,50 +209,59 @@ export default function StaffPage() {
                     booking.status
                   )}`}
                 >
-                  {booking.status === "Confirmed" && "Đã Xác Nhận"}
                   {booking.status === "Pending" && "Đang Chờ"}
+                  {booking.status === "Confirmed" && "Đã Xác Nhận"}
+                  {booking.status === "InProgress" && "Đang Thực Hiện"}
                   {booking.status === "Cancelled" && "Đã Hủy"}
-                  {booking.status !== "Confirmed" &&
-                    booking.status !== "Pending" &&
-                    booking.status !== "Cancelled" &&
-                    "Chưa Xác Nhận"}
                 </td>
                 <td className="!px-6 !py-4 text-center">
-                  {booking.status !== "Confirmed" ? (
+                  {booking.status === "Pending" ? (
                     <span className="text-red-500">
                       Khách hàng chưa thanh toán
                     </span>
-                  ) : (
+                  ) : booking.status === "Confirmed" ? (
                     <select
-  className="border rounded-lg shadow-md p-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
-  value={selectedDoctor[booking.bookingId]?.userId || ""}
-  onChange={(e) => handleDoctorChange(booking.bookingId, e.target.value)}
->
-  <option value="">Chọn Bác Sĩ</option>
-  {doctors.map((doctor) => (
-    <option key={doctor.userId} value={doctor.userId}>
-      {doctor.fullName}
-    </option>
-  ))}
-</select>
+                      className="border rounded-lg shadow-md p-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      value={selectedDoctor[booking.bookingId]?.userId || ""}
+                      onChange={(e) =>
+                        handleDoctorChange(booking.bookingId, e.target.value)
+                      }
+                    >
+                      <option value="">Chọn Bác Sĩ</option>
+                      {doctors.map((doctor) => (
+                        <option key={doctor.userId} value={doctor.userId}>
+                          {doctor.fullName}
+                        </option>
+                      ))}
+                    </select>
+                  ) : booking.status === "InProgress" ? (
+                    <span className="text-blue-500">Đã chọn bác sĩ</span>
+                  ) : null}
+                </td>
 
+                <td className="!px-6 !py-4 text-center">
+                  {booking.status === "Confirmed" ? (
+                    <button
+                      onClick={() => handleSaveDoctor(booking.bookingId)}
+                      className={`${
+                        savedDoctors[booking.bookingId]
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-teal-600 hover:bg-teal-700"
+                      } text-white !py-3 !px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400`}
+                      disabled={savedDoctors[booking.bookingId]} // Vô hiệu hóa khi đã lưu
+                    >
+                      Lưu
+                    </button>
+                  ) : (
+                    <span className="text-gray-400"></span>
+                  )}
+
+                  {savedDoctors[booking.bookingId] && (
+                    <span className="text-green-500 ml-2 font-semibold">
+                      Đã Lưu
+                    </span>
                   )}
                 </td>
-                <td className="!px-6 !py-4 text-center">
-  <button
-    onClick={() => handleSaveDoctor(booking.bookingId)}
-    className={`${savedDoctors[booking.bookingId] ? "bg-gray-300 cursor-not-allowed" : "bg-teal-600 hover:bg-teal-700"}
-      text-white !py-3 !px-6 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400`}
-    disabled={savedDoctors[booking.bookingId]} // Vô hiệu hóa khi đã lưu
-  >
-    Lưu
-  </button>
-
-  {savedDoctors[booking.bookingId] && (
-    <span className="text-green-500 ml-2 font-semibold">Đã Lưu</span>
-  )}
-</td>
-
               </tr>
             ))}
           </tbody>
