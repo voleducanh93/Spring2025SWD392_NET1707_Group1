@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Space, notification, Row, Col, Upload } from 'antd';
+import { Table, Button, Modal, Form, Input, Space, Row, Col, Upload, Popconfirm } from 'antd';
 import { useVaccine } from '../../hooks/useVaccine'; // Sử dụng hook lấy dữ liệu vaccine
 import { UploadOutlined } from '@mui/icons-material';
 import { toast } from 'react-toastify';
@@ -27,9 +27,13 @@ const VaccineManagement = () => {
     setSelectedVaccine(null);
   };
 
-  // Mở modal thêm/sửa vaccine
+  
   const showModal = (record = null) => {
-    setIsDetailModalOpen(false);
+    
+      
+      setSelectedVaccine(null);
+    
+  
     setEditingVaccine(record);
     form.setFieldsValue(record || {
       name: '',
@@ -48,21 +52,19 @@ const VaccineManagement = () => {
       preserve: '',
       injectionsCount: 0
     });
+  
     setIsModalOpen(true);
   };
+  
+  
 
   // Xóa vaccine
   const handleDelete = (vaccineId) => {
-    setIsDetailModalOpen(false);
-    Modal.confirm({
-      title: 'Bạn có chắc chắn muốn xóa vaccine này?',
-      onOk: () => {
-        // Gọi hàm xóa vaccine bằng `vaccineId`
+   
         removeVaccine.mutate(vaccineId);
-        notification.success({ message: 'Vaccine đã được xóa thành công!' });
-      }
-    });
+        
   };
+  
 
   const handleFileChange = ({ file }) => {
     setSelectedFile(file);
@@ -140,18 +142,31 @@ const VaccineManagement = () => {
       render: (_, record) => (
         <Space>
           <Button
+  onClick={() => showDetailModal(record)}
+  className="border border-green-500 text-green-500 px-3 py-1 rounded hover:bg-green-500 hover:text-white transition flex items-center gap-1"
+>
+🔍 chi tiết
+</Button>
+          <Button
   onClick={() => showModal(record)}
   className="border border-green-500 text-green-500 px-3 py-1 rounded hover:bg-green-500 hover:text-white transition flex items-center gap-1"
 >
   📝 Chỉnh sửa
 </Button>
 
-<Button
-  onClick={() => handleDelete(record.vaccineId)}
-  className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition flex items-center gap-1"
+<Popconfirm
+  title="Bạn có chắc chắn muốn xóa vaccine này?"
+  onConfirm={() => handleDelete(record.vaccineId)}
+  okText="Có"
+  cancelText="Không"
 >
-  🗑️ Xóa
-</Button>
+  <Button
+    className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition flex items-center gap-1"
+  >
+    🗑️ Xóa
+  </Button>
+</Popconfirm>
+
 
 
 
@@ -174,8 +189,8 @@ const VaccineManagement = () => {
       ➕ Thêm Vaccine
     </Button>
   </div>
-      <Table columns={columns} pagination={{ pageSize: 6, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
-        onClick: () => showDetailModal(record),
+      <Table columns={columns} pagination={{ pageSize: 5, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
+       
       })} />
 
      

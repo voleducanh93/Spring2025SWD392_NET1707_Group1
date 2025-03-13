@@ -130,12 +130,20 @@ const ComboManagement = () => {
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button onClick={() => showDetailModal(record)} className="border border-blue-500 text-blue-500 px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition">
-            Chi tiết
-          </Button>
-          <Button onClick={() => showModal(record)} className="border border-green-500 text-green-500 px-3 py-1 rounded hover:bg-green-500 hover:text-white transition">
-            Chỉnh sửa
-          </Button>
+         <Button
+  onClick={() => showDetailModal(record)}
+  className="border border-blue-500 text-blue-500 px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition flex items-center gap-1"
+>
+  🔍 Chi tiết
+</Button>
+
+<Button
+  onClick={() => showModal(record)}
+  className="border border-green-500 text-green-500 px-3 py-1 rounded hover:bg-green-500 hover:text-white transition flex items-center gap-1"
+>
+  ✏️ Chỉnh sửa
+</Button>
+
           <Popconfirm
   title="Bạn có chắc chắn muốn xóa Combo này?"
   onConfirm={() => removeCombo.mutate(record.comboId)}
@@ -144,9 +152,9 @@ const ComboManagement = () => {
 >
   <Button 
     className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition"
-    icon={<DeleteOutlined />}
+    
   >
-    Xóa
+    🗑️ Xóa
   </Button>
 </Popconfirm>
         </Space>
@@ -156,9 +164,18 @@ const ComboManagement = () => {
 
   return (
     <div>
-      <Button type="primary" onClick={() => showModal()} className="mb-3">
-        Thêm Combo Vaccine
-      </Button>
+     
+      
+      <div className="flex justify-between items-center mb-4">
+    <h1 className="text-2xl font-semibold">Quản Lý Combo Vaccine</h1>
+    <Button 
+      type="primary"
+      onClick={() => showModal()}
+      className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+    >
+      ➕ Thêm Combo Vaccine
+    </Button>
+  </div>
 
       <Table columns={columns} pagination={{ pageSize: 8 }} dataSource={combos} loading={isLoading} rowKey="id" />
 

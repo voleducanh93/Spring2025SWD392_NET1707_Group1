@@ -134,12 +134,20 @@ const InventoryManagement = () => {
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="primary" onClick={() => showDetailModal(record)}>
-            Chi tiết
-          </Button>
-          <Button type="default" onClick={() => showAddModal(record)}>
-            Thêm lô vaccine
-          </Button>
+          <Button
+  onClick={() => showDetailModal(record)}
+  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition flex items-center gap-1"
+>
+  🔍 Chi tiết
+</Button>
+
+<Button
+  onClick={() => showAddModal(record)}
+  className="border border-gray-500 text-gray-500 px-3 py-1 rounded hover:bg-gray-500 hover:text-white transition flex items-center gap-1"
+>
+  ➕ Thêm lô vaccine
+</Button>
+
         </Space>
       ),
     },

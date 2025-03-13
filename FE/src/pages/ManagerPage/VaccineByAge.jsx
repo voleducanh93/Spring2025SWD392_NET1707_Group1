@@ -230,9 +230,27 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
       key: "action",
       render: (_, record) => (
         <Space>
-           <Button type="link" onClick={() => showModalDetail(record)}>Chi tiết</Button>
-          <Button type="link" onClick={() => showModal(record)}>Sửa</Button>
-          <Button type="link" danger onClick={() => handleDelete(record.scheduleId)}>Xóa</Button>
+          <Button
+  onClick={() => showModalDetail(record)}
+  className="border border-blue-500 text-blue-500 px-3 py-1 rounded hover:bg-blue-500 hover:text-white transition flex items-center gap-1"
+>
+  🔍 Chi tiết
+</Button>
+
+<Button
+  onClick={() => showModal(record)}
+  className="border border-yellow-500 text-yellow-500 px-3 py-1 rounded hover:bg-yellow-500 hover:text-white transition flex items-center gap-1"
+>
+  ✏️ Sửa
+</Button>
+
+<Button
+  onClick={() => handleDelete(record.scheduleId)}
+  className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition flex items-center gap-1"
+>
+  🗑️ Xóa
+</Button>
+
         </Space>
       ),
     },
@@ -241,9 +259,17 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
   return (
     <div className="p-5">
 
-<Button type="primary" onClick={() => showModal()} className="mb-3">
-        Thêm Vaccine
-      </Button>
+
+      <div className="flex justify-between items-center mb-4">
+    <h1 className="text-2xl font-semibold">Quản Lý Lịch Tiêm Vaccine</h1>
+    <Button 
+      type="primary"
+      onClick={() => showModal()}
+      className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+    >
+      ➕ Thêm lịch tiêm
+    </Button>
+  </div>
 
       
       <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={scheduleVaccines} loading={isLoadingSchedules} rowKey="scheduleId" />
