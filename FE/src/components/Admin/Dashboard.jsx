@@ -98,7 +98,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="!p-6 !bg-gray-100 min-h-screen">
+    <div className=" min-h-screen">
       <h2 className="!text-2xl !font-bold !mb-4">Bảng Điều Khiển</h2>
 
       {/* Tổng Doanh Thu */}
@@ -147,10 +147,10 @@ export default function Dashboard() {
         </h3>
 
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={revenueData}>
+          <LineChart data={revenueData} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" tickFormatter={(date) => formatDate(date)} />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} />
+            <YAxis tickFormatter={(value) => formatCurrency(value)}  />
             <Tooltip
               formatter={(value) => formatCurrency(value)}
               labelFormatter={(label) => formatDate(label)}

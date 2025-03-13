@@ -9,13 +9,15 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
+import "./index.css"
 
 import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
 import StaffManagement from "../../pages/ManagerPage/StaffManagement";
 import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
-import ComboManagement from "../../pages/ManagerPage/Combo/ComboManagement";
+
 import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
+import ComboManagement from "../../pages/ManagerPage/ComboManagement";
 
 const { Header, Sider, Content } = Layout;
 
@@ -76,7 +78,7 @@ const SidebarManager = () => {
 
   return (
     <Layout className="h-screen">
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider trigger={null} collapsible collapsed={collapsed} width={250} style={{ backgroundColor: "#2A388F" }}>
         <div className="demo-logo-vertical" style={{ textAlign: "center", marginTop: "20px" }}>
           <img
             src="src/assets/logo-vnvc-tet-nguyen-dan.png"
@@ -86,10 +88,10 @@ const SidebarManager = () => {
         </div>
 
         <Menu
-          theme="dark"
+        className="custom-menu"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          style={{ marginTop: "40px" }}
+          style={{ marginTop: "40px", backgroundColor: "#2A388F" }}
           onClick={handleMenuClick} // Xử lý sự kiện khi chọn tab
           selectedKeys={[selectedTab]}
           items={[
@@ -97,6 +99,7 @@ const SidebarManager = () => {
               key: "1",
               icon: <UserOutlined />,
               label: "Quản lý nhân viên",
+              style: {color: "white"}
             },
             {
               key: "2",

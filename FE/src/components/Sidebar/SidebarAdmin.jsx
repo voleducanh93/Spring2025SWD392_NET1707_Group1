@@ -14,7 +14,7 @@ import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
 import StaffManagement from "../../pages/ManagerPage/StaffManagement";
 import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
-import ComboManagement from "../../pages/ManagerPage/Combo/ComboManagement";
+import ComboManagement from "../../pages/ManagerPage/ComboManagement";
 import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
 import Dashboard from "../Admin/Dashboard";
 

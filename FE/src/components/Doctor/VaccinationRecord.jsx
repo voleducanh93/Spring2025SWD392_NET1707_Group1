@@ -5,12 +5,13 @@ import {
   useUpdateVaccineRecord,
   useVaccineRecord,
 } from "../../hooks/useVaccineRecord";
+import { useNavigate } from "react-router-dom";
 
 const VaccinationRecord = () => {
   const { data: vaccineRecord, isLoading, isError } = useVaccineRecord();
   const updateRecord = useUpdateVaccineRecord();
   const [editedRecords, setEditedRecords] = useState({});
-
+  const navigate = useNavigate();
   if (isLoading) return <Spin tip="Đang tải hồ sơ tiêm chủng..." />;
   if (isError)
     return <Alert message="Không thể tải hồ sơ tiêm chủng" type="error" />;
@@ -24,20 +25,33 @@ const VaccinationRecord = () => {
 
   // ✅ Gửi cập nhật API khi nhấn "Lưu"
   const handleSave = (record) => {
-    const updatedData = editedRecords[record.vaccinationRecordId] || {};
+    const updatedData = {
+      ...editedRecords[record.vaccinationRecordId],
+      status: "Completed", 
+    };
+  console.log(updatedData);
+  
     updateRecord.mutate({
       vaccinationRecordId: record.vaccinationRecordId,
       updatedData,
     });
   };
+  
 
   return (
-    <div className="!flex !items-center !justify-center !min-h-screen !bg-gradient-to-r !from-blue-100 !to-indigo-200">
-      <div className="!max-w-4xl !w-full !p-8 !bg-white !shadow-2xl !rounded-2xl !border !border-gray-200">
+    <div className="!flex !items-center !justify-center !min-h-screen !bg-gradient-to-r ">
+      <div className="!max-w-7xl !w-full !p-8 !bg-white !shadow-2xl !rounded-2xl ">
         <h2 className="!text-3xl !font-bold !mb-6 !text-center !text-gray-800 !uppercase !tracking-wide">
           Ghi nhận hồ sơ tiêm chủng
         </h2>
-
+        <div className="!mb-6 !flex !justify-end">
+          <button
+            onClick={() => navigate("/doctor")}
+            className="!px-4 !py-2 !bg-gray-600 !text-white !font-semibold !rounded-lg !shadow-md hover:!bg-gray-700 transition duration-200"
+          >
+            ⬅️ Quay về trang Doctor
+          </button>
+        </div>
         <div className="!mb-6 !bg-white !p-6 !rounded-lg !shadow-lg">
           <h3 className="!text-lg !font-semibold !mb-4 !text-gray-700">
             Thông tin cá nhân
@@ -50,7 +64,7 @@ const VaccinationRecord = () => {
                 type="text"
                 value={vaccineRecord.fullName}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
+                className="!w-full !p-3 !rounded-lg !shadow-sm border border-gray-200 outline-none"
               />
             </div>
 
@@ -63,7 +77,7 @@ const VaccinationRecord = () => {
                   "vi-VN"
                 )}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
+                className="!w-full !p-3 !rounded-lg !shadow-sm border border-gray-200 outline-none"
               />
             </div>
 
@@ -76,7 +90,7 @@ const VaccinationRecord = () => {
                 type="text"
                 value={vaccineRecord.height}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
+                className="!w-full !p-3 !rounded-lg !shadow-sm border border-gray-200 outline-none"
               />
             </div>
 
@@ -89,13 +103,13 @@ const VaccinationRecord = () => {
                 type="text"
                 value={vaccineRecord.weight}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
+                className="!w-full !p-3 !rounded-lg !shadow-sm border border-gray-200 outline-none"
               />
             </div>
           </div>
         </div>
 
-        <div className="!bg-gray-50 !p-6 !rounded-lg !shadow-lg">
+        <div className="!p-6 !rounded-lg !shadow-lg">
           <h3 className="!text-lg !font-semibold !mb-4 !text-gray-700">
             Thông tin vaccine
           </h3>
@@ -146,13 +160,13 @@ const VaccinationRecord = () => {
                     </td>
                     <td className="!border !p-4">{record.batchNumber}</td>
                     <td className="!border !p-4">
-                      <select
-                        className="!w-full !p-2 !border !rounded-lg"
+                      <div
+                        className="!w-full !p-2 border border-green-400 !rounded-lg bg-green-300"
                         value="Completed"
                         disabled
                       >
-                        <option value="Completed">Completed</option>
-                      </select>
+                        <span value="Completed" className="text-green-500">Completed</span>
+                      </div>
                     </td>
 
                     <td className="!border !p-4">

@@ -5,6 +5,7 @@ import VaccineInventoryModal from "../../components/VaccineShow/VaccineInventory
 import { getInventoryByVaccineId, createInventory } from "../../api/VaccineInventory.api";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import { components } from "./ComboManagement";
 
 const InventoryManagement = () => {
   const { vaccines, isLoading } = useVaccine();
@@ -156,7 +157,7 @@ const InventoryManagement = () => {
   return (
     <div className="p-5">
       <h2 className="text-2xl font-bold mb-4">Quản lý tồn kho Vaccine</h2>
-      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="vaccineId" />
+      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="vaccineId" components={components} />
 
       {/* ✅ Modal Chi Tiết Kho Vaccine */}
       <VaccineInventoryModal isOpen={isModalOpen} handleClose={handleDetailCancel} selectedVaccine={selectedVaccine} />

@@ -4,6 +4,7 @@ import "react-calendar/dist/Calendar.css";
 import { AppContext } from "../../contexts/app.context";
 import { Modal } from "antd";
 import dayjs from "dayjs";
+import "./index.css"
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
@@ -51,7 +52,7 @@ export default function MyBooking() {
 
     if (dayBookings.length > 0) {
       return (
-        <div className="!bg-blue-500 !text-white !text-xs !font-semibold !rounded-md !p-1 !mt-1 !text-center">
+        <div className="!bg-blue-500 !text-white !text-xs !font-semibold !rounded-md !p-1 !text-center tile-container">
           {dayBookings.length} đơn
         </div>
       );
@@ -73,11 +74,11 @@ export default function MyBooking() {
       <h1 className="!text-2xl !font-bold !text-blue-700 !border-b-2 !border-blue-700 !pb-2 !mb-4">
         ĐƠN TIÊM CHỦNG CỦA BẠN
       </h1>
-      <div className="!bg-white !shadow-md !rounded-lg !p-4 !w-full !max-w">
+      <div className="!bg-white !shadow-md !rounded-lg !p-4 !w-full !max-w ">
         <Calendar
           onClickDay={handleDateClick}
           tileContent={getTileContent}
-          className="!w-full !h-full !text-lg !border !rounded-md"
+          className="!w-full !h-full !text-lg !border !rounded-md custom-calendar"
         />
       </div>
 

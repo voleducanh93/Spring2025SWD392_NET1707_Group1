@@ -1,0 +1,33 @@
+/* Tăng kích thước của mỗi ô ngày */
+.custom-calendar .react-calendar__tile {
+    min-height: 80px !important;  /* Tăng chiều cao của ô */
+    font-size: 1.2rem !important; /* Tăng cỡ chữ */
+  }
+  
+  /* Tăng kích thước tiêu đề tháng */
+  .custom-calendar .react-calendar__month-view__weekdays {
+    font-size: 1.2rem !important;
+  }
+  
+  /* Định dạng các ngày */
+  .custom-calendar .react-calendar__tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Khi hover vào ô ngày */
+  .custom-calendar .react-calendar__tile:hover {
+    background-color: #e0e7ff !important; /* Màu nền hover */
+    border-radius: 10px;
+  }
+  
+/* Căn giữa số ngày */
+.tile-container {
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
