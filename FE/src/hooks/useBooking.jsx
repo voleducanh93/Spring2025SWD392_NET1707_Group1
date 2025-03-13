@@ -1,22 +1,32 @@
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
-import { useMutation } from "@tanstack/react-query";
-import { createBooking } from "../api/booking.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createBooking, getBoookingByDoctor } from "../api/booking.api";
 import { toast } from "react-toastify";
 
 export const useBooking = () => {
   const { getUser } = useContext(AppContext);
+  const doctorId = "205cd6bd-6f9f-4781-b257-d08d019edd75"; 
+
   
   const addBooking = useMutation({
-   
-    
     mutationFn: (data) => createBooking(getUser, data),
-    
     onError: (error) => {
-      
       toast.error(error || "⚠️ Đặt lịch thất bại!");
     },
   });
 
-  return { addBooking };
+ 
+  const { data: bookings, isLoading, isError, error } = useQuery({
+    queryKey: ["doctorBookings", doctorId],
+    queryFn: () => getBoookingByDoctor(doctorId),
+    enabled: !!doctorId, 
+    refetchOnWindowFocus: false,
+    onError: () => {
+     
+      toast.error("⚠️ Không thể tải danh sách lịch tiêm chủng!");
+    },
+  });
+
+  return { addBooking, bookings, isLoading, isError, error };
 };

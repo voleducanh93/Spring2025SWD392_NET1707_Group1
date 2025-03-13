@@ -6,7 +6,10 @@ export const getChildren = async (id) => {
   return response.data.result;
 };
 
-
+export const getChildrenById = async (id) => {
+  const response = await http.get(`${BASE_URL}/${id}`);
+  return response.data.result;
+};
 export const createChildren = async (id,childrenData) => {
   const response = await http.post(`${BASE_URL}?userId=${id}`, childrenData);
   return response.data; 
