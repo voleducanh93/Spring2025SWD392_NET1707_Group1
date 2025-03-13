@@ -1,21 +1,35 @@
-import { useQuery } from "@tanstack/react-query";
-import { getChildrenById } from "../../api/children.api";
 import { Spin, Alert, Button } from "antd";
 
-const VaccinationRecord = ({ childId, booking, onBack }) => {
-  const {
-    data: child,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["child", childId],
-    queryFn: () => getChildrenById(childId),
-    enabled: !!childId,
-  });
+import { useState } from "react";
+import {
+  useUpdateVaccineRecord,
+  useVaccineRecord,
+} from "../../hooks/useVaccineRecord";
 
-  if (isLoading) return <Spin tip="Đang tải thông tin trẻ..." />;
+const VaccinationRecord = () => {
+  const { data: vaccineRecord, isLoading, isError } = useVaccineRecord();
+  const updateRecord = useUpdateVaccineRecord();
+  const [editedRecords, setEditedRecords] = useState({});
+
+  if (isLoading) return <Spin tip="Đang tải hồ sơ tiêm chủng..." />;
   if (isError)
-    return <Alert message="Không thể tải thông tin trẻ" type="error" />;
+    return <Alert message="Không thể tải hồ sơ tiêm chủng" type="error" />;
+
+  const handleInputChange = (id, field, value) => {
+    setEditedRecords((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [field]: value },
+    }));
+  };
+
+  // ✅ Gửi cập nhật API khi nhấn "Lưu"
+  const handleSave = (record) => {
+    const updatedData = editedRecords[record.vaccinationRecordId] || {};
+    updateRecord.mutate({
+      vaccinationRecordId: record.vaccinationRecordId,
+      updatedData,
+    });
+  };
 
   return (
     <div className="!flex !items-center !justify-center !min-h-screen !bg-gradient-to-r !from-blue-100 !to-indigo-200">
@@ -24,65 +38,67 @@ const VaccinationRecord = ({ childId, booking, onBack }) => {
           Ghi nhận hồ sơ tiêm chủng
         </h2>
 
-        {/* Thông tin cá nhân */}
         <div className="!mb-6 !bg-white !p-6 !rounded-lg !shadow-lg">
           <h3 className="!text-lg !font-semibold !mb-4 !text-gray-700">
             Thông tin cá nhân
           </h3>
-
           <div className="!grid !grid-cols-2 !gap-4">
+            {/* Họ và tên */}
             <div>
               <label className="!block !text-gray-600 !mb-1">Họ và tên</label>
               <input
                 type="text"
-                value={child.fullName}
+                value={vaccineRecord.fullName}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm !focus:ring-2 !focus:ring-blue-400 !transition bg-gray-100"
+                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
               />
             </div>
 
+            {/* Ngày sinh */}
             <div>
               <label className="!block !text-gray-600 !mb-1">Ngày sinh</label>
               <input
                 type="text"
-                value={new Date(child.dateOfBirth).toLocaleDateString("vi-VN")}
+                value={new Date(vaccineRecord.dateOfBirth).toLocaleDateString(
+                  "vi-VN"
+                )}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm !focus:ring-2 !focus:ring-blue-400 !transition bg-gray-100"
+                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
               />
             </div>
 
+            {/* Chiều cao */}
             <div>
               <label className="!block !text-gray-600 !mb-1">
-                Chiều cao (cm)
+                Chiều cao (m)
               </label>
               <input
                 type="text"
-                value={child.height}
+                value={vaccineRecord.height}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm !focus:ring-2 !focus:ring-blue-400 !transition bg-gray-100"
+                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
               />
             </div>
 
+            {/* Cân nặng */}
             <div>
               <label className="!block !text-gray-600 !mb-1">
                 Cân nặng (kg)
               </label>
               <input
                 type="text"
-                value={child.weight}
+                value={vaccineRecord.weight}
                 readOnly
-                className="!w-full !p-3 !border !rounded-lg !shadow-sm !focus:ring-2 !focus:ring-blue-400 !transition bg-gray-100"
+                className="!w-full !p-3 !border !rounded-lg !shadow-sm bg-gray-100"
               />
             </div>
           </div>
         </div>
 
-        {/* Thông tin lịch tiêm */}
         <div className="!bg-gray-50 !p-6 !rounded-lg !shadow-lg">
           <h3 className="!text-lg !font-semibold !mb-4 !text-gray-700">
             Thông tin vaccine
           </h3>
-
           <div className="!overflow-x-auto">
             <table className="!w-full !border !border-gray-300 !text-sm !shadow-md !rounded-lg">
               <thead>
@@ -94,56 +110,74 @@ const VaccinationRecord = ({ childId, booking, onBack }) => {
                   <th className="!border !p-4">Số Lô</th>
                   <th className="!border !p-4">Trạng Thái</th>
                   <th className="!border !p-4">Ghi Chú</th>
+                  <th className="!border !p-4">Hành Động</th>
                 </tr>
               </thead>
-
               <tbody>
-                <tr className="!bg-white hover:!bg-blue-100 !transition !duration-200 !text-center">
-                  <td className="!border !p-4">{booking.bookingType}</td>
-                  <td className="!border !p-4">0.05 ml</td>
-                  <td className="!border !p-4 !text-green-600 !font-semibold">
-                    {booking.totalPrice.toLocaleString()} VNĐ
-                  </td>
-                  <td className="!border !p-4">
-                    <input
-                      type="date"
-                      className="!w-full !p-2 !border !rounded-lg !shadow-sm !focus:ring-2 !focus:ring-blue-400 !transition"
-                    />
-                  </td>
-                  <td className="!border !p-4">BCG202401</td>
-                  <td className="!border !p-4">
-                    <select className="!w-full !p-2 !border !rounded-lg">
-                      <option
+                {vaccineRecord.vaccineRecords.map((record) => (
+                  <tr
+                    key={record.vaccinationRecordId}
+                    className="!bg-white hover:!bg-blue-100 !transition !duration-200 !text-center"
+                  >
+                    <td className="!border !p-4">{record.vaccineName}</td>
+                    <td className="!border !p-4">{record.doseAmount} ml</td>
+                    <td className="!border !p-4 !text-green-600 !font-semibold">
+                      {record.price.toLocaleString()} VNĐ
+                    </td>
+                    <td className="!border !p-4">
+                      <input
+                        type="date"
+                        defaultValue={
+                          record.nextDoseDate
+                            ? new Date(record.nextDoseDate)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            record.vaccinationRecordId,
+                            "nextDoseDate",
+                            e.target.value
+                          )
+                        }
+                        className="!w-full !p-2 !border !rounded-lg"
+                      />
+                    </td>
+                    <td className="!border !p-4">{record.batchNumber}</td>
+                    <td className="!border !p-4">
+                      <select
+                        className="!w-full !p-2 !border !rounded-lg"
                         value="Completed"
-                        selected={booking.status === "Completed"}
+                        disabled
                       >
-                        Completed
-                      </option>
-                      <option
-                        value="Pending"
-                        selected={booking.status === "Pending"}
-                      >
-                        Pending
-                      </option>
-                    </select>
-                  </td>
-                  <td className="!border !p-4">
-                    <textarea
-                      placeholder="Nhập ghi chú..."
-                      className="!w-full !p-2 !border !rounded-lg"
-                    ></textarea>
-                  </td>
-                </tr>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    </td>
+
+                    <td className="!border !p-4">
+                      <textarea
+                        defaultValue={record.notes}
+                        onChange={(e) =>
+                          handleInputChange(
+                            record.vaccinationRecordId,
+                            "notes",
+                            e.target.value
+                          )
+                        }
+                        className="!w-full !p-2 !border !rounded-lg"
+                      ></textarea>
+                    </td>
+                    <td className="!border !p-4">
+                      <Button type="primary" onClick={() => handleSave(record)}>
+                        Lưu
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-        </div>
-
-        {/* Nút quay lại */}
-        <div className="mt-6 text-center">
-          <Button type="default" onClick={onBack}>
-            Quay lại
-          </Button>
         </div>
       </div>
     </div>

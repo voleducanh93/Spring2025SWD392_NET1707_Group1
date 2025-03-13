@@ -25,6 +25,7 @@ import DepositSuccess from "../pages/BookingPage/DepositSuccess";
 import Wallet from "../pages/WalletPage/Wallet";
 import UserProfile from "../pages/ProfilePage/UserProfile";
 import DoctorPage from "../pages/DoctorPage/Doctor";
+import DoctorRecord from "../pages/DoctorPage/DoctorRecord";
 
 
 
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
       { path: "/invetory", element: <InventoryManagement/>},
       { path: "/user-profile", element: <UserProfile/>},
       { path: "/doctor", element: <DoctorPage/>},
+     {path:"/doctor/record/:bookingId", element:<DoctorRecord />},
       {
         path: "/booking",
         element: <PrivateRoute>

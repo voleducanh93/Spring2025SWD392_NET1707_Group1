@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 export const useBooking = () => {
   const { getUser } = useContext(AppContext);
-  const doctorId = "205cd6bd-6f9f-4781-b257-d08d019edd75"; 
+  const doctorId = getUser; 
 
   
   const addBooking = useMutation({
@@ -22,6 +22,7 @@ export const useBooking = () => {
     queryFn: () => getBoookingByDoctor(doctorId),
     enabled: !!doctorId, 
     refetchOnWindowFocus: false,
+    
     onError: () => {
      
       toast.error("⚠️ Không thể tải danh sách lịch tiêm chủng!");

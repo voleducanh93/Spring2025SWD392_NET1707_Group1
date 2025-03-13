@@ -1,8 +1,12 @@
-import VaccinationHandler from "../../components/Doctor/VaccinationHandler";
+import DoctorList from "../../components/Doctor/DoctorList";
 
 
-function DoctorPage() {
-  return <VaccinationHandler />;
-}
+const DoctorPage = () => {
+  return (
+    <div>
+      <DoctorList />
+    </div>
+  );
+};
 
 export default DoctorPage;

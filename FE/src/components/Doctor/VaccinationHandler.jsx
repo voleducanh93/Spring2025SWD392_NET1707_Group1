@@ -21,7 +21,7 @@ const VaccinationHandler = () => {
       {!selectedChildId ? (
         <DoctorList onProceedVaccination={handleProceedVaccination} />
       ) : (
-        <VaccinationRecord childId={selectedChildId} booking={selectedBooking} onBack={handleBackToList} />
+        <VaccinationRecord  bookingId={selectedBooking.bookingId} onBack={handleBackToList} />
       )}
     </div>
   );
