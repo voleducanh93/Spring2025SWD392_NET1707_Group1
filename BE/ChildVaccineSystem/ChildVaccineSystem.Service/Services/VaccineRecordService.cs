@@ -109,7 +109,8 @@ namespace ChildVaccineSystem.Service.Services
 								Status = VaccineRecordStatus.Completed,
 								Notes = "Tiêm chủng hoàn tất",
 								BatchNumber = vaccineInventory.BatchNumber,
-								NextDoseDate = nextDoseDate
+								NextDoseDate = nextDoseDate,
+								Price = vaccine.Price
 							};
 
 							await _vaccineRecordRepository.AddAsync(vaccinationRecord);
@@ -120,7 +121,7 @@ namespace ChildVaccineSystem.Service.Services
 								VaccinationRecordId = vaccinationRecord.VaccinationRecordId,
 								VaccineName = vaccine.Name,
 								DoseAmount = vaccine.DoseAmount,
-								Price = 0, // Giá vaccine mặc định 0 nếu không lấy từ hệ thống
+								Price = vaccine.Price,
 								NextDoseDate = nextDoseDate,
 								BatchNumber = vaccinationRecord.BatchNumber,
 								StatusEnum = VaccineRecordStatus.Completed,
@@ -132,8 +133,8 @@ namespace ChildVaccineSystem.Service.Services
 				}
 
 				// Cập nhật trạng thái booking thành COMPLETED
-				//booking.Status = BookingStatus.Completed;
-				//_unitOfWork.Bookings.UpdateAsync(booking);
+				booking.Status = BookingStatus.Completed;
+				_unitOfWork.Bookings.UpdateAsync(booking);
 
 				await _unitOfWork.CompleteAsync();
 
@@ -182,8 +183,9 @@ namespace ChildVaccineSystem.Service.Services
                 Status = VaccineRecordStatus.Completed,
                 Notes = "Tiêm chủng hoàn tất",
                 BatchNumber = vaccineInventory.BatchNumber,
-                NextDoseDate = nextDoseDate
-            };
+                NextDoseDate = nextDoseDate,
+				Price = detail.Vaccine.Price
+			};
 
             await _vaccineRecordRepository.AddAsync(vaccinationRecord);
 
@@ -240,6 +242,7 @@ namespace ChildVaccineSystem.Service.Services
 			// ✅ Kiểm tra trong bảng DoctorWorkSchedules xem bác sĩ có được gán cho BookingId này không
 			var isDoctorAssigned = await _unitOfWork.DoctorWorkSchedules
 				.AnyAsync(dws => dws.BookingId == record.BookingDetail.BookingId && dws.UserId == doctorId);
+			
 
 			if (!isDoctorAssigned)
 				throw new UnauthorizedAccessException("Bạn không có quyền truy cập hồ sơ này.");
@@ -259,6 +262,7 @@ namespace ChildVaccineSystem.Service.Services
 				VaccineName = record.Vaccine.Name,
 				DoseAmount = record.DoseAmount,
 				BatchNumber = record.BatchNumber,
+				Price = Convert.ToDecimal(record.Price),
 				StatusEnum = record.Status,
 				NextDoseDate = record.NextDoseDate,
 				Notes = record.Notes
@@ -325,9 +329,11 @@ namespace ChildVaccineSystem.Service.Services
 					Weight = group.First().Child.Weight,
 					VaccineRecords = group.Select(record => new VaccineRecordDetailDTO
 					{
+						VaccinationRecordId = record.VaccinationRecordId,
 						VaccineName = record.Vaccine.Name,
 						DoseAmount = record.DoseAmount,
 						BatchNumber = record.BatchNumber,
+						Price = Convert.ToDecimal(record.Price),
 						StatusEnum = record.Status,
 						NextDoseDate = record.NextDoseDate,
 						Notes = record.Notes
@@ -420,6 +426,7 @@ namespace ChildVaccineSystem.Service.Services
 					VaccineName = record.Vaccine.Name,
 					DoseAmount = record.DoseAmount,
 					BatchNumber = record.BatchNumber,
+					Price = Convert.ToDecimal(record.Price),
 					StatusEnum = record.Status,
 					NextDoseDate = record.NextDoseDate,
 					Notes = record.Notes
