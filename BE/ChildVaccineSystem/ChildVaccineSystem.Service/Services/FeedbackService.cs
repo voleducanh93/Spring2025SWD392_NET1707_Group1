@@ -26,7 +26,7 @@ namespace ChildVaccineSystem.Service.Services
         {
             var feedback = await _unitOfWork.Feedbacks.GetFeedbackByBookingIdAsync(bookingId);
             if (feedback == null)
-                throw new ArgumentException($"No feedback found for booking with ID {bookingId}");
+                throw new ArgumentException($"Không tìm thấy phản hồi nào cho việc đặt chỗ bằng ID {bookingId}");
 
             return _mapper.Map<FeedbackDTO>(feedback);
         }
@@ -53,7 +53,7 @@ namespace ChildVaccineSystem.Service.Services
             var feedback = await _unitOfWork.Feedbacks.GetAsync(f => f.BookingId == bookingId);
             if (feedback == null)
             {
-                throw new ArgumentException($"No feedback found for booking with ID {bookingId}");
+                throw new ArgumentException($"Không tìm thấy phản hồi nào cho việc đặt chỗ bằng ID {bookingId}");
             }
 
             feedback.Rating = updateFeedbackDto.Rating;
