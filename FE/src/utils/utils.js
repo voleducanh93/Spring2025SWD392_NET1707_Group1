@@ -20,6 +20,8 @@ export function isAxiosUnprocessableEntityError(error) {
 
 // Kiểm tra lỗi 401 (Unauthorized) từ Axios
 export function isAxiosUnauthorizedError(error) {
+  console.log(error.response?.status);
+  
   return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized;
 }
 

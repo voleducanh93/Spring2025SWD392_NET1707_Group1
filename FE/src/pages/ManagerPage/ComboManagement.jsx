@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useComboVaccine } from "../../hooks/useCombo";
 import ComboDetailModal from "../../components/Combo/ComboDetail";
 import ComboModal from "../../components/Combo/ComboModal";
-import { DeleteOutlined } from "@mui/icons-material";
+
 import "./headColumn.css"
 
 import { Button, Form, Popconfirm, Space, Table } from "antd";

@@ -6,17 +6,14 @@ export default function Wallet() {
   const [walletData, setWalletData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { getUser } = useContext(AppContext);
-  const userId = "d661e3d4-68c7-4cb6-ba75-beabd150bec5"; // Thay thế bằng user ID thực tế
 
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
         const response = await getWalletByUser();
-        console.log(response);
 
         //const data = await response.json();
         setWalletData(response);
-        console.log(walletData);
 
         setIsLoading(false);
       } catch (error) {
@@ -26,7 +23,7 @@ export default function Wallet() {
     };
 
     fetchWalletData();
-  }, [userId]);
+  }, [getUser]);
 
   if (isLoading) {
     return (

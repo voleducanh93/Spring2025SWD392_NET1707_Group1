@@ -27,7 +27,6 @@ export default function Topbar() {
   const navigate = useNavigate();
   const { setIsAuthenticated, isAuthenticated, walletBalance } =
     useContext(AppContext);
-  console.log(walletBalance);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
