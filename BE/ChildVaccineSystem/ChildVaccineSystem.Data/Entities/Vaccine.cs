@@ -30,5 +30,13 @@ namespace ChildVaccineSystem.Data.Entities
         public decimal DoseAmount { get; set; }
         public virtual ICollection<VaccineScheduleDetail> VaccineScheduleDetails { get; set; }
 
+        public int? IsParentId { get; set; } // Vaccine phải tiêm trước (nullable)
+
+        [ForeignKey("IsParentId")]
+        public virtual Vaccine? ParentVaccine { get; set; }
+        public virtual ICollection<Vaccine> ChildVaccines { get; set; }
+
+        public bool IsIncompatibility { get; set; } // Nếu true, vaccine này không thể tiêm chung với vaccine sống khác
+
 	}
 }
