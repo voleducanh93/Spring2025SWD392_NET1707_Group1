@@ -31,7 +31,6 @@ namespace ChildVaccineSystem.Data.Models
 		public DbSet<ComboVaccine> ComboVaccines { get; set; }
 		public DbSet<InjectionSchedule> InjectionSchedules { get; set; }
 		public DbSet<VaccineTransactionHistory> VaccineTransactions { get; set; }
-		public DbSet<BlogPost> BlogPosts { get; set; }
 		public DbSet<Wallet> Wallets { get; set; }
 		public DbSet<WalletTransaction> WalletTransactions { get; set; }
 		public DbSet<RefundRequest> RefundRequests { get; set; }
