@@ -145,7 +145,7 @@ namespace ChildVaccineSystem.Data.Models
 				.OnDelete(DeleteBehavior.Restrict);
 
 			modelBuilder.Entity<BookingDetail>()
-				.HasOne<VaccinationRecord>()
+				.HasOne(bd => bd.VaccinationRecord)
 				.WithOne(vr => vr.BookingDetail)
 				.HasForeignKey<VaccinationRecord>(vr => vr.BookingDetailId)
 				.OnDelete(DeleteBehavior.Restrict);
