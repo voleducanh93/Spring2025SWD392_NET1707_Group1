@@ -46,10 +46,15 @@ namespace ChildVaccineSystem.Common.Helper
             // Vaccine Mapping
             CreateMap<Vaccine, VaccineDTO>().ReverseMap();
 
-            CreateMap<CreateVaccineDTO, Vaccine>();
+            CreateMap<CreateVaccineDTO, Vaccine>()
+                .ForMember(dest => dest.ParentVaccine, opt => opt.Ignore()) // ✅ Xử lý riêng trong service
+                .ForMember(dest => dest.IsIncompatibility, opt => opt.MapFrom(src => src.IsIncompatibility));
 
             CreateMap<UpdateVaccineDTO, Vaccine>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.ParentVaccine, opt => opt.Ignore()) // ✅ Xử lý riêng trong service
+                .ForMember(dest => dest.IsIncompatibility, opt => opt.MapFrom(src => src.IsIncompatibility))
+                                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
 
             // ComboVaccine Mapping
             CreateMap<ComboVaccine, ComboVaccineDTO>()
