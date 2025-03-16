@@ -34,6 +34,7 @@ namespace ChildVaccineSystem.Data.Models
 		public DbSet<Wallet> Wallets { get; set; }
 		public DbSet<WalletTransaction> WalletTransactions { get; set; }
 		public DbSet<RefundRequest> RefundRequests { get; set; }
+		public DbSet<VaccinationReminder> VaccinationReminders { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -272,6 +273,25 @@ namespace ChildVaccineSystem.Data.Models
 				.WithMany()
 				.HasForeignKey(t => t.RefundRequestId)
 				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			//VaccinationReminder
+			modelBuilder.Entity<VaccinationReminder>()
+				.HasOne(vr => vr.User)
+				.WithMany()
+				.HasForeignKey(vr => vr.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<VaccinationReminder>()
+				.HasOne(vr => vr.Children)
+				.WithMany()
+				.HasForeignKey(vr => vr.ChildId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<VaccinationReminder>()
+				.HasOne(vr => vr.Booking)
+				.WithMany()
+				.HasForeignKey(vr => vr.BookingId)
 				.OnDelete(DeleteBehavior.Restrict);
 		}
 	}

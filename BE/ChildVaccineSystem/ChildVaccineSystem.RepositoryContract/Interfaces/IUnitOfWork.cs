@@ -28,9 +28,10 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IRefundRequestRepository RefundRequests { get; }
 		IWalletTransactionRepository WalletTransactions { get; }
         IVaccineRecordRepository VaccineRecords { get; }
+        INotificationRepository Notifications { get; }
+        IVaccinationReminderRepository VaccinationReminders { get; }
 
-
-        Task<int> CompleteAsync();
+		Task<int> CompleteAsync();
 		Task<IDbContextTransaction> BeginTransactionAsync();
 	}
 }

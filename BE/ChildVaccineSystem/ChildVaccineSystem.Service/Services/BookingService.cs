@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ChildVaccineSystem.Service.Services
 {
@@ -17,13 +19,17 @@ namespace ChildVaccineSystem.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IVaccineInventoryService _inventoryService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<NotificationService> _logger;
 
-        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, IVaccineInventoryService inventoryService)
+        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, IVaccineInventoryService inventoryService, IServiceProvider serviceProvider, ILogger<NotificationService>? logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _inventoryService = inventoryService;
-        }
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+		}
 
         public async Task<BookingDTO> GetByIdAsync(int id)
         {
@@ -192,7 +198,20 @@ namespace ChildVaccineSystem.Service.Services
             await _unitOfWork.Bookings.AddAsync(booking);
             await _unitOfWork.CompleteAsync();
 
-            return await GetByIdAsync(booking.BookingId);
+
+            try
+            {
+	            var reminderService = _serviceProvider.GetRequiredService<IReminderService>();
+	            await reminderService.CreateReminderForBookingAsync(booking.BookingId);
+	            _logger.LogInformation("Created reminder for new booking ID: {0}", booking.BookingId);
+            }
+            catch (Exception ex)
+            {
+	            // Log but don't fail the booking creation
+	            _logger.LogError(ex, "Error creating reminder for booking {BookingId}", booking.BookingId);
+            }
+
+			return await GetByIdAsync(booking.BookingId);
         }
 
         private async Task<PricingPolicy> GetPricingPolicyForBookingAsync(DateTime bookingDate)
