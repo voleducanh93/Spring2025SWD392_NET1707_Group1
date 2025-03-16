@@ -33,6 +33,11 @@ namespace ChildVaccineSystem.Service.Services
 
         public async Task<FeedbackDTO> AddFeedbackAsync(CreateFeedbackDTO feedbackDto, string userId, string userName)
         {
+            var existingFeedback = await _unitOfWork.Feedbacks.GetFeedbackByBookingIdAsync(feedbackDto.BookingId);
+            if (existingFeedback != null)
+            {
+                throw new ArgumentException($"Phản hồi cho BookingId {feedbackDto.BookingId} đã tồn tại.");
+            }
             var feedback = new Feedback
             {
                 BookingId = feedbackDto.BookingId,
