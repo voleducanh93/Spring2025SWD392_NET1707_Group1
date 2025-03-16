@@ -296,5 +296,31 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Kiểm tra yêu cầu vaccine cha cho Vaccines
+        /// </summary>
+        /// <param name="VaccineIds">Danh sách vaccine ID cần kiểm tra</param>
+        /// <returns>Danh sách thông báo cảnh báo</returns>
+        [HttpPost("check-parent-vaccine")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> CheckParenVaccine([FromForm] List<int> VaccineIds)
+        {
+	        try
+	        {
+		        var result = await _bookingService.CheckParentVaccinesInBookingAsync(VaccineIds);
+
+		        _response.StatusCode = HttpStatusCode.OK;
+		        _response.IsSuccess = true;
+		        _response.Result = result;
+		        return Ok(_response);
+	        }
+	        catch (Exception ex)
+	        {
+		        _response.StatusCode = HttpStatusCode.BadRequest;
+		        _response.IsSuccess = false;
+		        _response.ErrorMessages.Add(ex.Message);
+		        return BadRequest(_response);
+	        }
+        }
 	}
 }
