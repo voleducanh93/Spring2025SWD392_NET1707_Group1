@@ -4,7 +4,7 @@ import { useVaccineSchedule } from "../../hooks/useVaccineSchedule";
 import { useVaccine } from "../../hooks/useVaccine";
 import { toast } from "react-toastify";
 import VaccinationScheduleTable from "../../components/VaccineShow/VaccinationScheduleTable";
-
+import { components } from "./ComboManagement";
 const VaccineByAge = () => {
   const {
     vaccines: scheduleVaccines,
@@ -272,7 +272,7 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
   </div>
 
       
-      <Table columns={columns} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={scheduleVaccines} loading={isLoadingSchedules} rowKey="scheduleId" />
+      <Table columns={columns} components={components} pagination={{ pageSize: 8, showSizeChanger: false }} dataSource={scheduleVaccines} loading={isLoadingSchedules} rowKey="scheduleId" />
       <Modal
   title="Chi tiết Lịch Tiêm Chủng"
   open={isDetailModalOpen}

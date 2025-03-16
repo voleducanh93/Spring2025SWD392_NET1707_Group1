@@ -11,12 +11,13 @@ import {
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
 
 import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
-import StaffManagement from "../../pages/ManagerPage/StaffManagement";
 import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
 import ComboManagement from "../../pages/ManagerPage/ComboManagement";
 import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
 import Dashboard from "../Admin/Dashboard";
+import UserManage from "../User/UserManage";
+import RefundManage from "../User/RefundManage";
 
 const { Header, Sider, Content } = Layout;
 
@@ -46,6 +47,10 @@ const SidebarAdmin = () => {
         return <ComboManagement />;
         case "6":
         return <VaccineByAge />;
+        case "7":
+        return <UserManage />;
+        case "8":
+        return <RefundManage />;
       default:
         return <VaccineManagement />;
     }
@@ -124,6 +129,18 @@ const SidebarAdmin = () => {
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý lịch tiêm cho Vaccine",
             },
+            {
+              key: "7",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý User"
+            },
+            {
+              key: "8",
+              icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
+              label: "Quản lý Refund"
+            }
+      
+
           ]}
         />
       </Sider>

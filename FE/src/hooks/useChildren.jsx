@@ -17,8 +17,11 @@ if (!getUser) {
     queryKey: ["children",getUser],
     queryFn: () => getChildren(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy dữ liệu children:", err);
+    onError: (error) => {
+      if (error?.response?.data?.errorMessages?.length > 0) {
+        const errorMessage = error.response.data.errorMessages[0]; 
+        toast.error(`⚠️ ${errorMessage}`);
+    }
     },
   });
 
@@ -37,9 +40,7 @@ if (!getUser) {
         if (error?.response?.data?.errorMessages?.length > 0) {
             const errorMessage = error.response.data.errorMessages[0]; 
             toast.error(`⚠️ ${errorMessage}`);
-        } else {
-            toast.error("⚠️ Thêm trẻ thất bại! Vui lòng thử lại.");
-        }
+        } 
     }
 });
 
@@ -49,20 +50,32 @@ if (!getUser) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["children"] });
     },
-    onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật children:", error);
-    },
   });
 
   const removeChildren = useMutation({
     mutationFn: deleteChildren,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["children"] });
+
+    onSuccess: (_, id) => { // Lấy `id` từ mutation
+        queryClient.setQueryData(["children"], (oldData) => {
+            if (!oldData || oldData.length === 1) {
+                return []; // Đảm bảo danh sách rỗng khi xóa phần tử cuối
+            }
+            return oldData.filter((child) => child.id !== id);
+        });
+
+        queryClient.invalidateQueries(["children"]); // Làm mới danh sách từ API
+
+        toast.success("Đã xóa thành công");
     },
+
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa children:", error);
+        if (error?.response?.data?.errorMessages?.length > 0) {
+            const errorMessage = error.response.data.errorMessages[0]; 
+            toast.error(`⚠️ ${errorMessage}`);
+        }
     },
-  });
+});
+
 
   return {
     vaccines,
