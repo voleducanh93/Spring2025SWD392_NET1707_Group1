@@ -91,6 +91,13 @@ namespace ChildVaccineSystem.Data.Models
 				.HasForeignKey(f => f.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
 
+			//DoctorWorkSchedule
+			modelBuilder.Entity<DoctorWorkSchedule>()
+				.HasMany(dws => dws.Bookings)
+				.WithOne(b => b.DoctorWorkSchedule)
+				.HasForeignKey(b => b.DoctorWorkScheduleId)
+				.OnDelete(DeleteBehavior.Restrict);
+
 			//Booking
 			modelBuilder.Entity<Booking>()
 				.HasOne(b => b.Children)
@@ -120,12 +127,6 @@ namespace ChildVaccineSystem.Data.Models
 				.HasOne(b => b.Feedback)
 				.WithOne(f => f.Booking)
 				.HasForeignKey<Feedback>(f => f.BookingId)
-				.OnDelete(DeleteBehavior.Restrict);
-
-			modelBuilder.Entity<Booking>()
-				.HasMany<DoctorWorkSchedule>()
-				.WithOne(d => d.Booking)
-				.HasForeignKey(d => d.BookingId)
 				.OnDelete(DeleteBehavior.Restrict);
 
 			//BookingDetail
