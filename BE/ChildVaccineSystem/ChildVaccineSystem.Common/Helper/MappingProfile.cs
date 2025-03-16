@@ -19,6 +19,7 @@ using ChildVaccineSystem.Data.DTO.VaccineInventory;
 using ChildVaccineSystem.Data.DTO.Transaction;
 using ChildVaccineSystem.Data.DTO.DoctorWorkSchedule;
 using ChildVaccineSystem.Data.DTO.Feedback;
+using ChildVaccineSystem.Data.DTO.Notification;
 using ChildVaccineSystem.Data.DTO.User;
 using ChildVaccineSystem.Data.DTO.Refund;
 using ChildVaccineSystem.Data.DTO.Wallet;
@@ -46,10 +47,15 @@ namespace ChildVaccineSystem.Common.Helper
             // Vaccine Mapping
             CreateMap<Vaccine, VaccineDTO>().ReverseMap();
 
-            CreateMap<CreateVaccineDTO, Vaccine>();
+            CreateMap<CreateVaccineDTO, Vaccine>()
+                .ForMember(dest => dest.ParentVaccine, opt => opt.Ignore()) // ✅ Xử lý riêng trong service
+                .ForMember(dest => dest.IsIncompatibility, opt => opt.MapFrom(src => src.IsIncompatibility));
 
             CreateMap<UpdateVaccineDTO, Vaccine>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.ParentVaccine, opt => opt.Ignore()) // ✅ Xử lý riêng trong service
+                .ForMember(dest => dest.IsIncompatibility, opt => opt.MapFrom(src => src.IsIncompatibility))
+                                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
 
             // ComboVaccine Mapping
             CreateMap<ComboVaccine, ComboVaccineDTO>()
@@ -214,6 +220,8 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.StatusEnum, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes));
 
-        }
-    }
+            CreateMap<Notification, NotificationDTO>();
+
+		}
+	}
 }

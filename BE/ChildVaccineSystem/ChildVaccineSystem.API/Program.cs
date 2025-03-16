@@ -11,8 +11,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using ChildVaccineSystem.API.Jobs;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddQuartz(q =>
+{
+	// Register the job
+	q.AddJob<AppointmentReminderJob>(opts => opts.WithIdentity("AppointmentReminderJob"));
+
+	// Create a trigger for the job that runs daily at 8:00 AM
+	q.AddTrigger(opts => opts
+		.ForJob("AppointmentReminderJob")
+		.WithIdentity("AppointmentReminderTrigger")
+		.WithCronSchedule("0 0 6 * * ?"));  // Daily at 8:00 AM
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+builder.Services.AddSignalR();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -179,5 +197,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

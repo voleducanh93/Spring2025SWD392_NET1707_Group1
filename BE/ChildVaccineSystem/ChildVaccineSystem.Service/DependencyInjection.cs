@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChildVaccineSystem.RepositoryContract.Interfaces;
 
 namespace ChildVaccineSystem.Service
 {
@@ -36,10 +37,11 @@ namespace ChildVaccineSystem.Service
 			services.AddTransient<IWalletService, WalletService>();
 			services.AddTransient<IRefundService, RefundService>();
 			services.AddTransient<IPaymentService, PaymentService>();
-			services.AddTransient<IWalletDepositService, WalletDepositService>();
             services.AddTransient<IVaccineRecordService, VaccineRecordService>();
+            services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<IReminderService, ReminderService>();
 
-            return services;
+			return services;
         }
     }
 }

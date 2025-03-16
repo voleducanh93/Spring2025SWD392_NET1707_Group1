@@ -21,6 +21,7 @@ namespace ChildVaccineSystem.Data.DTO.Wallet
 		public decimal Amount { get; set; }
 		public string TransactionType { get; set; }
 		public string Description { get; set; }
+		public string Status { get; set; }
 		public DateTime CreatedAt { get; set; }
 	}
 
@@ -36,12 +37,5 @@ namespace ChildVaccineSystem.Data.DTO.Wallet
 		[Required]
 		[Range(10000, 100000000, ErrorMessage = "Deposit amount must be between 10,000 VND and 100,000,000 VND")]
 		public decimal Amount { get; set; }
-	}
-
-	public class WalletDepositResponseDTO
-	{
-		public bool Success { get; set; }
-		public string Message { get; set; }
-		public string PaymentUrl { get; set; }
 	}
 }

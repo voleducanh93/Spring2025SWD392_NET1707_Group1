@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using ChildVaccineSystem.Common.Helper;
 using ChildVaccineSystem.Data.DTO.Wallet;
 using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
 using ChildVaccineSystem.ServiceContract.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 
 namespace ChildVaccineSystem.Service.Services
 {
@@ -84,6 +86,7 @@ namespace ChildVaccineSystem.Service.Services
 				Amount = addFundsDto.Amount,
 				TransactionType = "Nạp tiền",
 				Description = $"Admin nạp tiền",
+				Status = "Hoàn thành",
 				CreatedAt = DateTime.UtcNow
 			};
 
@@ -92,6 +95,65 @@ namespace ChildVaccineSystem.Service.Services
 			await _unitOfWork.Wallets.UpdateWalletBalanceAsync(adminWallet.WalletId, addFundsDto.Amount);
 
 			return await GetAdminWalletAsync();
+		}
+
+		public async Task<string> CreateDepositAsync(string userId, WalletDepositDTO depositDto, string ipAddress)
+		{
+			var wallet = await _unitOfWork.Wallets.GetWalletByUserIdAsync(userId);
+
+			var walletTransaction = new WalletTransaction
+			{
+				WalletId = wallet.WalletId,
+				Amount = depositDto.Amount,
+				TransactionType = "Nạp tiền",
+				Description = $"Nạp tiền vào ví",
+				Status = "Đang chờ xử lý",
+				CreatedAt = DateTime.UtcNow
+			};
+
+			var result = await _unitOfWork.Wallets.AddTransactionAsync(walletTransaction);
+
+			try
+			{
+				string paymentUrl = await _vnPaymentService.CreateWalletDepositUrl(result.WalletTransactionId, depositDto.Amount, userId, ipAddress);
+
+				return paymentUrl;
+			}
+			catch (Exception ex)
+			{
+				throw new ArgumentException("Lỗi tạo url!");
+			}
+		}
+
+
+		public async Task<bool> ProcessDepositAsync(int walletTransactionId, string responseCode)
+		{
+			var walletTransaction = await _unitOfWork.WalletTransactions.GetAsync(w => w.WalletTransactionId == walletTransactionId);
+
+			if (walletTransaction == null)
+			{
+				return false;
+			}
+
+			var wallet = await _unitOfWork.Wallets.GetAsync(w => w.WalletId == walletTransaction.WalletId);
+
+			if (responseCode == "00")
+			{
+				walletTransaction.Status = "Hoàn thành";
+				await _unitOfWork.WalletTransactions.UpdateAsync(walletTransaction);
+				await _unitOfWork.CompleteAsync();
+
+				await _unitOfWork.Wallets.UpdateWalletBalanceAsync(wallet.WalletId, walletTransaction.Amount);
+				return true;
+			}
+			else
+			{
+				walletTransaction.Status = "Thất bại";
+				await _unitOfWork.WalletTransactions.UpdateAsync(walletTransaction);
+				await _unitOfWork.CompleteAsync();
+
+				return false;
+			}
 		}
 
 		public async Task<bool> TransferFundsAsync(string fromUserId, string toUserId, decimal amount, string description, int? refundRequestId = null, bool flag = false, IDbContextTransaction existingTransaction = null)
@@ -125,6 +187,7 @@ namespace ChildVaccineSystem.Service.Services
 					TransactionType = "Chuyển khoản",
 					Description = description,
 					RefundRequestId = refundRequestId,
+					Status = "Hoàn Thành",
 					CreatedAt = DateTime.UtcNow
 				};
 				await _unitOfWork.Wallets.AddTransactionAsync(withdrawalTx);
@@ -136,6 +199,7 @@ namespace ChildVaccineSystem.Service.Services
 					TransactionType = "Chuyển khoản",
 					Description = description,
 					RefundRequestId = refundRequestId,
+					Status = "Hoàn Thành",
 					CreatedAt = DateTime.UtcNow
 				};
 				await _unitOfWork.Wallets.AddTransactionAsync(depositTx);
@@ -222,36 +286,6 @@ namespace ChildVaccineSystem.Service.Services
 
 			var description = $"Thanh toán cho lịch hẹn #{bookingId}";
 			return await TransferFundsAsync(userId, adminWallet.UserId, amount, description);
-		}
-
-		public async Task<bool> AddFundsToUserWalletAsync(string userId, decimal amount, string transactionReference)
-		{
-			try
-			{
-				var wallet = await _unitOfWork.Wallets.GetWalletByUserIdAsync(userId);
-				if (wallet == null)
-				{
-					wallet = await _unitOfWork.Wallets.CreateWalletAsync(userId);
-				}
-
-				var transaction = new WalletTransaction
-				{
-					WalletId = wallet.WalletId,
-					Amount = amount,
-					TransactionType = "Nạp tiền",
-					Description = $"Nạp tiền qua VnPay (Ref: {transactionReference})",
-					CreatedAt = DateTime.UtcNow
-				};
-
-				await _unitOfWork.Wallets.AddTransactionAsync(transaction);
-				await _unitOfWork.Wallets.UpdateWalletBalanceAsync(wallet.WalletId, amount);
-
-				return true;
-			}
-			catch (Exception)
-			{
-				return false;
-			}
 		}
 	}
 }
