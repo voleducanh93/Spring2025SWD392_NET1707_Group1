@@ -108,7 +108,7 @@ namespace ChildVaccineSystem.Service.Services
 				return;
 			}
 
-			var reminderMessage = $"Nhắc nhở: Bạn có lịch tiêm chủng cho bé {childName} vào ngày {booking.BookingDate.ToString("dd/MM/yyyy")} lúc {booking.BookingDate.ToString("HH:mm")}. Vui lòng đưa bé đến đúng giờ.";
+			var reminderMessage = $"Nhắc nhở: Bạn có lịch tiêm chủng cho bé {childName} vào ngày {booking.BookingDate.ToString("dd/MM/yyyy")}. Vui lòng đưa bé đến đúng ngày.";
 
 			var notificationDto = new SendNotificationDTO
 			{
