@@ -11,7 +11,6 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IComboVaccineRepository ComboVaccines { get; }
         IComboDetailRepository ComboDetails { get; }
 		IVaccinationScheduleRepository VaccinationSchedules { get; }
-		IStaffScheduleRepository StaffSchedules { get; }
 		IInjectionScheduleRepository InjectionSchedules { get; }
 		IVaccineScheduleDetailRepository VaccineScheduleDetails { get; }
         IChildrenRepository Children { get; }

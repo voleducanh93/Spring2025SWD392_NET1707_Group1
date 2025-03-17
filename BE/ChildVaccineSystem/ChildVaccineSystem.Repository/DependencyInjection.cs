@@ -23,7 +23,6 @@ namespace ChildVaccineSystem.Repository
             services.AddTransient<IComboDetailRepository, ComboDetailRepository>();
             services.AddTransient<IComboVaccineRepository, ComboVaccineRepository>();
 			services.AddTransient<IVaccinationScheduleRepository, VaccinationScheduleRepository>();
-		    services.AddTransient<IStaffScheduleRepository, StaffScheduleRepository>();
 			services.AddTransient<IInjectionScheduleRepository, InjectionScheduleRepository>();
 			services.AddTransient<IVaccineScheduleDetailRepository, VaccineScheduleDetailRepository>();
             services.AddTransient<IChildrenRepository, ChildrenRepository>();
