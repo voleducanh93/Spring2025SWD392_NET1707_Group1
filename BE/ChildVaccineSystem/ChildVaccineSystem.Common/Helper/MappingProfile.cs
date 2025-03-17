@@ -98,19 +98,7 @@ namespace ChildVaccineSystem.Common.Helper
             CreateMap<UpdateVaccineScheduleDetailDTO, VaccineScheduleDetail>();
 
 
-            // StaffSchedule Mappings
-            CreateMap<StaffSchedule, StaffScheduleDTO>()
-                .ForMember(dest => dest.Staff, opt => opt.MapFrom(src => src.Staff));
-
-            CreateMap<CreateStaffScheduleDTO, StaffSchedule>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => true))
-                .ForMember(dest => dest.Staff, opt => opt.Ignore());
-
-            CreateMap<UpdateStaffScheduleDTO, StaffSchedule>()
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-
+           
             // InjectionSchedule Mappings
             CreateMap<InjectionSchedule, InjectionScheduleDTO>();
 
@@ -197,8 +185,8 @@ namespace ChildVaccineSystem.Common.Helper
 
 			// Refund request mappings
 			CreateMap<RefundRequest, RefundRequestDTO>()
-				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : "Unknown"))
-				.ForMember(dest => dest.ProcessedBy, opt => opt.MapFrom(src => src.ProcessedBy != null ? src.ProcessedBy.FullName : null));
+				.ForMember(dest => dest.UserName,
+					opt => opt.MapFrom(src => src.User != null ? src.User.FullName : "Unknown"));
 
             // VaccineRecord mappings
             CreateMap<VaccinationRecord, VaccineRecordDTO>()

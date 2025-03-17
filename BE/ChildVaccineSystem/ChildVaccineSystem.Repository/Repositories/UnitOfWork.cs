@@ -15,7 +15,6 @@ namespace ChildVaccineSystem.Repository.Repositories
         public IComboVaccineRepository ComboVaccines { get; }
         public IComboDetailRepository ComboDetails { get; }
 		public IVaccinationScheduleRepository VaccinationSchedules { get; }
-		public IStaffScheduleRepository StaffSchedules { get; }
 		public IInjectionScheduleRepository InjectionSchedules { get; }
 		public IVaccineScheduleDetailRepository VaccineScheduleDetails { get; }
         public IChildrenRepository Children { get; }
@@ -35,14 +34,13 @@ namespace ChildVaccineSystem.Repository.Repositories
 	    public INotificationRepository Notifications { get; }
 	    public IVaccinationReminderRepository VaccinationReminders { get; }
 
-		public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository, IStaffScheduleRepository staffScheduleRepository, IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories, IPricingPoliciesRepository pricingPolicies, IVaccineTransactionHistoryRepository vaccineTransactionHistoryRepository, ITransactionRepository transactionRepository, IDoctorWorkScheduleRepository doctorWorkScheduleRepositories, IFeedbackRepository feedbackRepository, IWalletRepository walletRepository, IRefundRequestRepository refundRequestRepository, IVaccineRecordRepository vaccineRecordRepository, IWalletTransactionRepository walletTransactionRepository, INotificationRepository notificationRepository, IVaccinationReminderRepository vaccinationReminderRepository)
+		public UnitOfWork(ChildVaccineSystemDBContext context, IVaccineRepository vaccineRepository, IComboVaccineRepository comboVaccines, IComboDetailRepository comboDetails, IVaccinationScheduleRepository vaccinationScheduleRepository,  IInjectionScheduleRepository injectionScheduleRepository, IVaccineScheduleDetailRepository vaccineScheduleDetailRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IBookingRepository bookingRepository, IBookingDetailRepository bookingDetailRepository, IVaccineInventoryRepository vaccineInventories, IPricingPoliciesRepository pricingPolicies, IVaccineTransactionHistoryRepository vaccineTransactionHistoryRepository, ITransactionRepository transactionRepository, IDoctorWorkScheduleRepository doctorWorkScheduleRepositories, IFeedbackRepository feedbackRepository, IWalletRepository walletRepository, IRefundRequestRepository refundRequestRepository, IVaccineRecordRepository vaccineRecordRepository, IWalletTransactionRepository walletTransactionRepository, INotificationRepository notificationRepository, IVaccinationReminderRepository vaccinationReminderRepository)
         {
             _context = context;
             Vaccines = vaccineRepository;
             ComboVaccines = comboVaccines;
             ComboDetails = comboDetails;
             VaccinationSchedules = vaccinationScheduleRepository;
-            StaffSchedules = staffScheduleRepository;
             InjectionSchedules = injectionScheduleRepository;
             VaccineScheduleDetails = vaccineScheduleDetailRepository;
             Children = childrenRepository;
