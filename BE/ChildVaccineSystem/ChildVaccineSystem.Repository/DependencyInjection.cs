@@ -23,7 +23,6 @@ namespace ChildVaccineSystem.Repository
             services.AddTransient<IComboDetailRepository, ComboDetailRepository>();
             services.AddTransient<IComboVaccineRepository, ComboVaccineRepository>();
 			services.AddTransient<IVaccinationScheduleRepository, VaccinationScheduleRepository>();
-		    services.AddTransient<IStaffScheduleRepository, StaffScheduleRepository>();
 			services.AddTransient<IInjectionScheduleRepository, InjectionScheduleRepository>();
 			services.AddTransient<IVaccineScheduleDetailRepository, VaccineScheduleDetailRepository>();
             services.AddTransient<IChildrenRepository, ChildrenRepository>();
@@ -37,11 +36,13 @@ namespace ChildVaccineSystem.Repository
             services.AddTransient<IFeedbackRepository, FeedbackRepository>();
 			services.AddTransient<IWalletRepository, WalletRepository>();
 			services.AddTransient<IRefundRequestRepository, RefundRequestRepository>();
-			services.AddTransient<IWalletDepositRepository, WalletDepositRepository>();
-            services.AddTransient<IVaccineRecordRepository, VaccineRecordRepository>();
+	        services.AddTransient<IVaccineRecordRepository, VaccineRecordRepository>();
+	        services.AddTransient<IWalletTransactionRepository, WalletTransactionRepository>();
+	        services.AddTransient<INotificationRepository, NotificationRepository>();
+	        services.AddTransient<IVaccinationReminderRepository, VaccinationReminderRepository>();
 
-            //DI Unit Of Work
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+			//DI Unit Of Work
+			services.AddTransient<IUnitOfWork, UnitOfWork>();
             return services;
 
 

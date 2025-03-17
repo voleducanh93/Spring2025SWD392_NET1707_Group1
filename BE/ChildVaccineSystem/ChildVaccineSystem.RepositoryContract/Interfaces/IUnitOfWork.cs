@@ -11,7 +11,6 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IComboVaccineRepository ComboVaccines { get; }
         IComboDetailRepository ComboDetails { get; }
 		IVaccinationScheduleRepository VaccinationSchedules { get; }
-		IStaffScheduleRepository StaffSchedules { get; }
 		IInjectionScheduleRepository InjectionSchedules { get; }
 		IVaccineScheduleDetailRepository VaccineScheduleDetails { get; }
         IChildrenRepository Children { get; }
@@ -26,11 +25,12 @@ namespace ChildVaccineSystem.RepositoryContract.Interfaces
         IFeedbackRepository Feedbacks { get; }
         IWalletRepository Wallets { get; }
         IRefundRequestRepository RefundRequests { get; }
-		IWalletDepositRepository WalletDeposits { get; }
+		IWalletTransactionRepository WalletTransactions { get; }
         IVaccineRecordRepository VaccineRecords { get; }
+        INotificationRepository Notifications { get; }
+        IVaccinationReminderRepository VaccinationReminders { get; }
 
-
-        Task<int> CompleteAsync();
+		Task<int> CompleteAsync();
 		Task<IDbContextTransaction> BeginTransactionAsync();
 	}
 }

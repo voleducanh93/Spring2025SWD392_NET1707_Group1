@@ -1,13 +1,13 @@
-﻿using ChildVaccineSystem.Data.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChildVaccineSystem.Data.Entities;
 
 namespace ChildVaccineSystem.RepositoryContract.Interfaces
 {
-	public interface IStaffScheduleRepository : IRepository<StaffSchedule>
+	public interface IWalletTransactionRepository : IRepository<WalletTransaction>
 	{
 	}
 }
