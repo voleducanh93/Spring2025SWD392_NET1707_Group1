@@ -1,6 +1,7 @@
-import { Table, Tag, Button, Space, Typography } from "antd";
+import { Table, Tag, Button, Space, Typography, Modal } from "antd";
 import { useBooking } from "../../hooks/useBooking";
 import { useCreateVaccineRecord } from "../../hooks/useVaccineRecord";
+import { useState } from "react";
 
 
 const statusColors = {
@@ -15,9 +16,19 @@ const statusColors = {
 const DoctorList = () => {
   const { bookings, isLoading, isError, error } = useBooking();
   const createVaccineRecord = useCreateVaccineRecord();
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const handleProceedVaccination = (bookingId) => {
     createVaccineRecord.mutate(bookingId);
+  };
+  const showModal = (record) => {
+    setSelectedBooking(record);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedBooking(null);
   };
 
   const columns = [
@@ -32,12 +43,8 @@ const DoctorList = () => {
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Button type="primary">Chi tiết</Button>
-          <Button
-            type="primary"
-            style={{ backgroundColor: "green", borderColor: "green" }}
-            onClick={() => handleProceedVaccination(record.bookingId)}
-          >
+          <Button type="primary" onClick={() => showModal(record)}>Chi tiết</Button>
+          <Button type="primary" style={{ backgroundColor: "green", borderColor: "green" }} onClick={() => handleProceedVaccination(record.bookingId)}>
             Tiến hành tiêm
           </Button>
         </Space>
@@ -52,6 +59,22 @@ const DoctorList = () => {
     <div style={{ padding: "20px" }}>
       <Typography.Title level={3}>Lịch Tiêm Chủng</Typography.Title>
       <Table dataSource={bookings} columns={columns} rowKey="bookingId" pagination={{ pageSize: 5 }} />
+      {/* Modal hiển thị chi tiết đặt lịch */}
+      <Modal title="Chi Tiết Đặt Lịch" visible={isModalVisible} onCancel={handleCloseModal} footer={[
+        <Button key="cancel" onClick={handleCloseModal}>Cancel</Button>,
+        <Button key="ok" type="primary" onClick={handleCloseModal}>OK</Button>
+      ]}>
+        {selectedBooking && (
+          <div>
+            <p><strong>ID:</strong> {selectedBooking.bookingId}</p>
+            <p><strong>Tên Trẻ:</strong> {selectedBooking.childName || "Không có dữ liệu"}</p>
+            <p><strong>Ngày Đặt:</strong> {new Date(selectedBooking.bookingDate).toLocaleDateString("vi-VN")}</p>
+            <p><strong>Loại Tiêm:</strong> {selectedBooking.bookingType}</p>
+            <p><strong>Ghi Chú:</strong> {selectedBooking.note || "Không có ghi chú"}</p>
+            <p><strong>Trạng Thái:</strong> <Tag color={statusColors[selectedBooking.status]}>{selectedBooking.status}</Tag></p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

@@ -27,7 +27,7 @@ const DepositResult = () => {
     });
     const timeout = setTimeout(() => {
       
-        navigate(depositAmount ? "/" : "/wallet");
+      navigate(depositAmount ? "/" : "/mybooking");
     }, 5000);
 
     return () => clearTimeout(timeout);

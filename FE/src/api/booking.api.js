@@ -29,4 +29,10 @@ export const createBooking = async ( id, bookingData) => {
     const response = await http.get(`${BASE_URL}/doctor/${id}/bookings`)
     return response.data.result;
   }
+  export const checkParentVaccine = async (vaccineIds) => {
+    const response = await http.post(`${BASE_URL}/check-parent-vaccine`, {
+      vaccineIds,
+    });
+    return response.data;
+  };
   

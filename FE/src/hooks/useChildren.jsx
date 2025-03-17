@@ -50,7 +50,10 @@ if (!getUser) {
       queryClient.invalidateQueries({ queryKey: ["children"] });
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật children:", error);
+      if (error?.response?.data?.errorMessages?.length > 0) {
+        const errorMessage = error.response.data.errorMessages[0]; 
+        toast.error(`⚠️ ${errorMessage}`);
+    } 
     },
   });
 
@@ -60,7 +63,10 @@ if (!getUser) {
       queryClient.invalidateQueries({ queryKey: ["children"] });
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa children:", error);
+      if (error?.response?.data?.errorMessages?.length > 0) {
+        const errorMessage = error.response.data.errorMessages[0]; 
+        toast.error(`⚠️ ${errorMessage}`);
+    }
     },
   });
 

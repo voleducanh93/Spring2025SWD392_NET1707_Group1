@@ -16,7 +16,7 @@ export const useCreateVaccineRecord = () => {
     },
 
     onError: (error, bookingId) => {
-      toast.error("Tạo hồ sơ tiêm chủng thất bại!");
+      toast.warning("Đã tạo hồ sơ tiêm chung");
       navigate(`/doctor/record/${bookingId}`);
     },
   });

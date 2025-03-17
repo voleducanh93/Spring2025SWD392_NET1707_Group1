@@ -22,6 +22,7 @@ import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
 import { EventNote } from "@mui/icons-material";
+import NotificationDropdown from "../Notification/NotificationDropdown";
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -109,8 +110,10 @@ export default function Topbar() {
             </motion.span>
 
             {/* Đăng nhập / Tài khoản */}
+            
             {!isAuthenticated ? (
               <div className="flex items-center mr-5">
+                
                 <Link to="/auth">
                   <motion.a
                     transition={{ type: "spring", stiffness: 200 }}
@@ -123,6 +126,7 @@ export default function Topbar() {
               </div>
             ) : (
               <div>
+                <NotificationDropdown />
                 <Tooltip title="Tài khoản">
                   <IconButton onClick={handleClick} size="small">
                     <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>

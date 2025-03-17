@@ -5,6 +5,7 @@ import { UploadOutlined } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../../config/firebase';
 import VaccineDetailModal from '../../components/VaccineShow/VaccineDetailModal';
+import { components } from './ComboManagement';
 
 const VaccineManagement = () => {
   const { vaccines, isLoading, addVaccine, editVaccine, removeVaccine } = useVaccine();
@@ -189,7 +190,7 @@ const VaccineManagement = () => {
       ➕ Thêm Vaccine
     </Button>
   </div>
-      <Table columns={columns} pagination={{ pageSize: 5, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
+      <Table columns={columns} components={components} pagination={{ pageSize: 5, showSizeChanger: false }} dataSource={vaccines} loading={isLoading} rowKey="scheduleId" onRow={(record) => ({
        
       })} />
 

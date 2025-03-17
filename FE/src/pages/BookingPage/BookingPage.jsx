@@ -7,14 +7,13 @@ import { Avatar, Button, DatePicker, Divider, Form, Select, Space } from "antd";
 import { PlusOutlined, UserOutlined } from "@ant-design/icons";
 import AddChildModal from "../../components/ChildrenInput/CreateChildren";
 import moment from "moment";
-
 import { toast } from "react-toastify";
 import { getVaccinesAndCombo } from "../../api/vaccineSchedule.api";
-import { useBooking } from "../../hooks/useBooking";
 import { usePayment } from "../../hooks/usePayment";
 import { AppContext } from "../../contexts/app.context";
 import { useProcessWalletPayment } from "../../hooks/useWallet";
 import DepositModal from "../../components/Composit/DepositModal";
+import { useBooking } from "../../hooks/useBooking";
 
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
@@ -28,7 +27,7 @@ const BookingPage = () => {
   const [isComboSelected, setIsComboSelected] = useState(false);
   const [comboVaccines, setComboVaccines] = useState([]);
   const { walletBalance, refreshWalletBalance } = useContext(AppContext);
-  
+
   const openAddChildModal = () => {
     setIsModalVisible(true);
   };
@@ -39,11 +38,10 @@ const BookingPage = () => {
   const handleAddChild = (newChild) => {
     addChildren.mutateAsync(newChild);
   };
-  
+
   const handleSelectChild = async (value) => {
     setSelectedChild(value.childId);
     setSelectedVaccines([]);
-    
 
     try {
       const result = await getVaccinesAndCombo(value.childId);
@@ -171,24 +169,21 @@ const BookingPage = () => {
 
         const bookingId = response.result.bookingId;
         console.log(bookingId);
-        
-        processWalletPayment.mutate(
-           bookingId ,
-          {
-            onSuccess: () => {
-              toast.success("💰 Thanh toán thành công bằng ví!");
-              setSelectedVaccines([]);
-              setSelectedChild(null);
-              setSelectedDate(null);
-              setVaccinationSchedule(null);
-              refreshWalletBalance();
-            },
-            onError: (walletError) => {
-              console.error("❌ Lỗi khi thanh toán bằng ví:", walletError);
-              toast.error("⚠️ Thanh toán thất bại! Vui lòng kiểm tra số dư.");
-            },
-          }
-        );
+
+        processWalletPayment.mutate(bookingId, {
+          onSuccess: () => {
+            toast.success("💰 Thanh toán thành công bằng ví!");
+            setSelectedVaccines([]);
+            setSelectedChild(null);
+            setSelectedDate(null);
+            setVaccinationSchedule(null);
+            refreshWalletBalance();
+          },
+          onError: (walletError) => {
+            console.error("❌ Lỗi khi thanh toán bằng ví:", walletError);
+            toast.error("⚠️ Thanh toán thất bại! Vui lòng kiểm tra số dư.");
+          },
+        });
       },
       onError: (error) => {
         console.error("❌ Lỗi khi tạo booking:", error);
@@ -200,29 +195,106 @@ const BookingPage = () => {
       },
     });
   };
+  const handleCheckVaccine = async (item) => {
+    if (!item.vaccineId) return false;
 
-  const toggleSelection = (item) => {
-    setSelectedVaccines((prev) => {
-      if (item.comboId) {
-        const isComboSelected = prev.some((v) => v.comboId === item.comboId);
-
-        if (isComboSelected) {
-          return prev.filter((v) => v.comboId !== item.comboId);
+    console.log("📡 Kiểm tra vaccine với ID:", item.vaccineId);
+    const formData = new FormData();
+    formData.append("VaccineIds", item.vaccineId);
+    try {
+      const response = await fetch(
+        "https://localhost:7134/api/Booking/check-parent-vaccine",
+        {
+          method: "POST",
+          headers: {
+            Accept: "*/*", // Đảm bảo API nhận dữ liệu đúng định dạng
+          },
+          body: formData, // Gửi FormData thay vì JSON
         }
+      );
 
-        return [...prev, item];
+      const result = await response.json();
+      console.log("✅ Kết quả kiểm tra vaccine:", result);
+
+      if (Array.isArray(result?.result) && result.result.length > 0) {
+        return new Promise((resolve) => {
+          toast(
+            ({ closeToast }) => (
+              <div>
+                <p>{result.result[0]}</p>
+                <button
+                  onClick={() => {
+                    closeToast();
+
+                    resolve(true); // Cho phép chọn vaccine
+                  }}
+                  style={{
+                    marginRight: "10px",
+                    padding: "5px 10px",
+                    border: "none",
+                    background: "#4CAF50",
+                    color: "white",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Tôi đã tiêm
+                </button>
+                <button
+                  onClick={() => {
+                    closeToast();
+
+                    resolve(false); // Không cho phép chọn vaccine
+                  }}
+                  style={{
+                    padding: "5px 10px",
+                    border: "none",
+                    background: "#f44336",
+                    color: "white",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Chưa tiêm
+                </button>
+              </div>
+            ),
+            { autoClose: false }
+          );
+        });
       } else {
-        const isVaccineSelected = prev.some(
-          (v) => v.vaccineId === item.vaccineId
-        );
-
-        if (isVaccineSelected) {
-          return prev.filter((v) => v.vaccineId !== item.vaccineId);
-        }
-
-        return [...prev, item];
+        return true; // Không có cảnh báo thì cho phép chọn luôn
       }
-    });
+    } catch (error) {
+      console.error("❌ Lỗi kiểm tra vaccine:", error);
+      toast.error("⚠️ Lỗi kiểm tra vaccine. Vui lòng thử lại.");
+      return false;
+    }
+  };
+
+  const toggleSelection = async (item, isRemoving = false) => {
+    if (item.comboId) {
+      // Nếu là combo vaccine, không cần kiểm tra API
+      setSelectedVaccines((prev) => {
+        const isComboSelected = prev.some((v) => v.comboId === item.comboId);
+        return isComboSelected
+          ? prev.filter((v) => v.comboId !== item.comboId)
+          : [...prev, item];
+      });
+    } else {
+      if (isRemoving) {
+        // 🛑 Khi "Bỏ chọn", không kiểm tra API
+        setSelectedVaccines((prev) =>
+          prev.filter((v) => v.vaccineId !== item.vaccineId)
+        );
+      } else {
+        // ✅ Khi "Chọn", kiểm tra API trước
+        const isAllowed = await handleCheckVaccine(item);
+        if (!isAllowed) return; // Nếu chưa tiêm, không cho chọn
+
+        setSelectedVaccines((prev) => [...prev, item]);
+      }
+    }
   };
 
   const calculateAgeInYears = (dob) => {
@@ -254,8 +326,9 @@ const BookingPage = () => {
         </h2>
         <div className="flex flex-row !mt-10 !mb-10 justify-around">
           <div
-            onClick={selectedChild ? () => handleVaccineAndCombo("vaccine") : undefined}
-
+            onClick={
+              selectedChild ? () => handleVaccineAndCombo("vaccine") : undefined
+            }
             className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer hover:"
           >
             <img
@@ -267,7 +340,9 @@ const BookingPage = () => {
             </h4>
           </div>
           <div
-            onClick={selectedChild ? () => handleVaccineAndCombo("combo") : undefined}
+            onClick={
+              selectedChild ? () => handleVaccineAndCombo("combo") : undefined
+            }
             className="flex flex-col bg-white col-sm-2 col-xs-6 justify-center items-center !p-10 rounded-3xl shadow-xl !space-y-10 w-[350px] cursor-pointer"
           >
             <img
@@ -283,7 +358,7 @@ const BookingPage = () => {
       <div className="flex items-center w-1/2 gap-4 !mt-5 !mb-5">
         <label className="font-semibold text-2xl">💰 Số dư ví:</label>
         <span className="text-2xl font-bold text-green-600">
-           {walletBalance.toLocaleString()} VND
+          {walletBalance.toLocaleString()} VND
         </span>
       </div>
       {/* Filter Dropdown */}
@@ -341,7 +416,7 @@ const BookingPage = () => {
           />
         </div>
         <div className="flex items-center gap-4 w-1/2">
-          {selectedVaccines.length > 0 && (
+          {selectedVaccines?.length > 0 && (
             <div className="flex items-center gap-4">
               <p className="font-semibold text-xl">Chọn ngày:</p>
               <Form.Item name="date" className="!pt-5">
@@ -360,7 +435,6 @@ const BookingPage = () => {
                   }}
                 />
               </Form.Item>
-              
             </div>
           )}
         </div>
@@ -372,7 +446,6 @@ const BookingPage = () => {
       />
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-          
           {/* 1. Hiển thị danh sách vaccine đơn */}
           {!isComboSelected && vaccinationSchedule?.length > 0
             ? vaccinationSchedule.map((vaccine) => (
@@ -389,6 +462,9 @@ const BookingPage = () => {
                     </p>
                     <p className="text-sm text-gray-600">
                       Phòng bệnh: {vaccine.description}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Số lượng: {vaccine.injectionsCount}
                     </p>
                     <div className="flex items-center gap-3 text-[#2A388F] mt-6">
                       <SellIcon />
@@ -407,7 +483,14 @@ const BookingPage = () => {
                         ? "bg-[#35944A]"
                         : "bg-[#2A388F]"
                     }`}
-                    onClick={() => toggleSelection(vaccine)}
+                    onClick={
+                      () =>
+                        selectedVaccines.some(
+                          (v) => v.vaccineId === vaccine.vaccineId
+                        )
+                          ? toggleSelection(vaccine, true) // 🛑 Bỏ chọn không kiểm tra API
+                          : toggleSelection(vaccine) // ✅ Chọn cần kiểm tra API trước
+                    }
                   >
                     {selectedVaccines.some(
                       (v) => v.vaccineId === vaccine.vaccineId
@@ -527,7 +610,7 @@ const BookingPage = () => {
                     </p>
                     <button
                       className="bg-red-500 text-white px-3 py-2 rounded-lg"
-                      onClick={() => toggleSelection(vaccine)}
+                      onClick={() => toggleSelection(vaccine, true)}
                     >
                       Bỏ chọn
                     </button>
