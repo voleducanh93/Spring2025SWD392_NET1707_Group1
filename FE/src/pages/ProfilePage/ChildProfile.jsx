@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useChildren } from "../../hooks/useChildren";
@@ -19,10 +19,12 @@ import HeightIcon from "@mui/icons-material/Height";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import AddChildModal from "../../components/ChildrenInput/CreateChildren";
 
+
 const ChildProfile = () => {
   const { vaccines: children,addChildren,  removeChildren } = useChildren();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   
   const handleAddChild = (newChild) => {
     addChildren.mutateAsync(newChild);
@@ -45,11 +47,15 @@ const ChildProfile = () => {
   //   );
   // }
 
-  const handleDelete = (id) => {
+ 
+
+  const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc muốn xóa hồ sơ này không?")) {
-      removeChildren.mutate(id);
+        await removeChildren.mutateAsync(id);
+        
     }
-  };
+};
+
 
   return (
     <div className="!container !mx-auto !p-6">

@@ -1,5 +1,4 @@
-import RefundManage from "../../components/Admin/RefundManage";
-
+import RefundManage from "../../components/User/RefundManage";
 
 
 const RefundPage = () => {
@@ -10,4 +9,6 @@ const RefundPage = () => {
   );
 };
 
+
 export default RefundPage;
+

@@ -5,8 +5,7 @@ import { UploadOutlined } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { uploadFile } from '../../config/firebase';
 import VaccineDetailModal from '../../components/VaccineShow/VaccineDetailModal';
-import { components } from './ComboManagement';
-
+import { components } from "./ComboManagement";
 const VaccineManagement = () => {
   const { vaccines, isLoading, addVaccine, editVaccine, removeVaccine } = useVaccine();
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -11,8 +11,7 @@ const ResultPayment = () => {
   // ✅ Lấy thông tin từ URL
   const isSuccess = window.location.pathname.includes("payment-success");
   const orderId = searchParams.get("orderId");
-  const amount = searchParams.get("amount"); // Chỉ có nếu thanh toán thành công
-  const errorCode = searchParams.get("errorCode"); // Chỉ có nếu thất bại
+
  
   // 🔄 Xử lý thanh toán lại
   const handleRetryPayment = () => {

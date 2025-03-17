@@ -5,6 +5,9 @@ import { AppContext } from "../../contexts/app.context";
 import { Modal } from "antd";
 import dayjs from "dayjs";
 import "./index.css";
+import { useRequestRefund } from "../../hooks/useRefund";
+import { toast } from "react-toastify";
+import { useRequestFeedback } from "../../hooks/useFeedback";
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
@@ -14,6 +17,8 @@ export default function MyBooking() {
   const { getUser } = useContext(AppContext);
   const [refundReason, setRefundReason] = useState("");
   const [showReasonInput, setShowReasonInput] = useState(false);
+  const [showFeedbackInput, setShowFeedbackInput] = useState(false);
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     if (!getUser) return;
@@ -45,36 +50,34 @@ export default function MyBooking() {
     setSelectedBookings(filteredBookings);
     setModalVisible(true);
   };
-
+  const { mutate: requestRefund1 } = useRequestRefund();
+  const { mutate:requestFeedback }= useRequestFeedback();
   const requestRefund = async (bookingId, reason) => {
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hoàn tiền.");
       return;
     }
+    if (reason.length < 10) {
+      toast.warning("⚠️ Lý do hoàn tiền phải có ít nhất 10 ký tự.");
+      return;
+    }
+
+    if (reason.length > 500) {
+      toast.warning("⚠️ Lý do hoàn tiền không được vượt quá 500 ký tự.");
+      return;
+    }
 
     try {
-      const response = await fetch(
-        "https://localhost:7134/api/Refund/request",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ bookingId, reason }),
-        }
-      );
-
-      const data = await response.json();
-      if (data.isSuccess) {
-        alert("Yêu cầu hoàn tiền thành công!");
-        setShowReasonInput(false); // Ẩn ô nhập sau khi gửi yêu cầu thành công
-        setRefundReason(""); // Reset lý do
-      } else {
-        alert("Yêu cầu hoàn tiền thất bại!");
-      }
+      await requestRefund1({
+        bookingId,
+        reason,
+      });
+      setShowReasonInput(false);
+      setRefundReason("");
+      setModalVisible(false);
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Có lỗi xảy ra, vui lòng thử lại sau.");
+      
     }
   };
 
@@ -92,6 +95,24 @@ export default function MyBooking() {
       );
     }
     return null;
+  };
+
+  const submitFeedback = (bookingId, comment) => {
+    if (!feedback.trim()) {
+      alert("Vui lòng nhập feedback!");
+      return;
+    }
+
+    if (!feedback.trim()) {
+      toast.error("Vui lòng nhập feedback!");
+      return;
+    }
+requestFeedback({ bookingId, comment });
+
+  setModalVisible(false);
+    // Reset trạng thái sau khi gửi
+    setShowFeedbackInput(false);
+    setFeedback("");
   };
 
   const statusMapping = {
@@ -119,7 +140,10 @@ export default function MyBooking() {
       </h1>
       <div className="!flex !gap-2 !mb-4">
         {Object.entries(statusMapping).map(([key, label]) => (
-          <span key={key} className={`!px-3 !py-1 !rounded !text-white ${statusColors[key]}`}>
+          <span
+            key={key}
+            className={`!px-3 !py-1 !rounded !text-white ${statusColors[key]}`}
+          >
             {label}
           </span>
         ))}
@@ -226,6 +250,40 @@ export default function MyBooking() {
                       </div>
                     )}
                   </>
+                )}
+                {b.status === "Completed" && (
+                  <div className="flex flex-col gap-2 !mt-6">
+                    {/* Nút nhập Feedback */}
+                    {!showFeedbackInput ? (
+                      <button
+                        className="w-full bg-blue-700 !text-white !font-semibold !py-2 !px-4 !rounded-lg"
+                        onClick={() => setShowFeedbackInput(true)}
+                      >
+                        Nhập Feedback
+                      </button>
+                    ) : (
+                      <div className="!mt-2">
+                        <textarea
+                          className="!w-full !border !rounded !p-2"
+                          placeholder="Nhập feedback của bạn..."
+                          value={feedback}
+                          onChange={(e) => setFeedback(e.target.value)}
+                        ></textarea>
+
+                        <button
+                          className="!bg-blue-600 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-blue-700 transition"
+                          onClick={() => submitFeedback(b.bookingId, feedback)}
+                        >
+                          Xác nhận Feedback
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Nút xem Vaccine Record */}
+                    <button className="w-full bg-green-500 !text-white !font-semibold !py-2 !px-4 !rounded-lg !border-2 !border-blue-300">
+                      Xem Vaccine Record
+                    </button>
+                  </div>
                 )}
               </div>
             ))}

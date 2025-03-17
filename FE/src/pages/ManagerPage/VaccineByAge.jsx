@@ -5,7 +5,6 @@ import { useVaccine } from "../../hooks/useVaccine";
 import { toast } from "react-toastify";
 import VaccinationScheduleTable from "../../components/VaccineShow/VaccinationScheduleTable";
 import { components } from "./ComboManagement";
-
 const VaccineByAge = () => {
   const {
     vaccines: scheduleVaccines,

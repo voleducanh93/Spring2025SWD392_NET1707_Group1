@@ -5,8 +5,7 @@ const BASE_URL = "/Admin";
 // Lấy danh sách người dùng
 export const getUsers = async () => {
   const response = await http.get(`${BASE_URL}/getAllUsers`);
-  console.log(response.data.result);
-  
+
   return response.data.result;
 };
 
@@ -27,3 +26,4 @@ export const deleteUser = async (id) => {
   const response = await http.delete(`${BASE_URL}/DeleteUser/${id}`);
   return response.data;
 };
+

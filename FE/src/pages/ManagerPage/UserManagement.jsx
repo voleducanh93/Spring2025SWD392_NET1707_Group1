@@ -1,5 +1,4 @@
-import UserManage from "../../components/Admin/UserManage";
-
+import UserManage from "../../components/User/UserManage";
 
 
 
