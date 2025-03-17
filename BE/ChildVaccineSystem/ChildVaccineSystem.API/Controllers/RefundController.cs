@@ -1,5 +1,6 @@
 ﻿using ChildVaccineSystem.Common.Helper;
 using ChildVaccineSystem.Data.DTO.Refund;
+using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -168,10 +169,14 @@ namespace ChildVaccineSystem.API.Controllers
 
 				var refundRequest = await _refundService.CreateRefundRequestAsync(userId, createDto);
 
-				_response.Result = refundRequest;
+				_response.Result = new
+				{
+					Message = $"A refund of {refundRequest.Amount:C} has been requested based on the cancellation policy.",
+					RefundRequest = refundRequest
+				};
 				_response.StatusCode = HttpStatusCode.Created;
 				_response.IsSuccess = true;
-				_response.ErrorMessages.Add($"A refund of {refundRequest.Amount:C} has been requested based on the cancellation policy.");
+
 				return CreatedAtAction(nameof(GetRefundRequestById), new { id = refundRequest.RefundRequestId }, _response);
 			}
 			catch (KeyNotFoundException ex)

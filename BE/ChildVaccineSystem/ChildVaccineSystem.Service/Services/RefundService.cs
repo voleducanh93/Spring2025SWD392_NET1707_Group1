@@ -145,7 +145,6 @@ namespace ChildVaccineSystem.Service.Services
 				try
 				{
 					refundRequest.Status = "Đã chấp nhận";
-					refundRequest.ProcessedById = adminId;
 					refundRequest.ProcessedAt = DateTime.UtcNow;
 
 					await _unitOfWork.RefundRequests.UpdateAsync(refundRequest);
@@ -185,7 +184,6 @@ namespace ChildVaccineSystem.Service.Services
 
 			// Update refund request
 			refundRequest.Status = "Bị từ chối";
-			refundRequest.ProcessedById = adminId;
 			refundRequest.ProcessedAt = DateTime.UtcNow;
 			refundRequest.AdminNote = processDto.AdminNote;
 

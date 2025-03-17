@@ -156,7 +156,7 @@ namespace ChildVaccineSystem.Service.Services
 			}
 		}
 
-		public async Task<bool> TransferFundsAsync(string fromUserId, string toUserId, decimal amount, string description, int? refundRequestId = null, bool flag = false, IDbContextTransaction existingTransaction = null)
+		public async Task<bool> TransferFundsAsync(string fromUserId, string toUserId, decimal amount, string description, string transactionType, bool flag = false, IDbContextTransaction existingTransaction = null)
 		{
 			var shouldCommitTransaction = existingTransaction == null;
 			var transaction = existingTransaction ?? await _unitOfWork.BeginTransactionAsync();
@@ -184,9 +184,8 @@ namespace ChildVaccineSystem.Service.Services
 				{
 					WalletId = sourceWallet.WalletId,
 					Amount = -amount,
-					TransactionType = "Chuyển khoản",
+					TransactionType = transactionType,
 					Description = description,
-					RefundRequestId = refundRequestId,
 					Status = "Hoàn Thành",
 					CreatedAt = DateTime.UtcNow
 				};
@@ -196,9 +195,8 @@ namespace ChildVaccineSystem.Service.Services
 				{
 					WalletId = destWallet.WalletId,
 					Amount = amount,
-					TransactionType = "Chuyển khoản",
+					TransactionType = transactionType,
 					Description = description,
-					RefundRequestId = refundRequestId,
 					Status = "Hoàn Thành",
 					CreatedAt = DateTime.UtcNow
 				};
@@ -257,11 +255,11 @@ namespace ChildVaccineSystem.Service.Services
 
 			if (existingTransaction != null)
 			{
-				return await TransferFundsAsync(adminWallet.UserId, refundRequest.UserId, amount, description, refundRequestId, flag, existingTransaction);
+				return await TransferFundsAsync(adminWallet.UserId, refundRequest.UserId, amount, description, "Hoàn tiền", flag, existingTransaction);
 			}
 			else
 			{
-				return await TransferFundsAsync(adminWallet.UserId, refundRequest.UserId, amount, description, refundRequestId, flag);
+				return await TransferFundsAsync(adminWallet.UserId, refundRequest.UserId, amount, description, "Hoàn tiền", flag);
 			}
 		}
 
@@ -285,7 +283,7 @@ namespace ChildVaccineSystem.Service.Services
 			}
 
 			var description = $"Thanh toán cho lịch hẹn #{bookingId}";
-			return await TransferFundsAsync(userId, adminWallet.UserId, amount, description);
+			return await TransferFundsAsync(userId, adminWallet.UserId, amount, "Thanh toán lịch hẹn", description);
 		}
 	}
 }
