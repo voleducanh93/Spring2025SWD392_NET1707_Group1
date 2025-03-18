@@ -174,28 +174,31 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Xóa mềm một hồ sơ tiêm chủng (Soft Delete).
         /// </summary>
-        //[HttpDelete("{vaccineRecordId}/delete")]
-        //public async Task<ActionResult<APIResponse>> SoftDeleteVaccineRecord(int vaccineRecordId)
-        //{
-        //	try
-        //	{
-        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //		var result = await _vaccineRecordService.SoftDeleteVaccineRecordAsync(vaccineRecordId, doctorId);
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor, Staff, Admin")]
+        [HttpDelete("{vaccineRecordId}/delete")]
+        public async Task<ActionResult<APIResponse>> SoftDeleteVaccineRecord(int vaccineRecordId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                bool isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                bool isStaff = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Staff");
 
-        //		_response.StatusCode = HttpStatusCode.OK;
-        //		_response.IsSuccess = result;
-        //		_response.Result = result ? "Hồ sơ đã được đánh dấu xóa." : "Xóa thất bại.";
-        //		return Ok(_response);
-        //	}
-        //	catch (Exception ex)
-        //	{
-        //		_response.StatusCode = HttpStatusCode.BadRequest;
-        //		_response.IsSuccess = false;
-        //		_response.ErrorMessages.Add(ex.Message);
-        //		return BadRequest(_response);
-        //	}
-        //}
+                var result = await _vaccineRecordService.SoftDeleteVaccineRecordAsync(vaccineRecordId, userId, isAdmin, isStaff);
 
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = result;
+                _response.Result = result ? "Hồ sơ đã được đánh dấu xóa." : "Xóa thất bại.";
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
 
     }
 }
