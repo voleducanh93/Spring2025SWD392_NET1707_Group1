@@ -97,7 +97,7 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
         
         while (schedules.length < requiredInjections) {
           schedules.push({
-            doseNumber: schedules.length + 1,
+            injectionNumber: schedules.length + 1,
             injectionMonth: 0,  // Default value, could be updated
             isRequired: true,  // Mark as required by default
             notes: `Mũi ${schedules.length + 1} tiêm`,  // Default notes
@@ -105,7 +105,7 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
         }
   
         const formattedSchedules = schedules.map((schedule, index) => ({
-          doseNumber: index + 1,
+          injectionNumber: index + 1,
           injectionMonth: schedule.injectionMonth,
           isRequired: true,
           notes: schedule.notes || `Mũi ${index + 1} tiêm`,
@@ -152,7 +152,7 @@ const [selectedSchedule, setSelectedSchedule] = useState(null);
       } else {
         notification.error({ message: "No vaccine selected!" });
       }
-  
+      setIsInjectionAdded(false);
       setIsModalOpen(false);
       form.resetFields();
     });

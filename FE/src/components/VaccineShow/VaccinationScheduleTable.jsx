@@ -1,4 +1,5 @@
 import { Card, Table, Typography, Badge } from "antd";
+import PropTypes from 'prop-types';
 
 const { Title, Text } = Typography;
 
@@ -31,11 +32,11 @@ const VaccinationScheduleTable = ({ vaccinationSchedule }) => {
                 columns={[
                   {
                     title: "Mũi tiêm",
-                    dataIndex: "doseNumber",
-                    key: "doseNumber",
+                    dataIndex: "injectionNumber",
+                    key: "injectionNumber",
                     width: 100,
-                    render: (doseNumber) => (
-                      <Badge color="blue" text={`Mũi ${doseNumber}`} />
+                    render: (injectionNumber) => (
+                      <Badge color="blue" text={`Mũi ${injectionNumber}`} />
                     ),
                   },
                   {
@@ -73,5 +74,29 @@ const VaccinationScheduleTable = ({ vaccinationSchedule }) => {
     </div>
   );
 };
+VaccinationScheduleTable.propTypes = {
+  vaccinationSchedule: PropTypes.shape({
+    vaccineScheduleDetails: PropTypes.arrayOf(
+      PropTypes.shape({
+        vaccineId: PropTypes.string.isRequired,
+        injectionSchedules: PropTypes.arrayOf(
+          PropTypes.shape({
+            injectionNumber: PropTypes.number.isRequired,
+            injectionMonth: PropTypes.number.isRequired,
+            isRequired: PropTypes.bool.isRequired,
+            notes: PropTypes.string,
+          })
+        ),
+      })
+    ),
+    result: PropTypes.shape({
+      vaccineName: PropTypes.string,
+    }),
+    ageRangeStart: PropTypes.number,
+    ageRangeEnd: PropTypes.number,
+    notes: PropTypes.string,
+  }),
+};
+
 
 export default VaccinationScheduleTable;

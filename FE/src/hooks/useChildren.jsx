@@ -3,6 +3,7 @@ import { getChildren, createChildren, updateChildren, deleteChildren } from "../
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { toast } from "react-toastify";
+import { handleApiError } from "../utils/utils";
 
 export const useChildren = () => {
   
@@ -75,11 +76,8 @@ if (!getUser) {
     },
 
     onError: (error) => {
-        if (error?.response?.data?.errorMessages?.length > 0) {
-            const errorMessage = error.response.data.errorMessages[0]; 
-            toast.error(`⚠️ ${errorMessage}`);
-        }
-    },
+      handleApiError(error);
+    }
 });
 
 

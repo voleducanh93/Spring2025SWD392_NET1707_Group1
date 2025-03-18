@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getVaccines, createVaccine, updateVaccine, deleteVaccine } from "../api/vaccine.api";
+import { toast } from "react-toastify";
 
 
 export const useVaccine = () => {
@@ -41,6 +42,7 @@ export const useVaccine = () => {
   const removeVaccine = useMutation({
     mutationFn: deleteVaccine,
     onSuccess: () => {
+      toast.success("🗑️ Xóa vaccine thành công!");
       queryClient.invalidateQueries({ queryKey: ["vaccines"] });
     },
     onError: (error) => {

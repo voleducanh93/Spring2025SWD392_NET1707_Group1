@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import HttpStatusCode from '../constants/httpStatusCode.enum';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 // import userImage from 'src/assets/images/user.svg';
@@ -20,8 +21,6 @@ export function isAxiosUnprocessableEntityError(error) {
 
 // Kiểm tra lỗi 401 (Unauthorized) từ Axios
 export function isAxiosUnauthorizedError(error) {
-  console.log(error.response?.status);
-  
   return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized;
 }
 
@@ -68,6 +67,10 @@ export const generateNameId = ({ name, id }) => {
 export const getIdFromNameId = (nameId) => {
   const arr = nameId.split('-i-');
   return arr[arr.length - 1];
+};
+export const handleApiError = (error, customMessage = "❌ Lỗi không xác định!") => {
+  const errorMessage = error?.response?.data?.errorMessages?.[0] || customMessage;
+  toast.error(`⚠️ ${errorMessage}`);
 };
 
 export const useQueryString = () => {

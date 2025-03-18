@@ -5,7 +5,6 @@ import {
   SettingOutlined,
   UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
@@ -13,7 +12,6 @@ import "./index.css"
 
 import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
 import StaffManagement from "../../pages/ManagerPage/StaffManagement";
-import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
 
 import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
@@ -38,14 +36,12 @@ const SidebarManager = () => {
       case "1":
         return <StaffManagement />;
       case "2":
-        return <DoctorManagement />;
-      case "3":
         return <InventoryManagement />;
-      case "4":
+      case "3":
         return <VaccineManagement />;
-      case "5":
+      case "4":
         return <ComboManagement />;
-        case "6":
+        case "5":
         return <VaccineByAge />;
       default:
         return <VaccineManagement />;
@@ -101,28 +97,24 @@ const SidebarManager = () => {
               label: "Quản lý nhân viên",
               style: {color: "white"}
             },
+
             {
               key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "Quản lý bác sĩ",
-            },
-            {
-              key: "3",
               icon: <UploadOutlined />,
               label: "Quản lý kho vaccine",
             },
             {
-              key: "4",
+              key: "3",
               icon: <UploadOutlined />,
               label: "Quản lý vaccine",
             },
             {
-              key: "5",
+              key: "4",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý Combo Vaccine",
             },
             {
-              key: "6",
+              key: "5",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý lịch tiêm cho Vaccine",
             },

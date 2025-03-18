@@ -2,7 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import authApi from "../api/auth.api";
 import { toast } from "react-toastify";
-import { useQueryString } from "../utils/utils";
+import { handleApiError, useQueryString } from "../utils/utils";
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { useNavigate } from "react-router-dom";
@@ -17,12 +17,8 @@ export const useRegister = () => {
       );
     },
     onError: (error) => {
-      // Kiểm tra nếu API trả về danh sách lỗi
-      const errorMessage = error.response?.data?.errorMessages?.length
-        ? error.response.data.errorMessages.join(", ") 
-        : "❌ Đăng ký thất bại! Vui lòng thử lại.";
-    
-      toast.error(errorMessage, { position: "top-right" });
+      
+      handleApiError(error);
     },
     
   });
@@ -39,11 +35,7 @@ export const useLogin = () => {
       toast.success("Đăng nhập thành công!");
     },
     onError: (error) => {
-      // const errorMessage = error.response?.data?.errorMessages?.length
-      // ? error.response.data.errorMessages.join(", ") 
-      // : "❌ Đăng nhập thất bại! Vui lòng thử lại.";
-      const errorMessage= "Email hoặc mật khẩu sai"
-    toast.error(errorMessage, { position: "top-right" });
+      handleApiError(error);
     },
   });
 };
@@ -55,7 +47,7 @@ export const useForgotPassword = () => {
       toast.success(data.message || "Đã gửi email đặt lại mật khẩu!");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Có lỗi xảy ra!");
+      handleApiError(error);
     },
   });
 };
@@ -112,12 +104,7 @@ export const useGetProfile = () => {
     queryFn: userApi.getUserProfile,
     enabled: isAuthenticated, 
     onError: (error) => {
-      
-      const errorMessage = error.response?.data?.errorMessages?.length
-        ? error.response.data.errorMessages.join(", ") 
-        : "❌ Đăng ký thất bại! Vui lòng thử lại.";
-    
-      toast.error(errorMessage, { position: "top-right" });
+      handleApiError(error);
     },
   });
 };
@@ -129,10 +116,7 @@ export const useUpdateProfile = () => {
       toast.success(response.message || "✅ Hồ sơ cập nhật thành công!");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.errorMessages?.length
-        ? error.response.data.errorMessages.join(", ")
-        : "❌ Cập nhật hồ sơ thất bại!";
-      toast.error(errorMessage, { position: "top-right" });
+      handleApiError(error);
     },
   });
 };
@@ -144,10 +128,7 @@ export const useChangePassword = () => {
       toast.success(response.message || "✅ Đổi mật khẩu thành công!");
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.errorMessages?.length
-        ? error.response.data.errorMessages.join(", ")
-        : "❌ Đổi mật khẩu thất bại!";
-      toast.error(errorMessage, { position: "top-right" });
+      handleApiError(error);
     },
   });
 };

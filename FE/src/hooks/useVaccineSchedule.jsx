@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getVaccines, createVaccine, updateVaccine, deleteVaccine, VaccineById } from "../api/vaccineSchedule.api";
 import { toast } from 'react-toastify'; // Import toast
+import { handleApiError } from "../utils/utils";
 
 
 export const useVaccineSchedule = () => {
@@ -21,8 +22,7 @@ export const useVaccineSchedule = () => {
       toast.success("Vaccine đã được thêm thành công!"); // Thông báo thành công
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi thêm vaccine:", error);
-      toast.error(`Thêm vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`); // Thông báo lỗi
+      handleApiError(error);
     },
   });
 
@@ -33,8 +33,7 @@ export const useVaccineSchedule = () => {
       toast.success("Vaccine đã được cập nhật thành công!"); 
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật vaccine:", error);
-      toast.error(`Cập nhật vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`); 
+      handleApiError(error);
     },
   });
 
@@ -45,8 +44,7 @@ export const useVaccineSchedule = () => {
       toast.success("Vaccine đã được xóa thành công!"); 
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa vaccine:", error);
-      toast.error(`Xóa vaccine thất bại: ${error.response?.data?.errorMessages || "Lỗi không xác định"}`);
+      handleApiError(error);
     },
   });
   

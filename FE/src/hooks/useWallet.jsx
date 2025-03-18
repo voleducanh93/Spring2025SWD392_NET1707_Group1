@@ -36,7 +36,7 @@ export const useProcessWalletPayment = () => {
         toast.success("✅ Vui lòng hoàn tất thanh toán!");
         
         if (response?.paymentUrl) {
-          window.open(response.paymentUrl, "_blank"); // Mở trang thanh toán
+          window.open(response.paymentUrl, "_blank"); 
         } else {
           toast.error("❌ Không thể tạo giao dịch. Vui lòng thử lại!");
         }

@@ -1,4 +1,5 @@
 import { Modal } from "antd";
+import PropTypes from 'prop-types';
 
 const ComboDetailModal = ({ isOpen, handleClose, selectedCombo }) => {
   return (
@@ -48,5 +49,21 @@ const ComboDetailModal = ({ isOpen, handleClose, selectedCombo }) => {
     </Modal>
   );
 };
-
+ComboDetailModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  selectedCombo: PropTypes.shape({
+    comboName: PropTypes.string,
+    description: PropTypes.string,
+    totalPrice: PropTypes.number,
+    isActive: PropTypes.bool,
+    vaccines: PropTypes.arrayOf(
+      PropTypes.shape({
+        image: PropTypes.string,
+        name: PropTypes.string,
+        price: PropTypes.number,
+      })
+    ),
+  }),
+};
 export default ComboDetailModal;

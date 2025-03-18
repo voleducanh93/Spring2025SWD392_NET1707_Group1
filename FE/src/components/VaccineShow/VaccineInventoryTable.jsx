@@ -1,5 +1,6 @@
 import { Table } from "antd";
 import { useVaccineinvetoryById } from "../../hooks/useInventory";
+import PropTypes from 'prop-types';
 
 const VaccineInventoryTable = ({ vaccineId }) => {
   const { data: inventory, isLoading, isError } = useVaccineinvetoryById(vaccineId);
@@ -49,5 +50,9 @@ const VaccineInventoryTable = ({ vaccineId }) => {
     </div>
   );
 };
+VaccineInventoryTable.propTypes = {
+  vaccineId: PropTypes.string.isRequired,
+};
+
 
 export default VaccineInventoryTable;

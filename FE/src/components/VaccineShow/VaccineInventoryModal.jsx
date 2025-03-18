@@ -2,6 +2,7 @@ import { Modal, Table, Button, Space, Form, Input, DatePicker, Popconfirm } from
 
 import dayjs from "dayjs";
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { useInventory, useVaccineinvetoryById } from "../../hooks/useInventory";
 import { toast } from "react-toastify";
 
@@ -148,5 +149,11 @@ const VaccineInventoryModal = ({ isOpen, handleClose, selectedVaccine }) => {
     </>
   );
 };
+VaccineInventoryModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  selectedVaccine: PropTypes.object,
+};
+
 
 export default VaccineInventoryModal;

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PATH_NAME } from "../constants/pathName";
+
 import HomePage from "../pages/HomePage/HomePage";
 import MainLayout from "../pages/MainLayout/MainLayout";
 import AuthPage from "../pages/AuthPage/AuthPage";
@@ -12,7 +13,6 @@ import BookingPage from "../pages/BookingPage/BookingPage";
 import PrivateRoute from "./PrivateRoute";
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
-
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
 import StaffPage from "../pages/StaffPage/StaffPage";
@@ -33,75 +33,150 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: "/reset-password", element: <ResetPassword /> },
-      { path: "/vaccineSchedule", element: <VaccineByAge /> },
-      { path: "/vaccine", element: <VaccineManagement /> },
-      { path: "/children", element: <RegistrationForm /> },
-      { path: "/vaccine/:id", element: <VaccineDetailPage /> },
+      { path: PATH_NAME.RESET_PASSWORD, element: <ResetPassword /> },
+      { path: PATH_NAME.VACCINE_SCHEDULE, element: <VaccineByAge /> },
+      { path: PATH_NAME.VACCINE, element: <VaccineManagement /> },
+      { path: PATH_NAME.CHILDREN, element: <RegistrationForm /> },
+      { path: PATH_NAME.VACCINE_DETAIL, element: <VaccineDetailPage /> },
+
       {
-        path: "/child-profile",
+        path: PATH_NAME.CHILD_PROFILE,
         element: (
           <PrivateRoute>
-            <ChildProfile />{" "}
+            <ChildProfile />
           </PrivateRoute>
         ),
       },
+
       {
-        path: "/edit-child/:childId",
+        path: PATH_NAME.EDIT_CHILD,
         element: (
           <PrivateRoute>
             <EditChildProfile />
           </PrivateRoute>
         ),
       },
-      { path: "/payment-success", element: <PrivateRoute><ResultPayment /></PrivateRoute> },
-      { path: "/payment-failure", element:  <PrivateRoute><ResultPayment /></PrivateRoute> },
+
       {
-        path: "/mybooking",
+        path: PATH_NAME.PAYMENT_SUCCESS,
+        element: (
+          <PrivateRoute>
+            <ResultPayment />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.PAYMENT_FAILURE,
+        element: (
+          <PrivateRoute>
+            <ResultPayment />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.MY_BOOKING,
         element: (
           <PrivateRoute>
             <MyBooking />
           </PrivateRoute>
         ),
       },
-      { path: "/chuyen-gia", element: <ChuyengiaPage /> },
-      { path: "/confirm-email", element: <ConfirmEmailPage /> },
-      { path: "/invetory", element: <PrivateRoute><InventoryManagement /></PrivateRoute> },
+
+      { path: PATH_NAME.CHUYEN_GIA, element: <ChuyengiaPage /> },
+      { path: PATH_NAME.CONFIRM_EMAIL, element: <ConfirmEmailPage /> },
+
       {
-        path: "/user-profile",
+        path: PATH_NAME.INVENTORY,
+        element: (
+          <PrivateRoute>
+            <InventoryManagement />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.USER_PROFILE,
         element: (
           <PrivateRoute>
             <UserProfile />
           </PrivateRoute>
         ),
       },
-      { path: "/doctor", element: <PrivateRoute><DoctorPage /></PrivateRoute> },
-      { path: "/doctor/record/:bookingId", element: <PrivateRoute><DoctorRecord /></PrivateRoute> },
+
       {
-        path: "/booking",
+        path: PATH_NAME.DOCTOR,
+        element: (
+          <PrivateRoute>
+            <DoctorPage />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.DOCTOR_RECORD,
+        element: (
+          <PrivateRoute>
+            <DoctorRecord />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.BOOKING,
         element: (
           <PrivateRoute>
             <BookingPage />
           </PrivateRoute>
         ),
       },
-      { path: "wallet/deposit-success", element: <PrivateRoute><DepositSuccess /></PrivateRoute> },
-      { path: "wallet/deposit-failure", element:  <PrivateRoute><DepositSuccess /></PrivateRoute> },
-      { path: "/mywallet", element: <PrivateRoute><Wallet /></PrivateRoute> },
+
+      {
+        path: PATH_NAME.WALLET_DEPOSIT_SUCCESS,
+        element: (
+          <PrivateRoute>
+            <DepositSuccess />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.WALLET_DEPOSIT_FAILURE,
+        element: (
+          <PrivateRoute>
+            <DepositSuccess />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: PATH_NAME.MY_WALLET,
+        element: (
+          <PrivateRoute>
+            <Wallet />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
-  {
-    path: "/auth",
-    element: <AuthPage />,
-  },
 
+  { path: PATH_NAME.AUTH, element: <AuthPage /> },
+  { path: PATH_NAME.ADMIN, element: <AdminPage /> },
   {
-    path: "/admin",
-    element: <AdminPage />,
+    path: PATH_NAME.STAFF,
+    element: (
+      <PrivateRoute>
+        <StaffPage />
+      </PrivateRoute>
+    ),
   },
   {
-    path: "/staff",
-    element: <PrivateRoute><StaffPage /></PrivateRoute>,
+    path: PATH_NAME.MANAGER,
+    element: (
+      <PrivateRoute>
+        <ManagerPage />
+      </PrivateRoute>
+    ),
   },
-  { path: "/manager", element: <PrivateRoute><ManagerPage /></PrivateRoute> },
 ]);

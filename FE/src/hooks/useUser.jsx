@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { toast } from "react-toastify";
 import { createUser, deleteUser, getUsers, updateUser } from "../api/user.api";
+import { handleApiError } from "../utils/utils";
 
 export const useUsers = () => {
   const queryClient = useQueryClient();
@@ -19,10 +20,7 @@ export const useUsers = () => {
     queryFn: getUsers,
     refetchOnWindowFocus: false,
     onError: (error) => {
-      if (error?.response?.data?.errorMessages?.length > 0) {
-        const errorMessage = error.response.data.errorMessages[0];
-        toast.error(`⚠️ ${errorMessage}`);
-      }
+      handleApiError(error);
     },
   });
 
@@ -34,11 +32,7 @@ export const useUsers = () => {
       toast.success("🎉 Thêm người dùng thành công!");
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi thêm người dùng:", error);
-      if (error?.response?.data?.errorMessages?.length > 0) {
-        const errorMessage = error.response.data.errorMessages[0];
-        toast.error(`⚠️ ${errorMessage}`);
-      }
+      handleApiError(error);
     },
   });
 
@@ -50,11 +44,7 @@ export const useUsers = () => {
       toast.success("✅ Cập nhật người dùng thành công!");
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật người dùng:", error);
-      if (error?.response?.data?.errorMessages?.length > 0) {
-        const errorMessage = error.response.data.errorMessages[0];
-        toast.error(`⚠️ ${errorMessage}`);
-      }
+      handleApiError(error);
     },
   });
 
@@ -73,11 +63,7 @@ export const useUsers = () => {
       toast.success("✅ Đã xóa người dùng thành công");
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa người dùng:", error);
-      if (error?.response?.data?.errorMessages?.length > 0) {
-        const errorMessage = error.response.data.errorMessages[0];
-        toast.error(`⚠️ ${errorMessage}`);
-      }
+      handleApiError(error);
     },
   });
 

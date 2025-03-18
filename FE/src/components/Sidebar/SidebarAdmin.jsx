@@ -5,13 +5,12 @@ import {
   SettingOutlined,
   UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
 
 import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
-import DoctorManagement from "../../pages/ManagerPage/DoctorManagement";
+
 import InventoryManagement from "../../pages/ManagerPage/InventoryManagement";
 import ComboManagement from "../../pages/ManagerPage/ComboManagement";
 import VaccineByAge from "../../pages/ManagerPage/VaccineByAge";
@@ -38,18 +37,16 @@ const SidebarAdmin = () => {
       case "1":
         return <Dashboard />;
       case "2":
-        return <DoctorManagement />;
-      case "3":
         return <InventoryManagement />;
-      case "4":
+      case "3":
         return <VaccineManagement />;
-      case "5":
+      case "4":
         return <ComboManagement />;
+        case "5":
+        return<VaccineByAge />;
         case "6":
-        return <VaccineByAge />;
-        case "7":
         return <UserManage />;
-        case "8":
+        case "7":
         return <RefundManage />;
       default:
         return <VaccineManagement />;
@@ -106,36 +103,31 @@ const SidebarAdmin = () => {
             },
             {
               key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "Quản lý bác sĩ",
-            },
-            {
-              key: "3",
               icon: <UploadOutlined />,
               label: "Quản lý kho vaccine",
             },
             {
-              key: "4",
+              key: "3",
               icon: <UploadOutlined />,
               label: "Quản lý vaccine",
             },
             {
-              key: "5",
+              key: "4",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý Combo Vaccine",
             },
             {
-              key: "6",
+              key: "5",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý lịch tiêm cho Vaccine",
             },
             {
-              key: "7",
+              key: "6",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý User"
             },
             {
-              key: "8",
+              key: "7",
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý Refund"
             }

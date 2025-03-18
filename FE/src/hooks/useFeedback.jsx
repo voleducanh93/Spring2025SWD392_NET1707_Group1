@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import feebackApi from "../api/feedback.api";
+import { handleApiError } from "../utils/utils";
 
 export const useRequestFeedback = () => {
   return useMutation({
@@ -11,12 +12,7 @@ export const useRequestFeedback = () => {
     },
 
     onError: (error) => {
-      if (error?.response?.data?.errorMessages?.length > 0) {
-        const errorMessage = error.response.data.errorMessages[0];
-        toast.error(`⚠️ ${errorMessage}`);
-      } else {
-        toast.error("Có lỗi xảy ra khi gửi feedback!");
-      }
+      handleApiError(error);
     },
   });
 };

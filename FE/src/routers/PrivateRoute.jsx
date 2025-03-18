@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AppContext } from "../contexts/app.context";
+import PropTypes from 'prop-types';
 
 
 const PrivateRoute = ({ children }) => {
@@ -14,5 +15,9 @@ const PrivateRoute = ({ children }) => {
   
   return children;
 };
+PrivateRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 
 export default PrivateRoute;

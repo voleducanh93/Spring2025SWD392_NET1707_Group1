@@ -1,9 +1,11 @@
-import { Modal, Button, Tabs, Spin } from "antd";
+import { Modal, Button, Tabs } from "antd";
 import { useVaccineScheduleById } from "../../hooks/useVaccineSchedule"; // Import hook để gọi API
 import VaccinationScheduleTable from "./VaccinationScheduleTable";
 import VaccineInventoryTable from "./VaccineInventoryTable";
 
 const { TabPane } = Tabs;
+
+import PropTypes from 'prop-types';
 
 const VaccineDetailModal = ({ isOpen, handleClose, selectedVaccine }) => {
 
@@ -72,5 +74,13 @@ const VaccineDetailModal = ({ isOpen, handleClose, selectedVaccine }) => {
     </Modal>
   );
 };
+VaccineDetailModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  selectedVaccine: PropTypes.object
+};
+
+
+
 
 export default VaccineDetailModal;
