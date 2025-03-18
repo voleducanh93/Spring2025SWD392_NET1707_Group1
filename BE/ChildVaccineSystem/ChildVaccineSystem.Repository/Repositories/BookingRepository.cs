@@ -1,4 +1,4 @@
-﻿using ChildVaccineSystem.Data.Entities;
+using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.Data.Enum;
 using ChildVaccineSystem.Data.Models;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
@@ -44,5 +44,14 @@ namespace ChildVaccineSystem.Repository.Repositories
                 .Include(b => b.User)
                 .ToListAsync();
         }
+        public async Task<bool> IsDoctorAssignedToBookingAsync(int bookingId, string doctorId)
+        {
+            return await (from b in _context.Bookings
+                          join dws in _context.DoctorWorkSchedules
+                          on b.DoctorWorkScheduleId equals dws.DoctorWorkScheduleId
+                          where b.BookingId == bookingId && dws.UserId == doctorId
+                          select b).AnyAsync();
+        }
+
     }
 }

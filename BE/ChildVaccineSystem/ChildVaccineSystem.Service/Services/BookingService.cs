@@ -383,6 +383,9 @@ namespace ChildVaccineSystem.Service.Services
                 }
             }
 
+            // ✅ Gán lịch làm việc vào booking
+            booking.DoctorWorkScheduleId = doctorSchedule.DoctorWorkScheduleId;
+
             booking.Status = BookingStatus.InProgress;
             await _unitOfWork.CompleteAsync();
 
