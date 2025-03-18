@@ -52,135 +52,135 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
-		/// <summary>
-		/// Lấy chi tiết một hồ sơ tiêm chủng.
-		/// </summary>
-		[HttpGet("{vaccineRecordId}")]
-		public async Task<ActionResult<APIResponse>> GetVaccineRecordById(int vaccineRecordId)
-		{
-			try
-			{
-				var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				var record = await _vaccineRecordService.GetVaccineRecordByIdAsync(vaccineRecordId, doctorId);
+        /// <summary>
+        /// Lấy chi tiết một hồ sơ tiêm chủng.
+        /// </summary>
+        //[HttpGet("{vaccineRecordId}")]
+        //public async Task<ActionResult<APIResponse>> GetVaccineRecordById(int vaccineRecordId)
+        //{
+        //	try
+        //	{
+        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //		var record = await _vaccineRecordService.GetVaccineRecordByIdAsync(vaccineRecordId, doctorId);
 
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = true;
-				_response.Result = record;
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.BadRequest;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return BadRequest(_response);
-			}
-		}
-
-
-		/// <summary>
-		/// Lấy danh sách hồ sơ tiêm chủng theo BookingId.
-		/// </summary>
-		[HttpGet("booking/{bookingId}")]
-		public async Task<ActionResult<APIResponse>> GetVaccineRecordsByBookingId(int bookingId)
-		{
-			try
-			{
-				var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				var record = await _vaccineRecordService.GetVaccineRecordsByBookingIdAsync(bookingId, doctorId);
-
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = true;
-				_response.Result = record;
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.BadRequest;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return BadRequest(_response);
-			}
-		}
+        //		_response.StatusCode = HttpStatusCode.OK;
+        //		_response.IsSuccess = true;
+        //		_response.Result = record;
+        //		return Ok(_response);
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		_response.StatusCode = HttpStatusCode.BadRequest;
+        //		_response.IsSuccess = false;
+        //		_response.ErrorMessages.Add(ex.Message);
+        //		return BadRequest(_response);
+        //	}
+        //}
 
 
-		/// <summary>
-		/// Lấy danh sách tất cả hồ sơ tiêm chủng (Doctor/Staff).
-		/// </summary>
-		[HttpGet("all")]
-		public async Task<ActionResult<APIResponse>> GetAllVaccineRecords()
-		{
-			try
-			{
-				var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				var records = await _vaccineRecordService.GetAllVaccineRecordsAsync(doctorId);
+        /// <summary>
+        /// Lấy danh sách hồ sơ tiêm chủng theo BookingId.
+        /// </summary>
+        //[HttpGet("booking/{bookingId}")]
+        //public async Task<ActionResult<APIResponse>> GetVaccineRecordsByBookingId(int bookingId)
+        //{
+        //	try
+        //	{
+        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //		var record = await _vaccineRecordService.GetVaccineRecordsByBookingIdAsync(bookingId, doctorId);
 
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = true;
-				_response.Result = records;
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.BadRequest;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return BadRequest(_response);
-			}
-		}
-
-
-
-		/// <summary>
-		/// Cập nhật hồ sơ tiêm chủng (trạng thái, ghi chú, ngày tiêm tiếp theo).
-		/// </summary>
-		[HttpPut("{vaccineRecordId}/update")]
-		public async Task<ActionResult<APIResponse>> UpdateVaccineRecord(int vaccineRecordId, [FromBody] UpdateVaccineRecordDTO updateDto)
-		{
-			try
-			{
-				var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				var result = await _vaccineRecordService.UpdateVaccineRecordAsync(vaccineRecordId, updateDto, doctorId);
-
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = result;
-				_response.Result = result ? "Cập nhật thành công." : "Cập nhật thất bại.";
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.BadRequest;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return BadRequest(_response);
-			}
-		}
-
-		/// <summary>
-		/// Xóa mềm một hồ sơ tiêm chủng (Soft Delete).
-		/// </summary>
-		[HttpDelete("{vaccineRecordId}/delete")]
-		public async Task<ActionResult<APIResponse>> SoftDeleteVaccineRecord(int vaccineRecordId)
-		{
-			try
-			{
-				var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				var result = await _vaccineRecordService.SoftDeleteVaccineRecordAsync(vaccineRecordId, doctorId);
-
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = result;
-				_response.Result = result ? "Hồ sơ đã được đánh dấu xóa." : "Xóa thất bại.";
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.BadRequest;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return BadRequest(_response);
-			}
-		}
+        //		_response.StatusCode = HttpStatusCode.OK;
+        //		_response.IsSuccess = true;
+        //		_response.Result = record;
+        //		return Ok(_response);
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		_response.StatusCode = HttpStatusCode.BadRequest;
+        //		_response.IsSuccess = false;
+        //		_response.ErrorMessages.Add(ex.Message);
+        //		return BadRequest(_response);
+        //	}
+        //}
 
 
-	}
+        /// <summary>
+        /// Lấy danh sách tất cả hồ sơ tiêm chủng (Doctor/Staff).
+        /// </summary>
+        //[HttpGet("all")]
+        //public async Task<ActionResult<APIResponse>> GetAllVaccineRecords()
+        //{
+        //	try
+        //	{
+        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //		var records = await _vaccineRecordService.GetAllVaccineRecordsAsync(doctorId);
+
+        //		_response.StatusCode = HttpStatusCode.OK;
+        //		_response.IsSuccess = true;
+        //		_response.Result = records;
+        //		return Ok(_response);
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		_response.StatusCode = HttpStatusCode.BadRequest;
+        //		_response.IsSuccess = false;
+        //		_response.ErrorMessages.Add(ex.Message);
+        //		return BadRequest(_response);
+        //	}
+        //}
+
+
+
+        /// <summary>
+        /// Cập nhật hồ sơ tiêm chủng (trạng thái, ghi chú, ngày tiêm tiếp theo).
+        /// </summary>
+        //[HttpPut("{vaccineRecordId}/update")]
+        //public async Task<ActionResult<APIResponse>> UpdateVaccineRecord(int vaccineRecordId, [FromBody] UpdateVaccineRecordDTO updateDto)
+        //{
+        //	try
+        //	{
+        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //		var result = await _vaccineRecordService.UpdateVaccineRecordAsync(vaccineRecordId, updateDto, doctorId);
+
+        //		_response.StatusCode = HttpStatusCode.OK;
+        //		_response.IsSuccess = result;
+        //		_response.Result = result ? "Cập nhật thành công." : "Cập nhật thất bại.";
+        //		return Ok(_response);
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		_response.StatusCode = HttpStatusCode.BadRequest;
+        //		_response.IsSuccess = false;
+        //		_response.ErrorMessages.Add(ex.Message);
+        //		return BadRequest(_response);
+        //	}
+        //}
+
+        /// <summary>
+        /// Xóa mềm một hồ sơ tiêm chủng (Soft Delete).
+        /// </summary>
+        //[HttpDelete("{vaccineRecordId}/delete")]
+        //public async Task<ActionResult<APIResponse>> SoftDeleteVaccineRecord(int vaccineRecordId)
+        //{
+        //	try
+        //	{
+        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //		var result = await _vaccineRecordService.SoftDeleteVaccineRecordAsync(vaccineRecordId, doctorId);
+
+        //		_response.StatusCode = HttpStatusCode.OK;
+        //		_response.IsSuccess = result;
+        //		_response.Result = result ? "Hồ sơ đã được đánh dấu xóa." : "Xóa thất bại.";
+        //		return Ok(_response);
+        //	}
+        //	catch (Exception ex)
+        //	{
+        //		_response.StatusCode = HttpStatusCode.BadRequest;
+        //		_response.IsSuccess = false;
+        //		_response.ErrorMessages.Add(ex.Message);
+        //		return BadRequest(_response);
+        //	}
+        //}
+
+
+    }
 }
