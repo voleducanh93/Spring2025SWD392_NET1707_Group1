@@ -404,46 +404,57 @@ namespace ChildVaccineSystem.Service.Services
         //		}
 
 
-        //		public async Task<VaccineRecordDTO> GetVaccineRecordsByBookingIdAsync(int bookingId, string doctorId)
-        //		{
-        //			if (bookingId <= 0)
-        //				throw new ArgumentException("Booking ID không hợp lệ.");
+        public async Task<VaccineRecordDTO> GetVaccineRecordsByBookingIdAsync(int bookingId, string userId, bool isAdmin, bool isStaff)
+        {
+            if (bookingId <= 0)
+                throw new ArgumentException("Booking ID không hợp lệ.");
 
-        //			// 🔹 Kiểm tra xem bác sĩ có được gán cho Booking này không
-        //			bool isDoctorAssigned = await _unitOfWork.DoctorWorkSchedules
-        //				.AnyAsync(dws => dws.BookingId == bookingId && dws.UserId == doctorId);
+            var records = await _vaccineRecordRepository.GetAllAsync(
+                vr => vr.BookingDetail.BookingId == bookingId
+                   && vr.BookingDetail != null
+                   && vr.BookingDetail.Booking != null,
+                includeProperties: "Vaccine,BookingDetail,BookingDetail.Booking,Child"
+            );
 
-        //			if (!isDoctorAssigned)
-        //				throw new UnauthorizedAccessException("Bạn không có quyền truy cập hồ sơ này.");
+            if (records == null || !records.Any())
+                throw new KeyNotFoundException("Không tìm thấy hồ sơ tiêm chủng cho Booking ID này.");
 
-        //			var records = await _vaccineRecordRepository.GetAllAsync(
-        //				vr => vr.BookingDetail.BookingId == bookingId,
-        //				includeProperties: "Vaccine,BookingDetail,Child"
-        //			);
+            var activeRecords = records.Where(r => r.Status != VaccineRecordStatus.Deleted).ToList();
 
-        //			if (records == null || !records.Any())
-        //				throw new KeyNotFoundException("Không tìm thấy hồ sơ tiêm chủng cho Booking ID này.");
+            if (!activeRecords.Any())
+                throw new InvalidOperationException("Tất cả hồ sơ trong booking này đã bị xóa.");
 
-        //			return new VaccineRecordDTO
-        //			{
-        //				BookingId = bookingId,
-        //				FullName = records.First().Child.FullName,
-        //				DateOfBirth = records.First().Child.DateOfBirth,
-        //				Height = records.First().Child.Height,
-        //				Weight = records.First().Child.Weight,
-        //				VaccineRecords = records.Select(record => new VaccineRecordDetailDTO
-        //				{
-        //					VaccinationRecordId = record.VaccinationRecordId,
-        //					VaccineName = record.Vaccine.Name,
-        //					DoseAmount = record.DoseAmount,
-        //					BatchNumber = record.BatchNumber,
-        //					Price = Convert.ToDecimal(record.Price),
-        //					StatusEnum = record.Status,
-        //					NextDoseDate = record.NextDoseDate,
-        //					Notes = record.Notes
-        //				}).ToList()
-        //			};
-        //		}
+            var firstRecord = activeRecords.First();
+
+            var customerId = firstRecord.BookingDetail.Booking.UserId;
+
+            bool isDoctorAssigned = await _unitOfWork.Bookings.IsDoctorAssignedToBookingAsync(bookingId, userId);
+
+            bool isCustomer = customerId == userId;
+
+            if (!(isAdmin || isStaff || isDoctorAssigned || isCustomer))
+                throw new UnauthorizedAccessException("Bạn không có quyền truy cập hồ sơ này.");
+
+            return new VaccineRecordDTO
+            {
+                BookingId = bookingId,
+                FullName = firstRecord.Child.FullName,
+                DateOfBirth = firstRecord.Child.DateOfBirth,
+                Height = firstRecord.Child.Height,
+                Weight = firstRecord.Child.Weight,
+                VaccineRecords = activeRecords.Select(record => new VaccineRecordDetailDTO
+                {
+                    VaccinationRecordId = record.VaccinationRecordId,
+                    VaccineName = record.Vaccine.Name,
+                    DoseAmount = record.DoseAmount,
+                    BatchNumber = record.BatchNumber,
+                    Price = Convert.ToDecimal(record.Price),
+                    StatusEnum = record.Status,
+                    NextDoseDate = record.NextDoseDate,
+                    Notes = record.Notes
+                }).ToList()
+            };
+        }
 
     }
 }

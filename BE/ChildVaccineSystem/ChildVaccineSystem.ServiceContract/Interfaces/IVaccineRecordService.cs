@@ -15,10 +15,10 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task<DateTime?> CalculateNextDoseDateAsync(int vaccineId, int sequence);
         Task<int> GetCurrentVaccineSequenceAsync(int childId, int vaccineId);
         Task<VaccineRecordDTO> GetVaccineRecordByIdAsync(int vaccineRecordId, string userId, bool isAdmin, bool isStaff);
-		//Task<bool> SoftDeleteVaccineRecordAsync(int vaccineRecordId, string doctorId);
-		//Task<IEnumerable<VaccineRecordDTO>> GetAllVaccineRecordsAsync(string doctorId);
-		//Task<bool> UpdateVaccineRecordAsync(int vaccineRecordId, UpdateVaccineRecordDTO updateDto, string doctorId);
-		//Task<VaccineRecordDTO> GetVaccineRecordsByBookingIdAsync(int bookingId, string doctorId);
+        //Task<bool> SoftDeleteVaccineRecordAsync(int vaccineRecordId, string doctorId);
+        //Task<IEnumerable<VaccineRecordDTO>> GetAllVaccineRecordsAsync(string doctorId);
+        //Task<bool> UpdateVaccineRecordAsync(int vaccineRecordId, UpdateVaccineRecordDTO updateDto, string doctorId);
+        Task<VaccineRecordDTO> GetVaccineRecordsByBookingIdAsync(int bookingId, string userId, bool isAdmin, bool isStaff);
 
 	}
 }
