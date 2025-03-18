@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -6,12 +6,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Container } from "@mui/material";
 import { Link } from "react-router-dom";
+import { AppContext } from "../../contexts/app.context";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [isScrollTopVisible, setIsScrollTopVisible] = useState(false);
+  const {userRole } =
+      useContext(AppContext);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
   const searchSuggestions = [
@@ -63,6 +66,9 @@ export default function Navbar() {
     console.log("Tìm kiếm:", query);
     // Ở đây có thể điều hướng đến trang kết quả tìm kiếm hoặc thực hiện fetch API
   };
+  if (!userRole || userRole !== "customer") {
+    return null;
+  }
   return (
     <Container>
       <nav

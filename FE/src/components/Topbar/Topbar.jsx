@@ -11,6 +11,7 @@ import {
   Divider,
   IconButton,
   Tooltip,
+  Button,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -21,12 +22,12 @@ import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
-import { EventNote } from "@mui/icons-material";
+import { EventNote, HomeRepairServiceOutlined } from "@mui/icons-material";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 
 export default function Topbar() {
   const navigate = useNavigate();
-  const { setIsAuthenticated, isAuthenticated, walletBalance } =
+  const { setIsAuthenticated, isAuthenticated, walletBalance,userRole } =
     useContext(AppContext);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -47,6 +48,28 @@ export default function Topbar() {
     setIsAuthenticated(false);
     navigate("/auth");
   };
+  if (!userRole || userRole !== "customer") {
+    return (
+      <div className="fixed top-4 right-4">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<HomeRepairServiceOutlined />}
+          onClick={() => {
+            if (userRole === "Admin") {
+              navigate("/admin");
+            } else if (userRole === "Staff") {
+              navigate("/staff");
+            } else {
+              navigate("/home");
+            }
+          }}
+        >
+          Quay về Trang Chính
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <Container>

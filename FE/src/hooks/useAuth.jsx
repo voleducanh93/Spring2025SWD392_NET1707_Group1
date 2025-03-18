@@ -25,12 +25,12 @@ export const useRegister = () => {
 };
 
 export const useLogin = () => {
-  const { setIsAuthenticated, isAuthenticated,refreshWalletBalance } = useContext(AppContext);
+  const { setIsAuthenticated,refreshWalletBalance } = useContext(AppContext);
   return useMutation({
     mutationFn: (userData) => authApi.login(userData),
     onSuccess: () => {
       setIsAuthenticated(true);
-      console.log(isAuthenticated);
+     
       refreshWalletBalance();
       toast.success("Đăng nhập thành công!");
     },

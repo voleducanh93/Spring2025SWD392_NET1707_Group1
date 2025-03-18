@@ -20,7 +20,7 @@ export const setUserIdLS = (userId) => {
 export const clearLS = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
-  localStorage.removeItem('profile');
+  localStorage.removeItem('role');
   localStorage.removeItem('userId');
 
   const clearLSEvent = new Event('clearLS');

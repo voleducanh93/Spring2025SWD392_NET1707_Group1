@@ -1,10 +1,11 @@
-import DoctorList from "../../components/Doctor/DoctorList";
+import SidebarDoctor from "../../components/Sidebar/SidebarDotor";
+
 
 
 const DoctorPage = () => {
   return (
     <div>
-      <DoctorList />
+      <SidebarDoctor />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, Form, Modal, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
@@ -6,16 +6,22 @@ import { useRegister, useLogin, useForgotPassword } from "../../hooks/useAuth";
 import { useLocationData } from "./useLocationData";
 import SignInForm from "../../components/Auth/SignInForm";
 import SignUpForm from "../../components/Auth/SignUpForm";
+import { toast } from "react-toastify";
 
+
+import { getUserRoleFromToken } from "../../utils/decode";
+import { AppContext } from "../../contexts/app.context";
 
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  // Manage loading state manually
-  const [isVerificationModalVisible, setIsVerificationModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Manage loading state manually
+  const [isVerificationModalVisible, setIsVerificationModalVisible] =
+    useState(false);
   const [verificationEmail] = useState("");
-  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] =
+    useState(false);
   const [resetPasswordEmail] = useState("");
-
+ const {setUserRole}= useContext(AppContext);
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
@@ -34,40 +40,33 @@ function AuthPage() {
     buildFullAddress,
   } = useLocationData();
 
-  
-  const { mutate: registerMutate, isSuccess: isRegisterSuccess, isError: isRegisterError } = useRegister();
-  const { mutate: loginMutate, isSuccess: isLoginSuccess, isError: isLoginError } = useLogin();
+  const {
+    mutate: registerMutate,
+    isSuccess: isRegisterSuccess,
+    isError: isRegisterError,
+  } = useRegister();
+  const {
+    mutate: loginMutate,
+  } = useLogin();
   const { mutate: forgotPasswordMutate } = useForgotPassword();
- 
-  
+
   useEffect(() => {
     if (isRegisterSuccess) {
-      setIsLoading(false);  
+      setIsLoading(false);
       form.resetFields();
-      navigate("/auth"); 
+      navigate("/auth");
     }
 
     if (isRegisterError) {
-      setIsLoading(false);  
-  
+      setIsLoading(false);
     }
   }, [isRegisterSuccess, isRegisterError, navigate, form]);
 
-  useEffect(() => {
-    if (isLoginSuccess) {
-      setIsLoading(false);  
-      navigate("/"); 
-    }
 
-    if (isLoginError) {
-      setIsLoading(false); 
-    
-    }
-  }, [isLoginSuccess, isLoginError, navigate]);
 
-  const handleOnFinish = (values) => {
-    setIsLoading(true);  
-
+  const handleOnFinish = async (values) => {
+    setIsLoading(true);
+  
     if (isSignUpMode) {
       registerMutate({
         fullName: `${values["first-name"]} ${values["last-name"]}`,
@@ -79,23 +78,76 @@ function AuthPage() {
         password: values.password,
         role: "Customer",
       });
+  
+      toast.success("Đăng ký thành công!");
     } else {
-      loginMutate({
-        username: values.email,
-        password: values.password,
-      });
-     
+      loginMutate(
+        {
+          username: values.email,
+          password: values.password,
+        },
+        {
+          onSuccess: (data) => {
+            const token = data?.result?.token;
+            if (!token) {
+              toast.error("Token không hợp lệ!");
+              setIsLoading(false);
+              return;
+            }
+  
+            let userRole = getUserRoleFromToken(token);
+            if (!userRole) {
+              toast.error("Vai trò không hợp lệ!");
+              setIsLoading(false);
+              return;
+            }
+  
+            localStorage.setItem("role", userRole);
+  
+            let redirectPath = "/";
+            switch (userRole) {
+              case "Admin":
+                redirectPath = "/admin";
+                break;
+              case "Manager":
+                redirectPath = "/manager";
+                break;
+              case "Staff":
+                redirectPath = "/staff";
+                break;
+              case "Doctor":
+                redirectPath = "/doctor";
+                break;
+              case "Customer":
+                redirectPath = "/";
+                break;
+              default:
+                toast.error("Vai trò không hợp lệ!");
+                setIsLoading(false);
+                return;
+            }
+  
+            navigate(redirectPath);
+          },
+          onError: (error) => {
+            console.error("Lỗi đăng nhập:", error);
+            toast.error("Đăng nhập thất bại!");
+          },
+        }
+      );
     }
   };
+  
+  
   const handleSubmitForgot = (email) => {
-    
-    forgotPasswordMutate({email: email}); 
+    forgotPasswordMutate({ email: email });
     form.resetFields();
-    
   };
 
   return (
-    <div className={`${styles.container} ${isSignUpMode ? styles.signUpMode : ""}`}>
+    <div
+      className={`${styles.container} ${isSignUpMode ? styles.signUpMode : ""}`}
+    >
       <div className={styles.formsContainer}>
         <div className={styles.signinSignup}>
           {isLoading ? (
@@ -104,11 +156,16 @@ function AuthPage() {
             </div>
           ) : (
             <>
-             
-              {!isSignUpMode && <SignInForm key="signInForm" onFinish={handleOnFinish} handleSubmitForgot={handleSubmitForgot} />}
+              {!isSignUpMode && (
+                <SignInForm
+                  key="signInForm"
+                  onFinish={handleOnFinish}
+                  handleSubmitForgot={handleSubmitForgot}
+                />
+              )}
               {isSignUpMode && (
                 <SignUpForm
-                  key="signUpForm" 
+                  key="signUpForm"
                   form={form}
                   onFinish={handleOnFinish}
                   provinceList={provinceList}
@@ -134,7 +191,9 @@ function AuthPage() {
         <div className={`${styles.panel} ${styles.leftPanel}`}>
           <div className={styles.content}>
             <h3>Bạn là người mới?</h3>
-            <p>Hãy đăng ký tài khoản ngay để tham gia cộng đồng của chúng tôi.</p>
+            <p>
+              Hãy đăng ký tài khoản ngay để tham gia cộng đồng của chúng tôi.
+            </p>
             <Button
               type="primary"
               className={styles.btn}
@@ -170,8 +229,20 @@ function AuthPage() {
         visible={isVerificationModalVisible}
         onOk={() => setIsVerificationModalVisible(false)}
         onCancel={() => setIsVerificationModalVisible(false)}
-        footer={[<Button key="ok" type="primary" onClick={() => setIsVerificationModalVisible(false)}>OK</Button>]} >
-        <p>Email xác thực đã được gửi đến {verificationEmail}. Vui lòng kiểm tra hộp thư của bạn.</p>
+        footer={[
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => setIsVerificationModalVisible(false)}
+          >
+            OK
+          </Button>,
+        ]}
+      >
+        <p>
+          Email xác thực đã được gửi đến {verificationEmail}. Vui lòng kiểm tra
+          hộp thư của bạn.
+        </p>
       </Modal>
 
       {/* Modal cài lại mật khẩu */}
@@ -180,8 +251,20 @@ function AuthPage() {
         visible={isResetPasswordModalVisible}
         onOk={() => setIsResetPasswordModalVisible(false)}
         onCancel={() => setIsResetPasswordModalVisible(false)}
-        footer={[<Button key="ok" type="primary" onClick={() => setIsResetPasswordModalVisible(false)}>OK</Button>]} >
-        <p>Chúng tôi đã gửi email đặt lại mật khẩu đến {resetPasswordEmail}. Hãy kiểm tra hộp thư!</p>
+        footer={[
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => setIsResetPasswordModalVisible(false)}
+          >
+            OK
+          </Button>,
+        ]}
+      >
+        <p>
+          Chúng tôi đã gửi email đặt lại mật khẩu đến {resetPasswordEmail}. Hãy
+          kiểm tra hộp thư!
+        </p>
       </Modal>
     </div>
   );

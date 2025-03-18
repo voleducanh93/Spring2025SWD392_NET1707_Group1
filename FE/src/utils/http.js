@@ -78,32 +78,39 @@ class Http {
           return Promise.reject(error);
         }
 
-        if (isAxiosUnauthorizedError(error)) {
-          const originalRequest = error.config; 
-          if (error.response?.status === 401 && originalRequest.url !== URL_REFRESH_TOKEN) {
-            if (!this.refreshTokenRequest) {
-             
+        if (isAxiosUnauthorizedError(error) && response.config.url !== URL_REFRESH_TOKEN) {
+          const originalRequest = error.config;
         
-              // Gọi API refresh token
-              this.refreshTokenRequest = this.handleRefreshToken()
-                .then((newAccessToken) => {
-                 
-                  return newAccessToken;
-                })
-                .finally(() => {
-                  this.refreshTokenRequest = null; 
-                });
-            }
-        
-            
-            return this.refreshTokenRequest.then((newAccessToken) => {
-              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`; 
-              return this.instance(originalRequest); 
-            });
+          // Nếu đã có refreshTokenRequest đang chạy, chờ nó hoàn thành
+          if (!this.refreshTokenRequest) {
+            this.refreshTokenRequest = this.handleRefreshToken()
+              .then((newAccessToken) => {
+                return newAccessToken;
+              })
+              .catch(() => {
+                console.log("🚨 Refresh token thất bại, logout!");
+                this.clearAuthData();
+                window.location.href = "/auth"; // Chuyển về trang login
+                return Promise.reject(error);
+              })
+              .finally(() => {
+                this.refreshTokenRequest = null; // Reset sau khi hoàn thành
+              });
           }
         
-         
+          return this.refreshTokenRequest.then((newAccessToken) => {
+            if (!newAccessToken) {
+              console.log("🚨 Không lấy được token mới, logout!");
+              this.clearAuthData();
+              window.location.href = "/auth";
+              return Promise.reject(error);
+            }
+        
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return this.instance(originalRequest);
+          });
         }
+        
         
 
         return Promise.reject(error);

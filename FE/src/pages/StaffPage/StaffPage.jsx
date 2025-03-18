@@ -6,6 +6,7 @@ import {
   getAllBookings,
   getAllDoctors,
 } from "../../api/booking.api";
+import { handleApiError } from "../../utils/utils";
 
 export default function StaffPage() {
   const [bookings, setBookings] = useState([]);
@@ -108,10 +109,8 @@ export default function StaffPage() {
         );
       }
     } catch (error) {
-      console.error("❌ Lỗi khi gọi API:", error);
-      toast.error("❌ Lỗi khi gán bác sĩ! Vui lòng thử lại.", {
-        position: "top-right",
-      });
+     
+      handleApiError(error);
     }
   };
 

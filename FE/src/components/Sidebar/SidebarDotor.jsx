@@ -5,20 +5,19 @@ import {
   MenuUnfoldOutlined,
   SettingOutlined,
   UserOutlined,
-  AppstoreOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
-import VaccineManagement from "../../pages/ManagerPage/VaccineManagement";
-import Dashboard from "../Admin/Dashboard";
-import RefundManage from "../Admin/RefundManage";
-import UserManage from "../Admin/UserManage";
+
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import { AppContext } from "../../contexts/app.context";
 
+import DoctorList from "../Doctor/DoctorList";
+
+
 const { Header, Sider, Content } = Layout;
 
-const SidebarAdmin = () => {
+const SidebarDoctor = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate(); // Hook điều hướng
  const  {setIsAuthenticated} = useContext(AppContext);
@@ -52,13 +51,8 @@ const SidebarAdmin = () => {
   const renderContent = () => {
     switch (selectedTab) {
       case "1":
-        return <Dashboard />;
-      case "2":
-        return <UserManage />;
-      case "3":
-        return <RefundManage />;
-      default:
-        return <VaccineManagement />;
+        return <DoctorList />;
+     
     }
   };
 
@@ -104,18 +98,8 @@ const SidebarAdmin = () => {
           items={[
             {
               key: "1",
-              icon: <UserOutlined />,
-              label: "Dashboard",
-            },
-            {
-              key: "2",
-              icon: <AppstoreOutlined />,
-              label: "Quản lý người dùng",
-            },
-            {
-              key: "3",
-              icon: <AppstoreOutlined />,
-              label: "Quản lý hoàn tiền",
+              
+              label: "Quản lí Hồ Sơ",
             },
           ]}
         />
@@ -172,4 +156,4 @@ const SidebarAdmin = () => {
   );
 };
 
-export default SidebarAdmin;
+export default SidebarDoctor;

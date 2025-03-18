@@ -10,7 +10,7 @@ import ManagerPage from "../pages/ManagerPage/ManagerPage";
 import ChildProfile from "../pages/ProfilePage/ChildProfile";
 import EditChildProfile from "../pages/ProfilePage/EditChildProfile";
 import BookingPage from "../pages/BookingPage/BookingPage";
-import PrivateRoute from "./PrivateRoute";
+
 import VaccineManagement from "../pages/ManagerPage/VaccineManagement";
 import RegistrationForm from "../pages/ProfilePage/ProfilePage";
 import VaccineDetailPage from "../pages/VaccineDetailPage/VaccineDetailPage";
@@ -26,6 +26,7 @@ import Wallet from "../pages/WalletPage/Wallet";
 import UserProfile from "../pages/ProfilePage/UserProfile";
 import DoctorPage from "../pages/DoctorPage/Doctor";
 import DoctorRecord from "../pages/DoctorPage/DoctorRecord";
+import { NoAuthRoute, PrivateRoute } from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -38,11 +39,18 @@ export const router = createBrowserRouter([
       { path: PATH_NAME.VACCINE, element: <VaccineManagement /> },
       { path: PATH_NAME.CHILDREN, element: <RegistrationForm /> },
       { path: PATH_NAME.VACCINE_DETAIL, element: <VaccineDetailPage /> },
-
+      {
+        path: PATH_NAME.STAFF,
+        element: (
+          <PrivateRoute allowedRoles={["Staff"]}>
+            <StaffPage />
+          </PrivateRoute>
+        ),
+      },
       {
         path: PATH_NAME.CHILD_PROFILE,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <ChildProfile />
           </PrivateRoute>
         ),
@@ -51,7 +59,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.EDIT_CHILD,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <EditChildProfile />
           </PrivateRoute>
         ),
@@ -60,7 +68,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.PAYMENT_SUCCESS,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <ResultPayment />
           </PrivateRoute>
         ),
@@ -69,7 +77,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.PAYMENT_FAILURE,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <ResultPayment />
           </PrivateRoute>
         ),
@@ -78,7 +86,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.MY_BOOKING,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <MyBooking />
           </PrivateRoute>
         ),
@@ -99,34 +107,19 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.USER_PROFILE,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer","Doctor","Admin","Manager","Staff"]}>
             <UserProfile />
           </PrivateRoute>
         ),
       },
 
-      {
-        path: PATH_NAME.DOCTOR,
-        element: (
-          <PrivateRoute>
-            <DoctorPage />
-          </PrivateRoute>
-        ),
-      },
-
-      {
-        path: PATH_NAME.DOCTOR_RECORD,
-        element: (
-          <PrivateRoute>
-            <DoctorRecord />
-          </PrivateRoute>
-        ),
-      },
+      
+      
 
       {
         path: PATH_NAME.BOOKING,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <BookingPage />
           </PrivateRoute>
         ),
@@ -135,7 +128,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.WALLET_DEPOSIT_SUCCESS,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <DepositSuccess />
           </PrivateRoute>
         ),
@@ -144,7 +137,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.WALLET_DEPOSIT_FAILURE,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer"]}>
             <DepositSuccess />
           </PrivateRoute>
         ),
@@ -153,7 +146,7 @@ export const router = createBrowserRouter([
       {
         path: PATH_NAME.MY_WALLET,
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={["Customer","Admin"]}>
             <Wallet />
           </PrivateRoute>
         ),
@@ -161,20 +154,27 @@ export const router = createBrowserRouter([
     ],
   },
 
-  { path: PATH_NAME.AUTH, element: <AuthPage /> },
-  { path: PATH_NAME.ADMIN, element: <AdminPage /> },
+  { path: PATH_NAME.AUTH, element: <NoAuthRoute><AuthPage /></NoAuthRoute> },
+  { path: PATH_NAME.ADMIN, element: <PrivateRoute allowedRoles={["Admin"]}>
+  <AdminPage />
+</PrivateRoute> },
+{
+  path: PATH_NAME.DOCTOR,
+  element: <PrivateRoute allowedRoles={["Doctor"]}><DoctorPage /></PrivateRoute>,
+},
+
   {
-    path: PATH_NAME.STAFF,
+    path: PATH_NAME.DOCTOR_RECORD,
     element: (
-      <PrivateRoute>
-        <StaffPage />
+      <PrivateRoute allowedRoles={["Doctor"]}>
+        <DoctorRecord />
       </PrivateRoute>
     ),
   },
   {
     path: PATH_NAME.MANAGER,
     element: (
-      <PrivateRoute>
+      <PrivateRoute allowedRoles={["Manager"]}>
         <ManagerPage />
       </PrivateRoute>
     ),
