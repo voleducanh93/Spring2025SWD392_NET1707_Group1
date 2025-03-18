@@ -3,9 +3,9 @@ import { getVaccinesAndCombo } from "../api/vaccineSchedule.api";
 
 export const useVaccineAndCombo = (childId) => {
   return useQuery({
-    queryKey: ["vaccineAndCombo", childId], // Query Key chứa childId để re-fetch khi thay đổi
+    queryKey: ["vaccineAndCombo", childId],
     queryFn: () => getVaccinesAndCombo(childId),
-    enabled: !!childId, // Chỉ fetch khi childId có giá trị
+    enabled: !!childId,
     refetchOnWindowFocus: false,
   });
 };

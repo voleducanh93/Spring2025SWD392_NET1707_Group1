@@ -6,10 +6,10 @@ export const usePayment = () => {
   const { mutate: fetchPaymentUrl, isLoading, isError, data, error } = useMutation({
     mutationFn: (bookingId) => getPayment(bookingId),
     onSuccess: (response) => {
-        console.log("🔍 API Response:", response); // ✅ Kiểm tra dữ liệu từ API
-    
-        if (response && response.paymentUrl) { // ✅ Đảm bảo lấy đúng URL
-            console.log("🔗 Redirecting to:", response.paymentUrl);
+        
+    toast.success("Mời bạn qua trang thanh toán")
+        if (response && response.paymentUrl) { 
+            
             window.open(response.paymentUrl, "_blank");  
       } else {
         console.error("❌ Lỗi: Không lấy được link thanh toán!");

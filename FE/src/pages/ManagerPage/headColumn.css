@@ -1,0 +1,7 @@
+.custom-table > tr > th {
+    background-color: #1D2D70 !important; /* Màu nền */
+    color: white !important; /* Chữ trắng */
+    font-weight: bold !important; /* Chữ đậm */
+    text-align: center;
+  }
+  

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Modal, Form, Input, Select, DatePicker, Button, Upload } from "antd";
+import { Modal, Form, Input, Select, DatePicker, Button, Upload, Checkbox } from "antd";
 import { UserOutlined, UploadOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { uploadFile } from "../../config/firebase"; // Giả định có hàm upload lên Firebase
+import { uploadFile } from "../../config/firebase"; 
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -11,13 +12,13 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // ✅ Xử lý khi chọn file
+  
   const handleFileChange = ({ file }) => {
     setSelectedFile(file); 
     console.log("📂 File Selected:", file);
   };
 
-  // ✅ Xử lý khi nhấn OK
+
   const handleOk = async () => {
     try {
         const values = await form.validateFields();
@@ -39,7 +40,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
 
         onAddChild(formData);
 
-        // Xóa dữ liệu sau khi thêm thành công
+        
         form.resetFields();
         setSelectedFile(null);
         
@@ -53,7 +54,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
 };
 
 
-  // ✅ Đóng Modal và reset dữ liệu
+  
   const handleCancel = () => {
     form.resetFields();
     setSelectedFile(null);
@@ -62,73 +63,128 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
 
   return (
     <Modal
-      title="Create New Child"
-      visible={visible}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      okText="Add"
-      cancelText="Cancel"
-      width={600}
-      okButtonProps={{
-        disabled: isUploading, // Vô hiệu hóa khi đang tải ảnh
-        loading: isUploading, // Hiển thị spinner khi tải ảnh
-      }}
-    >
-      <Form form={form} layout="vertical" name="createChildForm">
-        {/* Full Name */}
-        <Form.Item label="Full Name" name="fullName" rules={[{ required: true, message: "Please enter the full name!" }]}>
-          <Input prefix={<UserOutlined />} placeholder="Enter full name" />
-        </Form.Item>
-
-        {/* Date of Birth */}
-        <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: "Please select the date of birth!" }]}>
-          <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} placeholder="Select date" />
-        </Form.Item>
-
-        {/* Gender */}
-        <Form.Item label="Gender" name="gender" rules={[{ required: true, message: "Please select the gender!" }]}>
-          <Select placeholder="Select gender">
-            <Option value="Male">Male</Option>
-            <Option value="Female">Female</Option>
-          </Select>
-        </Form.Item>
-
-        {/* Medical History */}
-        <Form.Item label="Medical History" name="medicalHistory">
-          <Input placeholder="Enter medical history (optional)" />
-        </Form.Item>
-
-        {/* Relation to User */}
-        <Form.Item label="Relation to User" name="relationToUser" rules={[{ required: true, message: "Please select the relation!" }]}>
-          <Select placeholder="Select relation to user">
-            <Option value="Son">Son</Option>
-            <Option value="Daughter">Daughter</Option>
-            <Option value="Other">Other</Option>
-          </Select>
-        </Form.Item>
-
-        {/* Height */}
-        <Form.Item label="Height" name="height">
-          <Input type="number" placeholder="Enter height (optional)" />
-        </Form.Item>
-
-        {/* Weight */}
-        <Form.Item label="Weight" name="weight">
-          <Input type="number" placeholder="Enter weight (optional)" />
-        </Form.Item>
-
-        {/* Image Upload */}
-        <Form.Item
-          label="Upload Image"
-          rules={[{ required: true, message: "Please upload an image!" }]} // 🔴 Bắt buộc chọn ảnh
+    title="Thêm Trẻ Em"
+    visible={visible}
+    onOk={handleOk}
+    onCancel={handleCancel}
+    okText="Thêm"
+    cancelText="Hủy"
+    width={600}
+    okButtonProps={{
+      disabled: isUploading,
+      loading: isUploading,
+    }}
+  >
+    <Form form={form} layout="vertical" name="createChildForm">
+      
+      <Form.Item
+        label="Tên"
+        name="fullName"
+        rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="Nhập tên" />
+      </Form.Item>
+  
+      <Form.Item
+        label="Ngày sinh"
+        name="dateOfBirth"
+        rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
+      >
+        <DatePicker
+          format="YYYY-MM-DD"
+          style={{ width: "100%" }}
+          placeholder="Chọn ngày sinh"
+          disabledDate={(current) => current && current >= moment().endOf('day')}
+        />
+      </Form.Item>
+  
+      <Form.Item
+        label="Giới tính"
+        name="gender"
+        rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+      >
+        <Select placeholder="Chọn giới tính">
+          <Option value="Male">Nam</Option>
+          <Option value="Female">Nữ</Option>
+        </Select>
+      </Form.Item>
+  
+      <Form.Item label="Tiền sử bệnh" name="medicalHistory" valuePropName="checked">
+        <Checkbox
+          onChange={(e) => {
+            form.setFieldsValue({ medicalHistory: e.target.checked ? "Có" : "Không" });
+          }}
         >
-          <Upload beforeUpload={() => false} onChange={handleFileChange} maxCount={1} showUploadList={true}>
-            <Button icon={<UploadOutlined />}>Select File</Button>
-          </Upload>
-          {/* {selectedFile && <p>📂 Selected: {selectedFile.name}</p>} */}
-        </Form.Item>
-      </Form>
-    </Modal>
+          Có tiền sử bệnh
+        </Checkbox>
+      </Form.Item>
+  
+      <Form.Item
+        label="Mối quan hệ với người dùng"
+        name="relationToUser"
+        rules={[{ required: true, message: "Vui lòng chọn mối quan hệ!" }]}
+      >
+        <Select placeholder="Chọn mối quan hệ">
+          <Option value={0}>Con</Option>
+          <Option value={1}>Cháu</Option>
+          <Option value={2}>Anh/Chị/Em</Option>
+          <Option value={3}>Người thân</Option>
+          <Option value={4}>Khác</Option>
+        </Select>
+      </Form.Item>
+  
+      <Form.Item
+        label="Chiều cao (cm)"
+        name="height"
+        rules={[
+          { required: true, message: "Vui lòng nhập chiều cao!" },
+          {
+            validator: (_, value) => {
+              if (!value) return Promise.reject("Chiều cao không hợp lệ!");
+              const numberValue = Number(value);
+              if (isNaN(numberValue) || numberValue < 1) {
+                return Promise.reject("Chiều cao phải lớn hơn 0!");
+              }
+              return Promise.resolve();
+            },
+          },
+        ]}
+      >
+        <Input type="number" placeholder="Nhập chiều cao" min={1} />
+      </Form.Item>
+  
+      <Form.Item
+        label="Cân nặng (kg)"
+        name="weight"
+        rules={[
+          { required: true, message: "Vui lòng nhập cân nặng!" },
+          {
+            validator: (_, value) => {
+              if (!value) return Promise.reject("Cân nặng không hợp lệ!");
+              const numberValue = Number(value);
+              if (isNaN(numberValue) || numberValue < 1) {
+                return Promise.reject("Cân nặng phải lớn hơn 0!");
+              }
+              return Promise.resolve();
+            },
+          },
+        ]}
+      >
+        <Input type="number" placeholder="Nhập cân nặng" min={1} />
+      </Form.Item>
+  
+      <Form.Item
+        label="Tải ảnh lên"
+        rules={[{ required: true, message: "Vui lòng tải lên một ảnh!" }]}
+      >
+        <Upload beforeUpload={() => false} onChange={handleFileChange} maxCount={1} showUploadList={true}>
+          <Button icon={<UploadOutlined />}>Chọn tệp</Button>
+        </Upload>
+      </Form.Item>
+  
+    </Form>
+  </Modal>
+  
   );
 };
 

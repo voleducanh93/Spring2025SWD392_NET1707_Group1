@@ -1,10 +1,12 @@
 // useRegister.js
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import authApi from "../api/auth.api";
 import { toast } from "react-toastify";
-import { useQueryString } from "../utils/utils";
+import { handleApiError, useQueryString } from "../utils/utils";
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
+import { useNavigate } from "react-router-dom";
+import userApi from "../api/profile.api";
 
 export const useRegister = () => {
   return useMutation({
@@ -15,23 +17,25 @@ export const useRegister = () => {
       );
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Đăng ký thất bại!");
+      
+      handleApiError(error);
     },
+    
   });
 };
 
 export const useLogin = () => {
-  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, isAuthenticated,refreshWalletBalance } = useContext(AppContext);
   return useMutation({
     mutationFn: (userData) => authApi.login(userData),
     onSuccess: () => {
       setIsAuthenticated(true);
       console.log(isAuthenticated);
-
+      refreshWalletBalance();
       toast.success("Đăng nhập thành công!");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Đăng nhập thất bại!");
+      handleApiError(error);
     },
   });
 };
@@ -43,14 +47,14 @@ export const useForgotPassword = () => {
       toast.success(data.message || "Đã gửi email đặt lại mật khẩu!");
     },
     onError: (error) => {
-      toast.error(error.response?.data?.error || "Có lỗi xảy ra!");
+      handleApiError(error);
     },
   });
 };
 
 export const useResetPassword = () => {
   const queryParams = useQueryString();
-  console.log(queryParams.email + queryParams.token);
+  //console.log(queryParams.email + queryParams.token);
   return useMutation({
     mutationFn: (passwordData) =>
       authApi.resetPassword({
@@ -67,4 +71,65 @@ export const useResetPassword = () => {
       toast.error(error.response?.data?.error || "Có lỗi xảy ra!");
     },
   });
+
 };
+export const useConfirmEmail = () => {
+  const queryParams = useQueryString();
+  const navigate = useNavigate();
+
+  const email = queryParams.email;
+  const token = queryParams.token;
+
+  return useMutation({
+    mutationFn: async () => {
+      console.log(email, token);
+      
+      if (!email || !token) throw new Error("Thông tin không hợp lệ!");
+      return await authApi.confirmEmail({ email, token });
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Xác nhận email thành công!, Mời bạn đăng nhập");
+      setTimeout(() => navigate("/auth"), 2000); 
+    },
+    onError: (error) => {
+      toast.error(error.response?.error || "Xác nhận thất bại!");
+    },
+  });
+};
+export const useGetProfile = () => {
+  const { isAuthenticated } = useContext(AppContext);
+
+  return useQuery({
+    queryKey: ["userProfile"],
+    queryFn: userApi.getUserProfile,
+    enabled: isAuthenticated, 
+    onError: (error) => {
+      handleApiError(error);
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: (data) => userApi.updateProfile(data), 
+    onSuccess: (response) => {
+      toast.success(response.message || "✅ Hồ sơ cập nhật thành công!");
+    },
+    onError: (error) => {
+      handleApiError(error);
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (passwordData) => userApi.changePassword(passwordData),
+    onSuccess: (response) => {
+      toast.success(response.message || "✅ Đổi mật khẩu thành công!");
+    },
+    onError: (error) => {
+      handleApiError(error);
+    },
+  });
+};
+

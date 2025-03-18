@@ -7,6 +7,7 @@ import { useLocationData } from "./useLocationData";
 import SignInForm from "../../components/Auth/SignInForm";
 import SignUpForm from "../../components/Auth/SignUpForm";
 
+
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);  // Manage loading state manually
@@ -37,7 +38,7 @@ function AuthPage() {
   const { mutate: registerMutate, isSuccess: isRegisterSuccess, isError: isRegisterError } = useRegister();
   const { mutate: loginMutate, isSuccess: isLoginSuccess, isError: isLoginError } = useLogin();
   const { mutate: forgotPasswordMutate } = useForgotPassword();
-
+ 
   
   useEffect(() => {
     if (isRegisterSuccess) {
@@ -83,13 +84,14 @@ function AuthPage() {
         username: values.email,
         password: values.password,
       });
+     
     }
   };
   const handleSubmitForgot = (email) => {
     
     forgotPasswordMutate({email: email}); 
     form.resetFields();
-    //setIsResetPasswordModalVisible(true);
+    
   };
 
   return (
@@ -102,11 +104,11 @@ function AuthPage() {
             </div>
           ) : (
             <>
-              {/* Add key prop to force re-render when switching between forms */}
+             
               {!isSignUpMode && <SignInForm key="signInForm" onFinish={handleOnFinish} handleSubmitForgot={handleSubmitForgot} />}
               {isSignUpMode && (
                 <SignUpForm
-                  key="signUpForm"  // Force re-render when switching forms
+                  key="signUpForm" 
                   form={form}
                   onFinish={handleOnFinish}
                   provinceList={provinceList}

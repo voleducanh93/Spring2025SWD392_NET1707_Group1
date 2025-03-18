@@ -1,0 +1,16 @@
+/* Mặc định chữ trắng */
+.custom-menu .ant-menu-item {
+    color: white !important;
+  }
+  
+  /* Khi hover */
+  .custom-menu .ant-menu-item:hover {
+    background-color: #1D2D70 !important; /* Nền khi hover */
+  }
+  
+  /* Khi được chọn (click vào tab) */
+  .custom-menu .ant-menu-item-selected {
+    background-color: #1A237E !important; /* Màu nền khi được chọn */
+    color: white !important; /* Giữ màu mặc định của Ant Design */
+  }
+  

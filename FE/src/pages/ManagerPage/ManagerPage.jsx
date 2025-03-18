@@ -1,18 +1,15 @@
-import React from 'react';
-import StaffManagement from './StaffManagement';
-import DoctorManagement from './DoctorManagement';
-import VaccineSchedule from './VaccineSchedule';
-import VaccineManagement from './VaccineManagement';
+
+import SidebarManager from '../../components/Sidebar/SidebarManager';
 
 const ManagerPage = () => {
   return (
     <div>
-      <h1>Trang Quản Lý</h1>
       <div>
-        <StaffManagement />
+        {/* <StaffManagement />
         <DoctorManagement />
-        <VaccineSchedule />
-        <VaccineManagement />
+        <VaccineSchedule /> */}
+        {/* <VaccineManagement /> */}
+        <SidebarManager/>
       </div>
     </div>
   );

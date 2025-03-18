@@ -15,17 +15,20 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Container } from "@mui/material";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
+import WalletIcon from "@mui/icons-material/Wallet";
 import Logout from "@mui/icons-material/Logout";
 import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
+import { EventNote } from "@mui/icons-material";
+import NotificationDropdown from "../Notification/NotificationDropdown";
 
 export default function Topbar() {
   const navigate = useNavigate();
-  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, isAuthenticated, walletBalance } =
+    useContext(AppContext);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -63,12 +66,12 @@ export default function Topbar() {
             onClick={() => navigate("/")}
           >
             <img
-              src="src/assets/logo-vnvc-tet-nguyen-dan.png"
+              src="src/assets/logo.webp"
               alt="VNVC Logo"
               className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
             />
             <span className="text-orange-500 text-2xl font-bold tracking-wide drop-shadow-md">
-              VNVC
+              CVSTS
             </span>
           </motion.div>
 
@@ -89,11 +92,9 @@ export default function Topbar() {
               transition={{ type: "spring", stiffness: 200 }}
               className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <Link
-                to="/Booking"
-              >
-              <CalendarMonthIcon />
-              <span className="font-medium">ĐĂNG KÝ TIÊM</span>
+              <Link to="/Booking">
+                <CalendarMonthIcon />
+                <span className="font-medium">ĐĂNG KÝ TIÊM</span>
               </Link>
             </motion.div>
 
@@ -109,8 +110,10 @@ export default function Topbar() {
             </motion.span>
 
             {/* Đăng nhập / Tài khoản */}
+            
             {!isAuthenticated ? (
               <div className="flex items-center mr-5">
+                
                 <Link to="/auth">
                   <motion.a
                     transition={{ type: "spring", stiffness: 200 }}
@@ -123,6 +126,7 @@ export default function Topbar() {
               </div>
             ) : (
               <div>
+                <NotificationDropdown />
                 <Tooltip title="Tài khoản">
                   <IconButton onClick={handleClick} size="small">
                     <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
@@ -142,7 +146,7 @@ export default function Topbar() {
                   }}
                 >
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/user-profile")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <Avatar /> Tài Khoản Của Tôi
@@ -162,23 +166,29 @@ export default function Topbar() {
                   <Divider />
 
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/mybooking")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <ListItemIcon>
-                      <PersonAdd fontSize="small" />
+                      <EventNote fontSize="small" />
                     </ListItemIcon>
-                    Thêm tài khoản
+                    Danh sách lịch hẹn
                   </MenuItem>
 
                   <MenuItem
-                    onClick={handleClose}
+                    onClick={() => navigate("/mywallet")}
                     className="hover:bg-gray-100 transition-all duration-200"
                   >
                     <ListItemIcon>
-                      <Settings fontSize="small" />
+                      <WalletIcon />
                     </ListItemIcon>
-                    Cài đặt
+                    <div className="flex flex-col">
+                      <span>
+                        Ví tiền:{" "}
+                        {walletBalance ? walletBalance.toLocaleString() : "0"}{" "}
+                        VND
+                      </span>
+                    </div>
                   </MenuItem>
 
                   <MenuItem

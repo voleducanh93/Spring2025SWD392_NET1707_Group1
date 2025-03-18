@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getVaccines, createVaccine, updateVaccine, deleteVaccine, getVaccinesAndCombo } from "../api/vaccineSchedule.api";
+import { getVaccines, createVaccine, updateVaccine, deleteVaccine, VaccineById } from "../api/vaccineSchedule.api";
 import { toast } from 'react-toastify'; // Import toast
+import { handleApiError } from "../utils/utils";
+
 
 export const useVaccineSchedule = () => {
   const queryClient = useQueryClient();
@@ -11,6 +13,8 @@ export const useVaccineSchedule = () => {
     refetchOnWindowFocus: false,
   });
 
+  
+
   const addVaccine = useMutation({
     mutationFn: createVaccine,
     onSuccess: () => {
@@ -18,8 +22,7 @@ export const useVaccineSchedule = () => {
       toast.success("Vaccine đã được thêm thành công!"); // Thông báo thành công
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi thêm vaccine:", error);
-      toast.error(`Thêm vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      handleApiError(error);
     },
   });
 
@@ -27,11 +30,10 @@ export const useVaccineSchedule = () => {
     mutationFn: ({ id, data }) => updateVaccine(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vaccineSchedule"] });
-      toast.success("Vaccine đã được cập nhật thành công!"); // Thông báo thành công
+      toast.success("Vaccine đã được cập nhật thành công!"); 
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật vaccine:", error);
-      toast.error(`Cập nhật vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      handleApiError(error);
     },
   });
 
@@ -39,14 +41,22 @@ export const useVaccineSchedule = () => {
     mutationFn: deleteVaccine,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vaccineSchedule"] });
-      toast.success("Vaccine đã được xóa thành công!"); // Thông báo thành công
+      toast.success("Vaccine đã được xóa thành công!"); 
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa vaccine:", error);
-      toast.error(`Xóa vaccine thất bại: ${error.message || "Lỗi không xác định"}`); // Thông báo lỗi
+      handleApiError(error);
     },
   });
   
 
   return { vaccines, isLoading, isError, error, addVaccine, editVaccine, removeVaccine };
+};
+
+export const useVaccineScheduleById = (id) => {
+  return useQuery({
+    queryKey: ["vaccineScheduleID", id],
+    queryFn: () => VaccineById(id),
+    enabled: !!id, 
+    refetchOnWindowFocus: false,
+  });
 };

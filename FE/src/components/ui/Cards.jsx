@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useVaccine } from "../../hooks/useVaccine";
 import imgTam from "../../assets/vac-xin-pentaxim-1.jpg";
+import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 12; // Số vaccine mỗi trang
 
@@ -72,10 +73,8 @@ export default function Cards() {
       <Grid container spacing={4}>
         {displayedVaccines.map((vaccine, index) => (
           <Grid item key={index} xs={12} sm={6} md={3}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 150 }}
-            >
+          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 150 }}>
+            <Link to={`/vaccine/${vaccine.vaccineId}`} style={{ textDecoration: "none" }}>
               <Card
                 sx={{
                   maxWidth: 345,
@@ -93,7 +92,7 @@ export default function Cards() {
                   component="img"
                   alt={vaccine.name}
                   height="200"
-                  image={imgTam} //{vaccine.image || "default-image.jpg"} // Fallback image
+                  image={imgTam} // Hoặc vaccine.image nếu có
                   sx={{
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",
@@ -127,35 +126,10 @@ export default function Cards() {
                     {vaccine.description}
                   </Typography>
                 </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#FF7043",
-                        color: "white",
-                        transform: "scale(1.05)",
-                      },
-                    }}
-                  >
-                    Share
-                  </Button>
-                  <Button
-                    size="small"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "#0288D1",
-                        color: "white",
-                        transform: "scale(1.05)",
-                      },
-                    }}
-                  >
-                    Learn More
-                  </Button>
-                </CardActions>
               </Card>
-            </motion.div>
-          </Grid>
+            </Link>
+          </motion.div>
+        </Grid>
         ))}
       </Grid>
 

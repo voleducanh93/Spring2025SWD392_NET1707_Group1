@@ -3,18 +3,26 @@ import { getChildren, createChildren, updateChildren, deleteChildren } from "../
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { toast } from "react-toastify";
+import { handleApiError } from "../utils/utils";
 
 export const useChildren = () => {
+  
   const queryClient = useQueryClient();
 const { getUser} = useContext(AppContext);
-
+  
+if (!getUser) {
+  toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại."); 
+}
 
   const { data: vaccines, isLoading, isError, error } = useQuery({
-    queryKey: ["children"],
+    queryKey: ["children",getUser],
     queryFn: () => getChildren(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy dữ liệu children:", err);
+    onError: (error) => {
+      if (error?.response?.data?.errorMessages?.length > 0) {
+        const errorMessage = error.response.data.errorMessages[0]; 
+        toast.error(`⚠️ ${errorMessage}`);
+    }
     },
   });
 
@@ -31,11 +39,9 @@ const { getUser} = useContext(AppContext);
 
         
         if (error?.response?.data?.errorMessages?.length > 0) {
-            const errorMessage = error.response.data.errorMessages[0]; // Lấy thông báo lỗi đầu tiên
+            const errorMessage = error.response.data.errorMessages[0]; 
             toast.error(`⚠️ ${errorMessage}`);
-        } else {
-            toast.error("⚠️ Thêm trẻ thất bại! Vui lòng thử lại.");
-        }
+        } 
     }
 });
 
@@ -46,19 +52,34 @@ const { getUser} = useContext(AppContext);
       queryClient.invalidateQueries({ queryKey: ["children"] });
     },
     onError: (error) => {
-      console.error("❌ Lỗi khi cập nhật children:", error);
+      if (error?.response?.data?.errorMessages?.length > 0) {
+        const errorMessage = error.response.data.errorMessages[0]; 
+        toast.error(`⚠️ ${errorMessage}`);
+    } 
     },
   });
 
   const removeChildren = useMutation({
     mutationFn: deleteChildren,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["children"] });
+
+    onSuccess: (_, id) => { // Lấy `id` từ mutation
+        queryClient.setQueryData(["children"], (oldData) => {
+            if (!oldData || oldData.length === 1) {
+                return []; // Đảm bảo danh sách rỗng khi xóa phần tử cuối
+            }
+            return oldData.filter((child) => child.id !== id);
+        });
+
+        queryClient.invalidateQueries(["children"]); // Làm mới danh sách từ API
+
+        toast.success("Đã xóa thành công");
     },
+
     onError: (error) => {
-      console.error("❌ Lỗi khi xóa children:", error);
-    },
-  });
+      handleApiError(error);
+    }
+});
+
 
   return {
     vaccines,

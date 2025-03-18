@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import HttpStatusCode from '../constants/httpStatusCode.enum';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 // import userImage from 'src/assets/images/user.svg';
@@ -67,6 +68,10 @@ export const getIdFromNameId = (nameId) => {
   const arr = nameId.split('-i-');
   return arr[arr.length - 1];
 };
+export const handleApiError = (error, customMessage = "❌ Lỗi không xác định!") => {
+  const errorMessage = error?.response?.data?.errorMessages?.[0] || customMessage;
+  toast.error(`⚠️ ${errorMessage}`);
+};
 
 export const useQueryString = () => {
   const { search } = useLocation();
@@ -80,6 +85,4 @@ export const useQueryString = () => {
 
   return queryParams;
 };
-// // Lấy URL ảnh đại diện
-// export const getAvatarUrl = (avatarName) =>
-//   avatarName ? `${config.baseUrl}images/${avatarName}` : userImage;
+
