@@ -55,27 +55,31 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Lấy chi tiết một hồ sơ tiêm chủng.
         /// </summary>
-        //[HttpGet("{vaccineRecordId}")]
-        //public async Task<ActionResult<APIResponse>> GetVaccineRecordById(int vaccineRecordId)
-        //{
-        //	try
-        //	{
-        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //		var record = await _vaccineRecordService.GetVaccineRecordByIdAsync(vaccineRecordId, doctorId);
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor, Customer, Staff, Admin")]
+        [HttpGet("{vaccineRecordId}")]
+        public async Task<ActionResult<APIResponse>> GetVaccineRecordById(int vaccineRecordId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                bool isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                bool isStaff = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Staff");
 
-        //		_response.StatusCode = HttpStatusCode.OK;
-        //		_response.IsSuccess = true;
-        //		_response.Result = record;
-        //		return Ok(_response);
-        //	}
-        //	catch (Exception ex)
-        //	{
-        //		_response.StatusCode = HttpStatusCode.BadRequest;
-        //		_response.IsSuccess = false;
-        //		_response.ErrorMessages.Add(ex.Message);
-        //		return BadRequest(_response);
-        //	}
-        //}
+                var record = await _vaccineRecordService.GetVaccineRecordByIdAsync(vaccineRecordId, userId, isAdmin, isStaff);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = record;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
 
 
         /// <summary>
