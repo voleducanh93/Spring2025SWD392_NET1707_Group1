@@ -1,4 +1,4 @@
-﻿using ChildVaccineSystem.Data.Entities;
+using ChildVaccineSystem.Data.Entities;
 using ChildVaccineSystem.Data.Enum;
 using ChildVaccineSystem.Data.Models;
 using ChildVaccineSystem.RepositoryContract.Interfaces;
@@ -27,27 +27,23 @@ namespace ChildVaccineSystem.Repository.Repositories
                              b.BookingDate.Date == bookingDate.Date &&
                              b.Status != BookingStatus.Cancelled);
         }
-
         public async Task<Booking> GetBookingWithDetailsAsync(int bookingId)
         {
             return await _context.Bookings
                 .Include(b => b.BookingDetails)
-                    .ThenInclude(d => d.Vaccine)
+                .ThenInclude(d => d.Vaccine)
                 .Include(b => b.BookingDetails)
-                    .ThenInclude(d => d.ComboVaccine)
-                .Include(b => b.Children) // ✅ Thêm để ánh xạ ChildName
+                .ThenInclude(d => d.ComboVaccine)
                 .FirstOrDefaultAsync(b => b.BookingId == bookingId);
         }
-
         public async Task<List<Booking>> GetUnassignedBookingsAsync()
         {
             return await _context.Bookings
-                .Where(b => b.Status == BookingStatus.Confirmed && b.DoctorWorkScheduleId == null)
+                .Where(b => b.Status == BookingStatus.Pending && !b.DoctorWorkSchedules.Any())
                 .Include(b => b.Children)
                 .Include(b => b.User)
                 .ToListAsync();
         }
-
         public async Task<bool> IsDoctorAssignedToBookingAsync(int bookingId, string doctorId)
         {
             return await (from b in _context.Bookings

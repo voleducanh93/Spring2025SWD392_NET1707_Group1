@@ -5,7 +5,7 @@
 namespace ChildVaccineSystem.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class huhu : Migration
+    public partial class me : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
