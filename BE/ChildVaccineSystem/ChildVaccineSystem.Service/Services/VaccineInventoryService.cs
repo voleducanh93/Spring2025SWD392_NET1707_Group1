@@ -68,7 +68,7 @@ namespace ChildVaccineSystem.Service.Services
 
             if (vaccineInventories == null || !vaccineInventories.Any())
             {
-                throw new KeyNotFoundException($"No inventory information found for vaccine with ID: {vaccineId}");
+                throw new KeyNotFoundException($"Không tìm thấy thông tin tồn kho cho vắc-xin có ID: {vaccineId}");
             }
 
             // Lọc bỏ các lô đã bị soft delete
@@ -76,7 +76,7 @@ namespace ChildVaccineSystem.Service.Services
 
             if (!activeInventories.Any())
             {
-                throw new Exception("No active inventory available for this vaccine.");
+                throw new Exception("Hiện không có sẵn vắc-xin này trong kho.");
             }
 
             return activeInventories.Select(vi => new VaccineInventoryDTO
@@ -116,7 +116,7 @@ namespace ChildVaccineSystem.Service.Services
 
             if (!sortedInventories.Any())
             {
-                throw new Exception("No available vaccine stock.");
+                throw new Exception("Không có sẵn vắc-xin.");
             }
 
             int remainingQuantity = quantity;
@@ -133,10 +133,10 @@ namespace ChildVaccineSystem.Service.Services
                 var transaction = new VaccineTransactionHistory
                 {
                     VaccineInventoryId = inventory.VaccineInventoryId,
-                    TransactionType = "Export",
+                    TransactionType = "Xuất",
                     Quantity = issuedQuantity,
                     TransactionDate = DateTime.UtcNow,
-                    Description = $"Export {issuedQuantity} unit(s) from Batch {inventory.BatchNumber}."
+                    Description = $"Xuất {issuedQuantity} vắc-xin từ Lô {inventory.BatchNumber}."
                 };
 
                 await _unitOfWork.VaccineTransactionHistories.AddAsync(transaction);
@@ -144,7 +144,7 @@ namespace ChildVaccineSystem.Service.Services
 
             if (remainingQuantity > 0)
             {
-                throw new Exception("Not enough vaccine in stock.");
+                throw new Exception("Không có đủ vắc-xin trong kho.");
             }
 
             await _unitOfWork.CompleteAsync();
@@ -158,12 +158,12 @@ namespace ChildVaccineSystem.Service.Services
 
             if (vaccineInventory == null)
             {
-                throw new Exception("Vaccine with the specified ID was not found.");
+                throw new Exception("Không tìm thấy vắc-xin có ID cụ thể.");
             }
 
             if (vaccineInventory.IsActive)
             {
-                throw new InvalidOperationException("Cannot return vaccine. This vaccine inventory has been deleted (soft delete).");
+                throw new InvalidOperationException("Không thể trả lại vắc-xin. Kho vắc-xin này đã bị xóa (xóa tạm thời).");
             }
             // Tính số vaccine đã xuất:
             int stockWithoutReturns = vaccineInventory.QuantityInStock - vaccineInventory.ReturnedQuantity;
@@ -172,7 +172,7 @@ namespace ChildVaccineSystem.Service.Services
             // Kiểm tra hợp lệ: tổng số vaccine trả không vượt quá số đã xuất
             if (vaccineInventory.ReturnedQuantity + returnQuantity > exported)
             {
-                throw new InvalidOperationException("The exported vaccine quantity is insufficient for the return.");
+                throw new InvalidOperationException("Số lượng vắc xin xuất đi không đủ để trả lại.");
             }
 
             // Cập nhật tồn kho và số vaccine đã trả
@@ -183,10 +183,10 @@ namespace ChildVaccineSystem.Service.Services
             var transaction = new VaccineTransactionHistory
             {
                 VaccineInventoryId = vaccineInventory.VaccineInventoryId,
-                TransactionType = "Return",
+                TransactionType = "Hoàn trả",
                 Quantity = returnQuantity,
                 TransactionDate = DateTime.UtcNow,
-                Description = $"Returned {returnQuantity} unit(s) to inventory."
+                Description = $"Hoàn trả {returnQuantity} vắc-xin về kho."
             };
 
             // Lưu giao dịch vào lịch sử (Dùng IVaccineTransactionHistoryRepository)
@@ -269,7 +269,7 @@ namespace ChildVaccineSystem.Service.Services
 
             var adminEmail = "hauphanduc3014@gmail.com";
             var expiringVaccineList = vaccines
-                .Select(v => $"{v.Vaccine.Name} - Expiration date: {v.ExpiryDate.ToShortDateString()}")
+                .Select(v => $"{v.Vaccine.Name} - Ngày hết hạn: {v.ExpiryDate.ToShortDateString()}")
                 .ToList();
 
             await _emailService.SendExpiryAlertsAsync(adminEmail, expiringVaccineList);
@@ -282,7 +282,7 @@ namespace ChildVaccineSystem.Service.Services
             var vaccine = await _unitOfWork.Vaccines.GetByIdAsync(dto.VaccineId);
             if (vaccine == null)
             {
-                throw new Exception("Vaccine does not exist.");
+                throw new Exception("Không có vắc-xin.");
             }
 
             // Kiểm tra xem lô vaccine đã tồn tại chưa
@@ -291,7 +291,13 @@ namespace ChildVaccineSystem.Service.Services
 
             if (existingBatch != null)
             {
-                throw new Exception("Batch number already exists.");
+                throw new Exception("Số lô đã tồn tại.");
+            }
+
+            // Validate the manufacturing date and expiry date
+            if (dto.ManufacturingDate > dto.ExpiryDate)
+            {
+                throw new Exception("Ngày sản xuất không được muộn hơn ngày hết hạn.");
             }
 
             // Tạo mới một bản ghi VaccineInventory
@@ -319,7 +325,7 @@ namespace ChildVaccineSystem.Service.Services
             var inventory = await _unitOfWork.VaccineInventories.GetByIdAsync(id);
             if (inventory == null)
             {
-                throw new Exception("Vaccine inventory does not exist.");
+                throw new Exception("Không tìm thấy vắc-xin trong kho.");
             }
 
             // Kiểm tra xem batch number mới có bị trùng không (nếu cập nhật batch number)
@@ -328,14 +334,28 @@ namespace ChildVaccineSystem.Service.Services
                 var existingBatch = await _unitOfWork.VaccineInventories.GetByBatchNumberAsync(dto.BatchNumber);
                 if (existingBatch != null)
                 {
-                    throw new Exception("Batch number already exists.");
+                    throw new Exception("Số lô đã tồn tại.");
                 }
                 inventory.BatchNumber = dto.BatchNumber;
             }
 
+            // Validate the manufacturing date and expiry date
+            if (dto.ManufacturingDate.HasValue && dto.ExpiryDate.HasValue && dto.ManufacturingDate.Value > dto.ExpiryDate.Value)
+            {
+                throw new Exception("Ngày sản xuất không được muộn hơn ngày hết hạn.");
+            }
+
             // Cập nhật thông tin khác nếu có
-            inventory.ManufacturingDate = dto.ManufacturingDate ?? inventory.ManufacturingDate;
-            inventory.ExpiryDate = dto.ExpiryDate ?? inventory.ExpiryDate;
+            if (dto.ManufacturingDate.HasValue)
+            {
+                inventory.ManufacturingDate = dto.ManufacturingDate.Value;
+            }
+
+            if (dto.ExpiryDate.HasValue)
+            {
+                inventory.ExpiryDate = dto.ExpiryDate.Value;
+            }
+
             inventory.Supplier = dto.Supplier ?? inventory.Supplier;
 
             // Nếu cập nhật số lượng ban đầu, thì cập nhật cả tồn kho
@@ -365,14 +385,14 @@ namespace ChildVaccineSystem.Service.Services
 
             if (inventory == null)
             {
-                throw new Exception("Vaccine inventory not found.");
+                throw new Exception("Không tìm thấy vắc-xin trong kho.");
             }
 
             // Đánh dấu lô vaccine này là xóa mềm, nhưng không ảnh hưởng đến các lô khác
             inventory.IsActive = true;
             await _unitOfWork.CompleteAsync();
 
-            return $"Vaccine inventory with ID {vaccineInventoryId} has been soft deleted.";
+            return $"Kho vắc-xin có ID  {vaccineInventoryId} đã bị xóa tạm thời.";
         }
 
 
@@ -389,13 +409,13 @@ namespace ChildVaccineSystem.Service.Services
             if (vaccineInventories == null || !vaccineInventories.Any())
             {
                 // Ném ngoại lệ nếu không tìm thấy vaccine tồn kho
-                throw new KeyNotFoundException($"No inventory information found for vaccine with ID: {vaccineInventoryId}");
+                throw new KeyNotFoundException($"Không tìm thấy thông tin tồn kho cho vắc-xin có ID: {vaccineInventoryId}");
             }
 
             // Kiểm tra xem có vaccine nào bị xóa mềm không
             if (vaccineInventories.Any(vi => vi.IsActive))
             {
-                throw new InvalidOperationException("This vaccine inventory has been deleted (soft delete).");
+                throw new InvalidOperationException("Kho vắc-xin này đã bị xóa (xóa tạm thời).");
             }
 
             // Chuyển đổi danh sách đối tượng thành danh sách DTO
@@ -443,7 +463,7 @@ namespace ChildVaccineSystem.Service.Services
                 .GetAllAsync(vi => vi.VaccineId == vaccineId && vi.QuantityInStock > 0);
 
             var selectedInventory = inventory.OrderBy(vi => vi.ExpiryDate).FirstOrDefault();
-            if (selectedInventory == null) throw new Exception("No available vaccine batch.");
+            if (selectedInventory == null) throw new Exception("Không có lô vắc-xin nào có sẵn.");
 
             // Giảm số lượng trong kho
             selectedInventory.QuantityInStock -= 1;
