@@ -145,27 +145,31 @@ namespace ChildVaccineSystem.API.Controllers
         /// <summary>
         /// Cập nhật hồ sơ tiêm chủng (trạng thái, ghi chú, ngày tiêm tiếp theo).
         /// </summary>
-        //[HttpPut("{vaccineRecordId}/update")]
-        //public async Task<ActionResult<APIResponse>> UpdateVaccineRecord(int vaccineRecordId, [FromBody] UpdateVaccineRecordDTO updateDto)
-        //{
-        //	try
-        //	{
-        //		var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //		var result = await _vaccineRecordService.UpdateVaccineRecordAsync(vaccineRecordId, updateDto, doctorId);
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor, Staff, Admin")]
+        [HttpPut("{vaccineRecordId}/update")]
+        public async Task<ActionResult<APIResponse>> UpdateVaccineRecord(int vaccineRecordId, [FromBody] UpdateVaccineRecordDTO updateDto)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                bool isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                bool isStaff = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Staff");
 
-        //		_response.StatusCode = HttpStatusCode.OK;
-        //		_response.IsSuccess = result;
-        //		_response.Result = result ? "Cập nhật thành công." : "Cập nhật thất bại.";
-        //		return Ok(_response);
-        //	}
-        //	catch (Exception ex)
-        //	{
-        //		_response.StatusCode = HttpStatusCode.BadRequest;
-        //		_response.IsSuccess = false;
-        //		_response.ErrorMessages.Add(ex.Message);
-        //		return BadRequest(_response);
-        //	}
-        //}
+                var result = await _vaccineRecordService.UpdateVaccineRecordAsync(vaccineRecordId, updateDto, userId, isAdmin, isStaff);
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = result;
+                _response.Result = result ? "Cập nhật thành công." : "Cập nhật thất bại.";
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add(ex.Message);
+                return BadRequest(_response);
+            }
+        }
 
         /// <summary>
         /// Xóa mềm một hồ sơ tiêm chủng (Soft Delete).
