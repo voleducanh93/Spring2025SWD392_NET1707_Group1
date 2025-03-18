@@ -24,5 +24,7 @@ namespace ChildVaccineSystem.Data.Entities
         [ForeignKey("VaccineInventory")]
         public int? VaccineInventoryId { get; set; }
         public VaccineInventory VaccineInventory { get; set; }
+        public int Order { get; set; } // Thứ tự tiêm
+        public int IntervalDays { get; set; } // Khoảng cách giữa các lần tiêm (tính theo ngày)
     }
 }
