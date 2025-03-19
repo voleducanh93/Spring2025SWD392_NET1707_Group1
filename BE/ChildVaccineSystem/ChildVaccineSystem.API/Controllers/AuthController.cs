@@ -120,15 +120,16 @@ namespace ChildVaccineSystem.API.Controllers
                 _response.ErrorMessages.Add("Tài khoản không tồn tại.");
                 return NotFound(_response);
             }
-            catch (UnauthorizedAccessException ex) // Nếu mật khẩu sai hoặc email chưa xác nhận
+            catch (Exception ex) // Nếu sai mật khẩu hoặc email chưa xác nhận hoặc lỗi hệ thống khác
             {
-                _response.StatusCode = HttpStatusCode.Unauthorized;
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add(ex.Message);
-                return Unauthorized(_response);
-            }
-            catch (Exception ex) // Các lỗi khác
-            {
+                if (ex.Message.Contains("Mật khẩu không chính xác") || ex.Message.Contains("Email chưa được xác nhận"))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add(ex.Message);
+                    return BadRequest(_response);
+                }
+
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add($"Lỗi hệ thống: {ex.Message}");
