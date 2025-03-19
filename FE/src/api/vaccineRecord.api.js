@@ -21,7 +21,7 @@ export const createVaccineRecord = async (id) => {
 };
 
 export const getVaccineRecord = async (bookingId) => {
-    const response = await http.get(`${BASE_URL}/booking/${bookingId}`);
+    const response = await http.get(`${BASE_URL}/bookingDetail/${bookingId}`);
     return response.data.result;
   };
 

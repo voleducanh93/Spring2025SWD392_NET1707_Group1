@@ -12,7 +12,6 @@ const DoctorList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const handleProceedVaccination = (bookingId) => {
-    console.log(bookingId);
     
     createVaccineRecord.mutate(bookingId);
   };
