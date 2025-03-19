@@ -30,7 +30,7 @@ namespace ChildVaccineSystem.API.Controllers
         /// Bác sĩ tạo hồ sơ tiêm chủng cho lịch hẹn.
         /// </summary>
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor")]
-        [HttpPost("{bookingId}/create")]
+        [HttpPost("{bookingDetailId}/create")]
         public async Task<ActionResult<APIResponse>> CreateVaccineRecord(int bookingId)
         {
             try
