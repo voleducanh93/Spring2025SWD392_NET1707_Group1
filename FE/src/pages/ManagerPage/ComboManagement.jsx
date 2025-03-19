@@ -38,6 +38,8 @@ const ComboManagement = () => {
   // Mở modal chi tiết Combo
   const showDetailModal = (combo) => {
     setSelectedCombo(combo);
+    console.log(combo);
+    
     setIsDetailModalOpen(true);
   };
 
@@ -75,52 +77,34 @@ const ComboManagement = () => {
   };
 
   // Xử lý Thêm/Sửa Combo
-  const handleOk = async () => {
+  const handleOk = async (comboData) => {
     try {
-      await form.validateFields();
-      const comboData = form.getFieldsValue();
-
+      console.log("🚀 Gửi dữ liệu lên API:", JSON.stringify(comboData, null, 2));
+  
+      if (!comboData || !comboData.comboName || !comboData.description || !comboData.vaccines?.length) {
+        console.error("⚠️ Dữ liệu không hợp lệ! Kiểm tra lại trước khi gửi API.");
+        return;
+      }
+  
       if (editingCombo) {
-        const existingVaccineIds = editingCombo.vaccines.map(
-          (v) => v.vaccineId
-        ); // Lấy danh sách vaccine cũ
-        const newVaccineIds = comboData.vaccineIds || []; // Lấy danh sách vaccine mới
-
-        // Kiểm tra xem có thay đổi vaccine không
-        const isVaccineChanged =
-          JSON.stringify(existingVaccineIds.sort()) !==
-          JSON.stringify(newVaccineIds.sort());
-
-        // Nếu không thay đổi vaccine, gửi danh sách cũ
-        const updatedVaccineIds = isVaccineChanged
-          ? newVaccineIds
-          : existingVaccineIds;
-
-        // Chuẩn bị dữ liệu cập nhật
-        const updatedData = {
-          comboName: comboData.comboName,
-          description: comboData.description,
-          totalPrice: comboData.totalPrice,
-          isActive: comboData.isActive,
-          vaccineIds: updatedVaccineIds, // Luôn có vaccineIds để tránh lỗi
-        };
-
-        // Gửi API cập nhật
+        // ✅ Cập nhật Combo
         editCombo.mutate({
           id: editingCombo.comboId,
-          data: updatedData,
+          data: comboData,
         });
       } else {
-        // Nếu là thêm mới, gửi tất cả thông tin
+        // ✅ Thêm mới Combo
         addCombo.mutate(comboData);
       }
-
+  
       setIsModalOpen(false);
       form.resetFields();
     } catch (error) {
-      console.error("Lỗi khi xử lý Combo:", error);
+      console.error("❌ Lỗi khi xử lý Combo:", error);
     }
   };
+  
+  
 
   
 

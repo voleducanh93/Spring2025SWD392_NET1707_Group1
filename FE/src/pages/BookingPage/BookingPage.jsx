@@ -52,12 +52,10 @@ const BookingPage = () => {
         setComboVaccines(result.result.comboVaccines || []);
         console.log(comboVaccines);
       } else {
-        console.warn("⚠️ Không có dữ liệu vaccine hoặc combo hợp lệ.");
         setVaccinationSchedule([]);
         setComboVaccines([]);
       }
-    } catch (error) {
-      console.error("❌ Lỗi khi gọi API:", error);
+    } catch {
       setVaccinationSchedule([]);
       setComboVaccines([]);
     }
@@ -179,8 +177,7 @@ const BookingPage = () => {
             setVaccinationSchedule(null);
             refreshWalletBalance();
           },
-          onError: (walletError) => {
-            console.error("❌ Lỗi khi thanh toán bằng ví:", walletError);
+          onError: () => {
             toast.error("⚠️ Thanh toán thất bại! Vui lòng kiểm tra số dư.");
           },
         });
@@ -207,9 +204,9 @@ const BookingPage = () => {
         {
           method: "POST",
           headers: {
-            Accept: "*/*", // Đảm bảo API nhận dữ liệu đúng định dạng
+            Accept: "*/*",
           },
-          body: formData, // Gửi FormData thay vì JSON
+          body: formData,
         }
       );
 
@@ -265,8 +262,7 @@ const BookingPage = () => {
       } else {
         return true; // Không có cảnh báo thì cho phép chọn luôn
       }
-    } catch (error) {
-      console.error("❌ Lỗi kiểm tra vaccine:", error);
+    } catch {
       toast.error("⚠️ Lỗi kiểm tra vaccine. Vui lòng thử lại.");
       return false;
     }
@@ -514,56 +510,65 @@ const BookingPage = () => {
           {/* 3. Hiển thị danh sách combo vaccine */}
           {isComboSelected && comboVaccines?.length > 0
             ? comboVaccines.map((combo) => (
-                <div
-                  key={combo.comboId}
-                  className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg max-h-[410px] overflow-hidden"
-                >
-                  {/* Hiển thị thông tin combo vaccine */}
-                  <div className="flex flex-col gap-3 bg-[#DDECF9] rounded-2xl !p-4">
-                    <h3 className="text-[#234060] text-lg font-medium">
-                      {combo.comboName}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Mô tả: {combo.description}
-                    </p>
-                    <div className="flex items-center gap-3 text-[#2A388F] mt-6">
-                      <SellIcon />
-                      <p className="font-semibold text-2xl">
-                        {combo.totalPrice
-                          ? `${combo.totalPrice.toLocaleString("vi-VN")} VNĐ`
-                          : "Liên hệ"}
-                      </p>
-                    </div>
-                    {/* Danh sách các vaccine trong combo */}
-                    <div className="mt-4">
-                      <h4 className="text-sm font-semibold">
-                        Danh sách vắc-xin:
-                      </h4>
-                      <ul className="list-disc pl-5">
-                        {combo.vaccines.map((vaccine) => (
-                          <li
-                            key={vaccine.vaccineId}
-                            className="text-sm text-gray-600"
-                          >
-                            {vaccine.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  <button
-                    className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
-                      selectedVaccines.some((v) => v.comboId === combo.comboId)
-                        ? "bg-[#35944A]"
-                        : "bg-[#2A388F]"
-                    }`}
-                    onClick={() => toggleSelection(combo)}
-                  >
-                    {selectedVaccines.some((v) => v.comboId === combo.comboId)
-                      ? "ĐÃ CHỌN"
-                      : "CHỌN"}
-                  </button>
+              <div
+              key={combo.comboId}
+              className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg min-h-[480px] max-h-[480px] w-full"
+            >
+              {/* Hiển thị thông tin combo vaccine */}
+              <div className="flex flex-col gap-3 bg-[#E6F0FA] rounded-2xl !p-4 flex-grow">
+                <h3 className="text-[#234060] text-lg font-medium text-center">{combo.comboName}</h3>
+            
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Mô tả:</span> {combo.description}
+                </p>
+            
+                <div className="flex items-center gap-3 text-[#2A388F] mt-4 justify-center">
+                  <SellIcon />
+                  <p className="font-semibold text-2xl">
+                    {combo.totalPrice ? `${combo.totalPrice.toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
+                  </p>
                 </div>
+            
+                {/* Danh sách các vaccine trong combo */}
+                <div className="mt-4 flex-grow">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                    📋 Danh sách vắc-xin:
+                  </h4>
+                  <div className="overflow-hidden rounded-lg border border-gray-300">
+                    <table className="w-full text-sm text-gray-800">
+                      <thead className="bg-blue-600 text-white">
+                        <tr>
+                          <th className="py-3 px-4 text-center border-b">Thứ tự</th>
+                          <th className="py-3 px-4 text-left border-b">Tên vắc-xin</th>
+                          <th className="py-3 px-4 text-center border-b">Khoảng cách (ngày)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white">
+                        {combo.vaccines.sort((a, b) => a.order - b.order).map((vaccine, index) => (
+                          <tr key={index} className="border-b last:border-none hover:bg-gray-100 transition-all">
+                            <td className="py-3 px-4 text-center font-semibold text-gray-900">{vaccine.order}</td>
+                            <td className="py-3 px-4 text-left">{vaccine.vaccine.name}</td>
+                            <td className="py-3 px-4 text-center">{vaccine.intervalDays} ngày</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            
+              {/* Nút chọn - Luôn ở dưới cùng */}
+              <div className="mt-auto">
+                <button
+                  className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
+                    selectedVaccines.some((v) => v.comboId === combo.comboId) ? "bg-[#35944A]" : "bg-[#2A388F]"
+                  }`}
+                  onClick={() => toggleSelection(combo)}
+                >
+                  {selectedVaccines.some((v) => v.comboId === combo.comboId) ? "ĐÃ CHỌN" : "CHỌN"}
+                </button>
+              </div>
+            </div>
               ))
             : isComboSelected &&
               comboVaccines.length === 0 && (
