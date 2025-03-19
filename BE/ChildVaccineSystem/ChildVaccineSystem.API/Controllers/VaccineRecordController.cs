@@ -31,12 +31,12 @@ namespace ChildVaccineSystem.API.Controllers
         /// </summary>
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Doctor")]
         [HttpPost("{bookingDetailId}/create")]
-        public async Task<ActionResult<APIResponse>> CreateVaccineRecord(int bookingId)
+        public async Task<ActionResult<APIResponse>> CreateVaccineRecord(int bookingDetailId)
         {
             try
             {
                 var doctorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var record = await _vaccineRecordService.CreateVaccinationRecordAsync(bookingId, doctorId);
+                var record = await _vaccineRecordService.CreateVaccinationRecordAsync(bookingDetailId, doctorId);
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
