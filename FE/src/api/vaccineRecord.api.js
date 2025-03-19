@@ -7,7 +7,7 @@ const BASE_URL = "/VaccineRecord";
 export const createVaccineRecord = async (id) => {
   try {
     const response = await http.post(`${BASE_URL}/${id}/create`);
-    console.log("API Response:", response.data);
+   
 
     if (!response.data || !response.data.result) {
       throw new Error("🚨 API không trả về dữ liệu hợp lệ!");

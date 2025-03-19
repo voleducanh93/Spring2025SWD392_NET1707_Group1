@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { checkParentVaccine, createBooking, getBoookingByDoctor } from "../api/booking.api";
+import { checkParentVaccine, createBooking, getBoookingDetailByDoctor } from "../api/booking.api";
 import { toast } from "react-toastify";
 
 export const useBooking = () => {
@@ -19,7 +19,7 @@ export const useBooking = () => {
   // Lấy danh sách lịch tiêm chủng của bác sĩ
   const { data: bookings, isLoading, isError, error } = useQuery({
     queryKey: ["doctorBookings", doctorId],
-    queryFn: () => getBoookingByDoctor(doctorId),
+    queryFn: () => getBoookingDetailByDoctor(doctorId),
     enabled: !!doctorId,
     refetchOnWindowFocus: false,
     onError: () => {
