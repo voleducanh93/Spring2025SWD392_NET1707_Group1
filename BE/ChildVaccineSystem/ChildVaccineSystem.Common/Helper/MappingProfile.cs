@@ -226,7 +226,9 @@ namespace ChildVaccineSystem.Common.Helper
                 .ForMember(dest => dest.ChildName, opt => opt.MapFrom(src => src.Bookings.FirstOrDefault().Children.FullName));
 
             //feedback
-            CreateMap<Feedback, FeedbackDTO>();
+            CreateMap<Feedback, FeedbackDTO>()
+                    .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+
             CreateMap<CreateFeedbackDTO, Feedback>();
             CreateMap<User, UserProfileDTO>();
 
