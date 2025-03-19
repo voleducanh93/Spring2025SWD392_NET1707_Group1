@@ -23,25 +23,26 @@ export default function MyBooking() {
   useEffect(() => {
     if (!getUser) return;
 
-    const fetchBookings = async () => {
+    const fetchBookingDetails = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7134/api/Booking/user/${getUser}`
+          `https://localhost:7134/api/Booking/user/${getUser}/booking-details`
         );
+
         const data = await response.json();
+
         if (data.isSuccess) {
-         
-          
-          setBookings(data.result);
+          console.log(data.result);
+          setBookings(data.result); // Lưu toàn bộ bookingDetails thay vì booking
         } else {
-          console.error("Lỗi khi lấy dữ liệu lịch đặt");
+          console.error("Lỗi khi lấy dữ liệu chi tiết đặt lịch");
         }
       } catch (error) {
         console.error("Đã xảy ra lỗi:", error);
       }
     };
 
-    fetchBookings();
+    fetchBookingDetails();
   }, [getUser]);
 
   const handleDateClick = (date) => {
@@ -53,7 +54,7 @@ export default function MyBooking() {
     setModalVisible(true);
   };
   const { mutate: requestRefund1 } = useRequestRefund();
-  const { mutate:requestFeedback }= useRequestFeedback();
+  const { mutate: requestFeedback } = useRequestFeedback();
   const requestRefund = async (bookingId, reason) => {
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hoàn tiền.");
@@ -79,7 +80,6 @@ export default function MyBooking() {
       setModalVisible(false);
     } catch (error) {
       console.error("Lỗi:", error);
-      
     }
   };
 
@@ -109,9 +109,9 @@ export default function MyBooking() {
       toast.error("Vui lòng nhập feedback!");
       return;
     }
-requestFeedback({ bookingId, comment });
+    requestFeedback({ bookingId, comment });
 
-  setModalVisible(false);
+    setModalVisible(false);
     // Reset trạng thái sau khi gửi
     setShowFeedbackInput(false);
     setFeedback("");
@@ -173,46 +173,32 @@ requestFeedback({ bookingId, comment });
       >
         {selectedBookings.length > 0 ? (
           <div className="!space-y-4">
-            {selectedBookings.map((b) => (
+            {selectedBookings.map((detail) => (
               <div
-                key={b.bookingId}
+                key={detail.bookingDetailId}
                 className="!p-4 !bg-gray-50 !rounded-md !shadow"
               >
                 <p>
-                  <strong>Mã đặt lịch:</strong> {b.bookingId}
+                  <strong>Mã chi tiết:</strong> {detail.bookingDetailId}
                 </p>
                 <p>
                   <strong>Loại đặt lịch:</strong>{" "}
-                  {b.bookingType === "singleVaccine"
+                  {detail.bookingType === "singleVaccine"
                     ? "Đặt lẻ Vaccine"
                     : "Gói Vaccine"}
                 </p>
                 <p>
-                  <strong>Chi tiết:</strong>{" "}
-                  {b.bookingDetails
-                    .map((d) => d.vaccineName || d.comboVaccineName)
-                    .join(", ")}
+                  <strong>Vaccine:</strong>{" "}
+                  {detail.vaccineName || detail.comboVaccineName}
                 </p>
                 <p>
-                  <strong>Ghi chú:</strong> {b.notes || "Không có ghi chú"}
+                  <strong>Trạng thái:</strong> {detail.status}
                 </p>
                 <p>
-                  <strong>Tổng tiền:</strong>{" "}
-                  <span className="!text-yellow-500">
-                    {b.totalPrice.toLocaleString()} VND
-                  </span>
+                  <strong>Giá:</strong> {detail.price.toLocaleString()} VND
                 </p>
-                <p>
-                  <strong>Trạng thái: </strong>
-                  <span
-                    className={`!text-white !px-2 !py-1 !rounded ${
-                      statusColors[b.status] || "bg-gray-500"
-                    }`}
-                  >
-                    {statusMapping[b.status] || "Không xác định"}
-                  </span>
-                </p>
-                {b.status === "Pending" && (
+
+                {detail.status === "Chưa hoàn thành" && (
                   <div className="!mt-4 !flex !gap-4">
                     <button className="!bg-yellow-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-yellow-600">
                       Thanh Toán
@@ -222,38 +208,8 @@ requestFeedback({ bookingId, comment });
                     </button>
                   </div>
                 )}
-                {b.status === "Confirmed" && (
-                  <>
-                    {/* Nút kích hoạt ô nhập lý do */}
-                    {!showReasonInput ? (
-                      <button
-                        className="!bg-orange-500 !text-white !px-4 !py-2 !rounded !mt-3 hover:!bg-orange-600 transition"
-                        onClick={() => setShowReasonInput(true)}
-                      >
-                        Hủy Đơn và Yêu Cầu Hoàn Tiền
-                      </button>
-                    ) : (
-                      <div className="!mt-2">
-                        <textarea
-                          className="!w-full !border !rounded !p-2"
-                          placeholder="Nhập lý do hoàn tiền..."
-                          value={refundReason}
-                          onChange={(e) => setRefundReason(e.target.value)}
-                        ></textarea>
 
-                        <button
-                          className="!bg-red-500 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-red-600 transition"
-                          onClick={() =>
-                            requestRefund(b.bookingId, refundReason)
-                          }
-                        >
-                          Xác nhận hoàn tiền
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-                {b.status === "Completed" && (
+                {detail.status === "Hoàn thành" && (
                   <div className="flex flex-col gap-2 !mt-6">
                     {/* Nút nhập Feedback */}
                     {!showFeedbackInput ? (
@@ -271,10 +227,11 @@ requestFeedback({ bookingId, comment });
                           value={feedback}
                           onChange={(e) => setFeedback(e.target.value)}
                         ></textarea>
-
                         <button
                           className="!bg-blue-600 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-blue-700 transition"
-                          onClick={() => submitFeedback(b.bookingId, feedback)}
+                          onClick={() =>
+                            submitFeedback(detail.bookingDetailId, feedback)
+                          }
                         >
                           Xác nhận Feedback
                         </button>
