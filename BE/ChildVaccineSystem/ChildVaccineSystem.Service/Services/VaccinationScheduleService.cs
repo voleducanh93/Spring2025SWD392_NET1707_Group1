@@ -209,13 +209,13 @@ namespace ChildVaccineSystem.Service.Services
 
 				foreach (var injection in detail.InjectionSchedules)
 				{
-					if (injection.InjectionMonth < scheduleDto.AgeRangeStart ||
-						injection.InjectionMonth > scheduleDto.AgeRangeEnd)
+					if (injection.InjectionMonth < scheduleDto.AgeRangeStart * 12||
+						injection.InjectionMonth > scheduleDto.AgeRangeEnd * 12)
 					{
 						var vaccine = existingVaccines.First(v => v.VaccineId == detail.VaccineId);
 						throw new ArgumentException(
 							$"Mũi ở tháng {injection.InjectionMonth} của vắc-xin {vaccine.VaccineId} " +
-							$"đã nằm ngoài độ tuổi {scheduleDto.AgeRangeStart} ({scheduleDto.AgeRangeStart * 12} tháng) - {scheduleDto.AgeRangeEnd} ({scheduleDto.AgeRangeStart * 12} tháng)");
+							$"đã nằm ngoài độ tuổi {scheduleDto.AgeRangeStart} ({scheduleDto.AgeRangeStart * 12} tháng) - {scheduleDto.AgeRangeEnd} ({scheduleDto.AgeRangeEnd * 12} tháng)");
 					}
 				}
 			}
