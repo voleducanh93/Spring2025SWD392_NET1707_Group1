@@ -2,6 +2,7 @@ import { Table, Tag, Button, Space, Typography, Modal } from "antd";
 import { useBooking } from "../../hooks/useBooking";
 import { useCreateVaccineRecord } from "../../hooks/useVaccineRecord";
 import { useState } from "react";
+import { components } from "../../pages/ManagerPage/ComboManagement";
 
 const statusColors = {
   InProgress: "blue",
@@ -59,7 +60,7 @@ const DoctorList = () => {
   return (
     <div style={{ padding: "20px" }}>
       <Typography.Title level={3}>Lịch Tiêm Chủng</Typography.Title>
-      <Table dataSource={bookings} columns={columns} rowKey="bookingId" pagination={{ pageSize: 5 }} />
+      <Table dataSource={bookings} components={components} columns={columns} rowKey="bookingId" pagination={{ pageSize: 5 }} />
 
 
       {/* Modal hiển thị chi tiết đặt lịch */}

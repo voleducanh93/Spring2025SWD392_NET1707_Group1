@@ -85,21 +85,22 @@ const SidebarAdmin = () => {
 
   return (
     <Layout className="h-screen">
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" style={{ textAlign: "center", marginTop: "20px" }}>
-          <img
-            src="src/assets/logo-vnvc-tet-nguyen-dan.png"
-            alt="VNVC Logo"
-            className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
-          />
-        </div>
+    <Sider trigger={null} collapsible collapsed={collapsed} width={250} style={{ backgroundColor: "#2A388F" }}>
+    <div className="demo-logo-vertical flex items-center justify-center h-20">
+  <img
+    src="src/assets/logo.webp"
+    alt="VNVC Logo"
+    className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
+  />
+</div>
 
-        <Menu
-          theme="dark"
+
+      <Menu
+        className="custom-menu"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          style={{ marginTop: "40px" }}
-          onClick={handleMenuClick}
+          style={{ marginTop: "40px", backgroundColor: "#2A388F" }}
+          onClick={handleMenuClick} // Xử lý sự kiện khi chọn tab
           selectedKeys={[selectedTab]}
           items={[
             {

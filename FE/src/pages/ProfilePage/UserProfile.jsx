@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Upload, Avatar, Card, Typography, DatePicker, Select } from "antd";
-import { UploadOutlined, UserOutlined, EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Row, Col, Card, Typography, DatePicker, Select } from "antd";
+import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useLocationData } from "../AuthPage/useLocationData"; 
 import { useChangePassword, useGetProfile, useUpdateProfile } from "../../hooks/useAuth";
 import { toast } from "react-toastify";
-import { uploadFile } from "../../config/firebase";
+
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -14,8 +14,8 @@ const UserProfile = () => {
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [url,setUrl ] = useState(null);
+  const [, setUserData] = useState(null);
+  const [url, ] = useState(null);
  
   const {
     provinceList,
@@ -123,15 +123,7 @@ const changePasswordMutation = useChangePassword();
       },
     });
   };
-  const handleFileChange = async ({ file }) => {
-    try {
-     
-      const url = await uploadFile(file); 
-      setUrl(url);
-    } catch (error) {
-      console.error("❌ Upload failed:", error);
-    }
-  };
+  
   
   
 
@@ -144,14 +136,7 @@ const changePasswordMutation = useChangePassword();
       <Card className="w-full md:w-1/2">
         <Title level={4} className="text-center">Thông tin cá nhân</Title>
   
-        <div className="text-center mb-4">
-          <Avatar size={100} icon={<UserOutlined />} src={userData?.imageUrl || ""} className="border-2 border-gray-300" />
-          <div className="mt-2">
-            <Upload showUploadList={false} onChange={handleFileChange}>
-              <Button icon={<UploadOutlined />}>Thay đổi hình</Button>
-            </Upload>
-          </div>
-        </div>
+        
   
         {/* Form Thông Tin Người Dùng */}
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>

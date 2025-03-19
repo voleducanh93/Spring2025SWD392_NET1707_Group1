@@ -62,7 +62,7 @@ function AuthPage() {
     }
   }, [isRegisterSuccess, isRegisterError, navigate, form]);
 
-
+ 
 
   const handleOnFinish = async (values) => {
     setIsLoading(true);

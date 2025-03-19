@@ -34,8 +34,7 @@ const SidebarDoctor = () => {
   const handleDropdownClick = ({ key }) => {
     if (key === "2") {
       navigate("/user-profile"); // Chuyển hướng đến trang Hồ sơ
-    } else if (key === "3") {
-      navigate("/mywallet"); // Chuyển hướng đến trang Ví tiền
+    
     } else if (key === "4") {
           toast.success("Đăng xuất thành công!");
           
@@ -67,10 +66,6 @@ const SidebarDoctor = () => {
       label: "Hồ sơ",
     },
     {
-      key: "3",
-      label: "Ví tiền",
-    },
-    {
       key: "4",
       label: "Thoát",
       icon: <SettingOutlined />,
@@ -79,21 +74,27 @@ const SidebarDoctor = () => {
 
   return (
     <Layout className="h-screen">
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" style={{ textAlign: "center", marginTop: "20px" }}>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        width={250}
+        style={{ backgroundColor: "#2A388F" }}
+      >
+        <div className="demo-logo-vertical flex items-center justify-center h-20">
           <img
-            src="src/assets/logo-vnvc-tet-nguyen-dan.png"
+            src="src/assets/logo.webp"
             alt="VNVC Logo"
             className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
           />
         </div>
 
         <Menu
-          theme="dark"
+          className="custom-menu"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          style={{ marginTop: "40px" }}
-          onClick={handleMenuClick}
+          style={{ marginTop: "40px", backgroundColor: "#2A388F" }}
+          onClick={handleMenuClick} // Xử lý sự kiện khi chọn tab
           selectedKeys={[selectedTab]}
           items={[
             {

@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 const { Title, Text } = Typography;
 
 const VaccinationScheduleTable = ({ vaccinationSchedule }) => {
+  console.log(vaccinationSchedule);
+  
   if (!vaccinationSchedule || !vaccinationSchedule.vaccineScheduleDetails) {
     return <p className="text-gray-500">Chưa có lịch tiêm chủng cho loại vaccine này.</p>;
   }

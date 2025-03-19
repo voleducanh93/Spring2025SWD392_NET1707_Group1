@@ -11,25 +11,26 @@ import {
   Divider,
   IconButton,
   Tooltip,
-  Button,
+
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Container } from "@mui/material";
 import WalletIcon from "@mui/icons-material/Wallet";
-import Logout from "@mui/icons-material/Logout";
+
 import ChildCareIcon from "@mui/icons-material/ChildCare";
 import { clearLS } from "../../utils/auth";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
-import { EventNote, HomeRepairServiceOutlined } from "@mui/icons-material";
+import { EventNote } from "@mui/icons-material";
 import NotificationDropdown from "../Notification/NotificationDropdown";
+import { LogOutIcon } from "lucide-react";
 
 export default function Topbar() {
   const navigate = useNavigate();
-  const { setIsAuthenticated, isAuthenticated, walletBalance,userRole } =
+  const { setIsAuthenticated, isAuthenticated, walletBalance } =
     useContext(AppContext);
-
+const userRole = localStorage.getItem("role");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -48,28 +49,7 @@ export default function Topbar() {
     setIsAuthenticated(false);
     navigate("/auth");
   };
-  if (!userRole || userRole !== "customer") {
-    return (
-      <div className="fixed top-4 right-4">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<HomeRepairServiceOutlined />}
-          onClick={() => {
-            if (userRole === "Admin") {
-              navigate("/admin");
-            } else if (userRole === "Staff") {
-              navigate("/staff");
-            } else {
-              navigate("/home");
-            }
-          }}
-        >
-          Quay về Trang Chính
-        </Button>
-      </div>
-    );
-  }
+
 
   return (
     <Container>
@@ -115,10 +95,11 @@ export default function Topbar() {
               transition={{ type: "spring", stiffness: 200 }}
               className="text-[#F9BC31] flex items-center gap-2 hover:text-[#F9BC31] transition-all duration-300"
             >
-              <Link to="/Booking">
+              {userRole === "Customer" && (<Link to="/Booking">
                 <CalendarMonthIcon />
                 <span className="font-medium">ĐĂNG KÝ TIÊM</span>
-              </Link>
+              </Link>)}
+              
             </motion.div>
 
             <motion.span
@@ -168,36 +149,54 @@ export default function Topbar() {
                     },
                   }}
                 >
-                  <MenuItem
-                    onClick={() => navigate("/user-profile")}
-                    className="hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <Avatar /> Tài Khoản Của Tôi
-                  </MenuItem>
+                 <MenuItem
+                  onClick={() => navigate("/user-profile")}
+                  className="hover:bg-gray-100 transition-all duration-200"
+                >
+                  <Avatar /> Tài Khoản Của Tôi
+                </MenuItem>
 
-                  {/* Hồ sơ trẻ em */}
-                  <MenuItem
-                    onClick={() => navigate("/child-profile")}
-                    className="hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <ListItemIcon>
-                      <ChildCareIcon fontSize="small" />
-                    </ListItemIcon>
-                    Hồ sơ trẻ em
-                  </MenuItem>
+                {/* Hiển thị Hồ sơ trẻ em và Danh sách lịch hẹn + Ví tiền chỉ cho Customer */}
+                {userRole === "Customer" && (
+                  <>
+                    <MenuItem
+                      onClick={() => navigate("/child-profile")}
+                      className="hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <ListItemIcon>
+                        <ChildCareIcon fontSize="small" />
+                      </ListItemIcon>
+                      Hồ sơ trẻ em
+                    </MenuItem>
 
-                  <Divider />
+                    <MenuItem
+                      onClick={() => navigate("/mybooking")}
+                      className="hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <ListItemIcon>
+                        <EventNote fontSize="small" />
+                      </ListItemIcon>
+                      Danh sách lịch hẹn
+                    </MenuItem>
 
-                  <MenuItem
-                    onClick={() => navigate("/mybooking")}
-                    className="hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <ListItemIcon>
-                      <EventNote fontSize="small" />
-                    </ListItemIcon>
-                    Danh sách lịch hẹn
-                  </MenuItem>
+                    <MenuItem
+                      onClick={() => navigate("/mywallet")}
+                      className="hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <ListItemIcon>
+                        <WalletIcon />
+                      </ListItemIcon>
+                      <div className="flex flex-col">
+                        <span>
+                          Ví tiền: {walletBalance ? walletBalance.toLocaleString() : "0"} VND
+                        </span>
+                      </div>
+                    </MenuItem>
+                  </>
+                )}
 
+                {/* Hiển thị Ví tiền cho Admin */}
+                {userRole === "Admin" && (
                   <MenuItem
                     onClick={() => navigate("/mywallet")}
                     className="hover:bg-gray-100 transition-all duration-200"
@@ -207,22 +206,24 @@ export default function Topbar() {
                     </ListItemIcon>
                     <div className="flex flex-col">
                       <span>
-                        Ví tiền:{" "}
-                        {walletBalance ? walletBalance.toLocaleString() : "0"}{" "}
-                        VND
+                        Ví tiền: {walletBalance ? walletBalance.toLocaleString() : "0"} VND
                       </span>
                     </div>
                   </MenuItem>
+                )}
 
-                  <MenuItem
-                    onClick={handleLogout}
-                    className="hover:bg-gray-100 transition-all duration-200"
-                  >
-                    <ListItemIcon>
-                      <Logout fontSize="small" />
-                    </ListItemIcon>
-                    Đăng Xuất
-                  </MenuItem>
+                <Divider />
+
+                {/* Đăng xuất */}
+                <MenuItem
+                  onClick={handleLogout}
+                  className="hover:bg-gray-100 transition-all duration-200"
+                >
+                  <ListItemIcon>
+                    <LogOutIcon fontSize="small" />
+                  </ListItemIcon>
+                  Đăng Xuất
+                </MenuItem>
                 </Menu>
               </div>
             )}
