@@ -17,7 +17,8 @@ namespace ChildVaccineSystem.API.Controllers
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	public class AuthController : ControllerBase
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public class AuthController : ControllerBase
 	{
 		private readonly IAuthService _authService;
 		private readonly APIResponse _response;
@@ -100,28 +101,44 @@ namespace ChildVaccineSystem.API.Controllers
 		}
 
 
-		[AllowAnonymous]
-		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequestDTO)
-		{
-			try
-			{
-				var result = await _authService.LoginAsync(loginRequestDTO);
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = true;
-				_response.Result = result;
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.NotFound;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add(ex.Message);
-				return Unauthorized(_response);
-			}
-		}
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        {
+            try
+            {
+                var result = await _authService.LoginAsync(loginRequestDTO);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = result;
+                return Ok(_response);
+            }
+            catch (KeyNotFoundException) // Nếu tài khoản không tồn tại
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Tài khoản không tồn tại.");
+                return NotFound(_response);
+            }
+            catch (Exception ex) // Nếu sai mật khẩu hoặc email chưa xác nhận hoặc lỗi hệ thống khác
+            {
+                if (ex.Message.Contains("Mật khẩu không chính xác") || ex.Message.Contains("Email chưa được xác nhận"))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add(ex.Message);
+                    return BadRequest(_response);
+                }
 
-		[AllowAnonymous]
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add($"Lỗi hệ thống: {ex.Message}");
+                return BadRequest(_response);
+            }
+        }
+
+
+        [AllowAnonymous]
 		[HttpPost("refresh-token")]
 		public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO model)
 		{

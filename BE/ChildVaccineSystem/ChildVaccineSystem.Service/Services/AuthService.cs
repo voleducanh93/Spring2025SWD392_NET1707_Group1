@@ -47,12 +47,14 @@ namespace ChildVaccineSystem.Service.Services
                 user = await _userManager.FindByNameAsync(loginRequestDTO.Username);
             }
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password))
-                throw new Exception("Tên người dùng hoặc mật khẩu không hợp lệ!");
+            if (user == null)
+                throw new KeyNotFoundException("Tài khoản không tồn tại."); // ✅ Trả về 404 Not Found
+
+            if (!await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password))
+                throw new UnauthorizedAccessException("Mật khẩu không chính xác."); // ✅ Trả về 401 Unauthorized
 
             if (!user.EmailConfirmed)
-                throw new Exception("Email chưa được xác nhận. Vui lòng xác nhận email của bạn để đăng nhập.");
-
+                throw new UnauthorizedAccessException("Email chưa được xác nhận. Vui lòng xác nhận email của bạn để đăng nhập."); // ✅ Trả về 401 Unauthorized
 
             var token = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
@@ -67,6 +69,7 @@ namespace ChildVaccineSystem.Service.Services
                 UserId = user.Id
             };
         }
+
         public async Task<User> RegisterAsync(UserRegisterDTO dto)
         {
             // Validate if email is null or empty
