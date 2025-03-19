@@ -25,7 +25,7 @@ builder.Services.AddQuartz(q =>
 	q.AddTrigger(opts => opts
 		.ForJob("AppointmentReminderJob")
 		.WithIdentity("AppointmentReminderTrigger")
-		.WithCronSchedule("0 0 6 * * ?"));  // Daily at 8:00 AM
+		.WithCronSchedule("00 08 22 * * ?"));  // Daily at 8:00 AM
 });
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

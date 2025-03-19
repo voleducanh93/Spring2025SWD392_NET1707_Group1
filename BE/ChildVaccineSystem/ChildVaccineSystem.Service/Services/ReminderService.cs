@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ChildVaccineSystem.Data.Enum;
 
 namespace ChildVaccineSystem.Service.Services
 {
@@ -29,11 +30,50 @@ namespace ChildVaccineSystem.Service.Services
 		{
 			_logger.LogInformation("Processing appointment reminders for bookings {0} days ahead", daysThreshold);
 
-			// 1. Xử lý các reminder đã tạo trước đó và đến hạn gửi
+			//Dọn dẹp lời nhắc đã hết hạn (lời nhắc cho những ngày đã qua)            
+			await CleanupExpiredRemindersAsync();
+
+
+			// 2. Xử lý các reminder đã tạo trước đó và đến hạn gửi
 			await ProcessScheduledRemindersAsync();
 
 			// 2. Tìm các booking sắp tới và tạo reminder nếu chưa có
 			await CreateRemindersForUpcomingBookingsAsync(daysThreshold);
+		}
+
+		private async Task CleanupExpiredRemindersAsync()
+		{
+			try
+			{
+				var currentDate = DateTime.Today;
+
+				// Lấy tất cả lời nhắc cho các lần đặt chỗ có ngày đã qua
+				var expiredReminders = await _unitOfWork.VaccinationReminders.GetAllAsync(
+					r => r.Booking.BookingDate.Date < currentDate,
+					includeProperties: "Booking"
+				);
+
+				_logger.LogInformation("Found {Count} expired reminders to clean up", expiredReminders?.Count() ?? 0);
+
+				foreach (var reminder in expiredReminders)
+				{
+					try
+					{
+						await _unitOfWork.VaccinationReminders.DeleteAsync(reminder);
+						_logger.LogInformation("Deleted expired reminder for booking ID: {0}", reminder.BookingId);
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Error deleting expired reminder for booking ID: {0}", reminder.BookingId);
+					}
+				}
+
+				await _unitOfWork.CompleteAsync();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error cleaning up expired reminders");
+			}
 		}
 
 		private async Task ProcessScheduledRemindersAsync()
@@ -48,17 +88,26 @@ namespace ChildVaccineSystem.Service.Services
 				{
 					try
 					{
+						// Check if the booking is still valid (Confirmed or InProgress)
+						if (reminder.Booking.Status != BookingStatus.Confirmed &&
+						    reminder.Booking.Status != BookingStatus.InProgress)
+						{
+							// Skip reminders for bookings that are no longer valid
+							await _unitOfWork.VaccinationReminders.DeleteAsync(reminder);
+							continue;
+						}
+
 						_logger.LogInformation("Sending reminder for booking ID: {0}", reminder.BookingId);
 
 						var childName = reminder.Children?.FullName ?? "your child";
 
-						// Gửi thông báo qua notification service
+						// Send notification
 						await _notificationService.SendBookingReminderAsync(
 							reminder.BookingId,
 							reminder.UserId,
 							childName);
 
-						// Đánh dấu đã gửi
+						// Mark as sent
 						reminder.IsSent = true;
 						await _unitOfWork.CompleteAsync();
 
@@ -73,7 +122,6 @@ namespace ChildVaccineSystem.Service.Services
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error processing scheduled reminders");
-				throw;
 			}
 		}
 
@@ -81,15 +129,21 @@ namespace ChildVaccineSystem.Service.Services
 		{
 			try
 			{
-				var upcomingBookings = await _unitOfWork.VaccinationReminders.GetUpcomingBookingsForRemindersAsync(daysThreshold);
+				// Lấy bookings đã Xác nhận hoặc Đang tiến hành
+				var targetDate = DateTime.Now.AddDays(daysThreshold);
+				var upcomingBookings = await _unitOfWork.Bookings.GetAllAsync(
+					b => b.BookingDate.Date == targetDate.Date &&
+					     (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.InProgress),
+					includeProperties: "Children,User"
+				);
 
-				_logger.LogInformation("Found {Count} upcoming bookings to create reminders for", upcomingBookings?.Count() ?? 0);
+				_logger.LogInformation("Found {Count} valid upcoming bookings for creating reminders", upcomingBookings?.Count() ?? 0);
 
 				foreach (var booking in upcomingBookings)
 				{
 					try
 					{
-						// Kiểm tra xem đã có reminder cho booking này chưa
+						// Kiểm tra xem booking này đã có lời nhắc chưa
 						bool hasReminder = await _unitOfWork.VaccinationReminders.HasReminderForBookingAsync(booking.BookingId);
 
 						if (!hasReminder)
@@ -116,7 +170,7 @@ namespace ChildVaccineSystem.Service.Services
 			try
 			{
 				var booking = await _unitOfWork.Bookings.GetAsync(b => b.BookingId == bookingId,
-					includeProperties: "Children,User,BookingDetails.Vaccine,BookingDetails.ComboVaccine");
+					includeProperties: "Children,User");
 
 				if (booking == null)
 				{
@@ -124,10 +178,18 @@ namespace ChildVaccineSystem.Service.Services
 					return;
 				}
 
-				// Tính ngày gửi reminder (3 ngày trước ngày hẹn)
+				// Không tạo lời nhắc cho bookings chưa được xác nhận hoặc đang tiến hành
+				if (booking.Status != BookingStatus.Confirmed && booking.Status != BookingStatus.InProgress)
+				{
+					_logger.LogInformation("Skipping reminder creation for booking {0} with status {1}",
+						bookingId, booking.Status);
+					return;
+				}
+
+				// Tính ngày nhắc nhở (nên gửi trước cuộc hẹn 3 ngày)
 				DateTime reminderDate = booking.BookingDate.AddDays(-3);
 
-				// Nếu ngày gửi reminder đã qua, đặt là ngày hôm nay
+				// Nếu ngày Bookings còn chưa đầy 3 ngày nữa, hãy đặt lời nhắc cho hôm nay
 				if (reminderDate < DateTime.Today)
 				{
 					reminderDate = DateTime.Today;
