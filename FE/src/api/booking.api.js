@@ -39,4 +39,8 @@ export const createBooking = async ( id, bookingData) => {
     });
     return response.data;
   };
+  export const DeleteBoooking = async (bookingId ,id) => {
+    const response = await http.get(`${BASE_URL}/${bookingId}/cancel?userId=${id}`)
+    return response.data.result;
+  }
   

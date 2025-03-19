@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createVaccineRecord, getVaccineRecord, updateVaccineRecord } from "../api/vaccineRecord.api";
+import { createVaccineRecord, getVaccineRecord, getVaccineRecordByBooking, updateVaccineRecord } from "../api/vaccineRecord.api";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -31,6 +31,13 @@ export const useVaccineRecord = () => {
     queryKey: ["vaccineRecord", bookingId],
     queryFn: () => getVaccineRecord(bookingId),
     enabled: !!bookingId,
+  });
+};
+export const useVaccineRecordByBooking = (bookingId) => {
+  return useQuery({
+    queryKey: ["vaccineRecord", bookingId], // ✅ React Query sẽ cache dữ liệu theo `bookingId`
+    queryFn: () => getVaccineRecordByBooking(bookingId),
+    enabled: !!bookingId, // ✅ Chỉ fetch nếu `bookingId` tồn tại
   });
 };
 

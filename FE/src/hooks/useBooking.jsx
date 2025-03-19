@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import { AppContext } from "../contexts/app.context";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { checkParentVaccine, createBooking, getBoookingDetailByDoctor } from "../api/booking.api";
+import { checkParentVaccine, createBooking, DeleteBoooking, getBoookingDetailByDoctor } from "../api/booking.api";
 import { toast } from "react-toastify";
+import { handleApiError } from "../utils/utils";
 
 export const useBooking = () => {
   const { getUser } = useContext(AppContext);
@@ -26,11 +27,23 @@ export const useBooking = () => {
       toast.error("⚠️ Không thể tải danh sách lịch tiêm chủng!");
     },
   });
+  const removeBooking = useMutation({
+      mutationFn: DeleteBoooking,
+  
+      onSuccess: () => { 
+  
+          toast.success("Đã xóa thành công");
+      },
+  
+      onError: (error) => {
+        handleApiError(error);
+      }
+  });
 
   // Kiểm tra vaccine của phụ huynh
   const checkVaccine = useMutation({
     mutationFn: (vaccineIds) => checkParentVaccine(vaccineIds)
 });
 
-  return { addBooking, bookings, isLoading, isError, error, checkVaccine };
+  return { addBooking, bookings, isLoading, isError, error, checkVaccine,removeBooking };
 };

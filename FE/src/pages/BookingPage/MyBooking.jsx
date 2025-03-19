@@ -8,6 +8,10 @@ import "./index.css";
 import { useRequestRefund } from "../../hooks/useRefund";
 import { toast } from "react-toastify";
 import { useRequestFeedback } from "../../hooks/useFeedback";
+import { usePayment } from "../../hooks/usePayment";
+import { useBooking } from "../../hooks/useBooking";
+import { useVaccineRecordByBooking } from "../../hooks/useVaccineRecord";
+import VaccineRecordTable from "../../components/VaccineShow/VaccineRecordTable";
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
@@ -19,7 +23,7 @@ export default function MyBooking() {
   const [showReasonInput, setShowReasonInput] = useState(false);
   const [showFeedbackInput, setShowFeedbackInput] = useState(false);
   const [feedback, setFeedback] = useState("");
-
+const { fetchPaymentUrl } = usePayment();
   useEffect(() => {
     if (!getUser) return;
 
@@ -55,6 +59,7 @@ export default function MyBooking() {
   };
   const { mutate: requestRefund1 } = useRequestRefund();
   const { mutate: requestFeedback } = useRequestFeedback();
+  
   const requestRefund = async (bookingId, reason) => {
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hoàn tiền.");
@@ -116,6 +121,29 @@ export default function MyBooking() {
     setShowFeedbackInput(false);
     setFeedback("");
   };
+  const { removeBooking } = useBooking();
+  const handlePayment = (bookingId) => {
+    fetchPaymentUrl(bookingId);
+  }
+  const handleCancel = (bookingId) => {
+    const isConfirmed = window.confirm(
+      "Bạn có chắc chắn muốn hủy đơn đặt lịch này không?"
+    );
+
+    if (isConfirmed) {
+      removeBooking(bookingId);
+    }
+  }
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+  // ✅ Gọi `useVaccineRecordByBooking` bên ngoài mọi hàm, và truyền `selectedBookingId`
+  const handleRecord = ({ bookingId }) => {
+    setSelectedBookingId(bookingId);
+  }
+
+  // ✅ Hàm này sẽ thay đổi `bookingId` và React Query tự động fetch lại dữ liệu
+ 
+  
 
   const statusMapping = {
     Pending: "Chờ xác nhận",
@@ -200,10 +228,13 @@ export default function MyBooking() {
 
                 {detail.status === "Chưa hoàn thành" && (
                   <div className="!mt-4 !flex !gap-4">
-                    <button className="!bg-yellow-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-yellow-600">
+                    <button className="!bg-yellow-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-yellow-600"
+                    onClick={() => handlePayment(detail.bookingId)}>
+                    
                       Thanh Toán
                     </button>
-                    <button className="!bg-red-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-red-600">
+                    <button className="!bg-red-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-red-600"
+                    onClick={() => handleCancel(detail.bookingId)}>
                       Hủy Lịch
                     </button>
                   </div>
@@ -239,7 +270,13 @@ export default function MyBooking() {
                     )}
 
                     {/* Nút xem Vaccine Record */}
-                    <button className="w-full bg-green-500 !text-white !font-semibold !py-2 !px-4 !rounded-lg !border-2 !border-blue-300">
+                    <button className="w-full bg-green-500 !text-white !font-semibold !py-2 !px-4 !rounded-lg !border-2 !border-blue-300"
+                    onClick={() =>
+                      handleRecord({ bookingId: 2 })
+                    }>
+                       
+
+{selectedBookingId && <VaccineRecordTable bookingId={selectedBookingId} />}
                       Xem Vaccine Record
                     </button>
                   </div>
