@@ -1,12 +1,14 @@
 import AppContext from "antd/es/app/context";
 import React, { useContext, useEffect, useState } from "react";
 import { getWalletByUser } from "../../api/wallet.api";
+import DepositModal from "../../components/Composit/DepositModal";
 
 export default function Wallet() {
   const [walletData, setWalletData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState("all");
   const { getUser } = useContext(AppContext);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchWalletData = async () => {
@@ -40,27 +42,47 @@ export default function Wallet() {
     );
   }
 
-  const filteredTransactions = walletData.recentTransactions.filter((transaction) => {
-    if (selectedTab === "all") return true;
-    if (selectedTab === "deposit") return transaction.amount > 0;
-    if (selectedTab === "payment") return transaction.amount < 0;
-    return true;
-  });
+  const filteredTransactions = walletData.recentTransactions.filter(
+    (transaction) => {
+      if (selectedTab === "all") return true;
+      if (selectedTab === "deposit") return transaction.amount > 0;
+      if (selectedTab === "payment") return transaction.amount < 0;
+      return true;
+    }
+  );
 
   return (
     <div className="!min-h-screen !bg-gradient-to-br !from-gray-50 !to-blue-50 !py-12 !px-4">
       <div className="!max-w-6xl !mx-auto">
-        <h1 className="!text-4xl !font-bold !text-gray-800 !mb-8 !text-center">Ví của tôi</h1>
+        <h1 className="!text-4xl !font-bold !text-gray-800 !mb-8 !text-center">
+          Ví của tôi
+        </h1>
 
         {/* Số dư & Hoàn tiền */}
         <div className="!flex !justify-center !gap-6 !mb-8">
           <div className="!bg-blue-500 !text-white !rounded-2xl !shadow-xl !p-6 !w-1/2">
-            <h2 className="!text-lg">Số dư hiện tại</h2>
-            <p className="!text-2xl !font-bold">{walletData.balance.toLocaleString()} VND</p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="!text-lg">Số dư hiện tại</h2>
+                <p className="!text-2xl !font-bold">
+                  {walletData.balance.toLocaleString()} VND
+                </p>
+              </div>
+              <button className="!px-4 !py-2 !bg-white !text-blue-500 !font-semibold !rounded-lg hover:!bg-blue-100 !transition-colors !duration-300"
+              onClick={() => setIsModalVisible(true)}>
+                Nạp tiền
+              </button>
+            </div>
           </div>
+          <DepositModal
+                      isOpen={isModalVisible}
+                      onClose={() => setIsModalVisible(false)}
+                    />
           <div className="!bg-green-500 !text-white !rounded-2xl !shadow-xl !p-6 !w-1/2">
             <h2 className="!text-lg">Tổng tiền hoàn</h2>
-            <p className="!text-2xl !font-bold">{walletData.totalRefunded.toLocaleString()} VND</p>
+            <p className="!text-2xl !font-bold">
+              {walletData.totalRefunded.toLocaleString()} VND
+            </p>
           </div>
         </div>
 
@@ -74,7 +96,9 @@ export default function Wallet() {
             <button
               key={tab.key}
               className={`!px-6 !py-2 !rounded-full !text-lg !font-semibold !mx-2 ${
-                selectedTab === tab.key ? "!bg-blue-500 !text-white" : "!bg-gray-200 !text-gray-700"
+                selectedTab === tab.key
+                  ? "!bg-blue-500 !text-white"
+                  : "!bg-gray-200 !text-gray-700"
               }`}
               onClick={() => setSelectedTab(tab.key)}
             >
@@ -82,10 +106,13 @@ export default function Wallet() {
             </button>
           ))}
         </div>
+        
 
         {/* Transactions */}
         <div className="!bg-white !rounded-2xl !shadow-xl !p-8">
-          <h2 className="!text-2xl !font-bold !text-gray-800 !mb-6">Lịch sử giao dịch</h2>
+          <h2 className="!text-2xl !font-bold !text-gray-800 !mb-6">
+            Lịch sử giao dịch
+          </h2>
           {filteredTransactions.length === 0 ? (
             <div className="!text-center !text-gray-500 !py-8">
               <p className="!text-lg">Không có giao dịch nào</p>
@@ -107,7 +134,9 @@ export default function Wallet() {
                   </div>
                   <div
                     className={`!text-xl !font-semibold ${
-                      transaction.amount > 0 ? "!text-green-600" : "!text-red-600"
+                      transaction.amount > 0
+                        ? "!text-green-600"
+                        : "!text-red-600"
                     }`}
                   >
                     {transaction.amount.toLocaleString()} VND

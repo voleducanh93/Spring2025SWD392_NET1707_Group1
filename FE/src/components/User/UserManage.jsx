@@ -164,6 +164,7 @@ const UserManage = () => {
       ...record,
       role: record.role || "User", // Mặc định nếu không có giá trị
       isActive: record.isActive !== undefined ? record.isActive : true, // Mặc định là true
+      
       dateOfBirth: record.dateOfBirth ? dayjs(record.dateOfBirth) : null, // Chuyển đổi ngày về `dayjs`
     });
     setIsModalOpen(true);
@@ -176,6 +177,8 @@ const UserManage = () => {
       id: editingUser ? editingUser.id : undefined, // Thêm id nếu đang chỉnh sửa
       dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null, // Định dạng ngày sinh về ISO
     };
+    console.log(formattedValues);
+    
 
     if (editingUser) {
       editUser.mutate({ id: editingUser.id, data: formattedValues }); // Gọi API cập nhật

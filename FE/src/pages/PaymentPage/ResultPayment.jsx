@@ -1,25 +1,19 @@
 import { Button, Result } from "antd";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { usePayment } from "../../hooks/usePayment";
+import {  useNavigate } from "react-router-dom";
+
 
 
 const ResultPayment = () => {
-  const [searchParams] = useSearchParams();
+
   const navigate = useNavigate();
-  const { fetchPaymentUrl } = usePayment(); // Hook gọi lại API thanh toán
+
 
   // ✅ Lấy thông tin từ URL
   const isSuccess = window.location.pathname.includes("payment-success");
-  const orderId = searchParams.get("orderId");
+
 
  
-  // 🔄 Xử lý thanh toán lại
-  const handleRetryPayment = () => {
-    if (orderId) {
-      fetchPaymentUrl(orderId);
-      navigate("/");
-    }
-  };
+ 
 
   return isSuccess ? (
     // ✅ Giao diện khi thanh toán thành công
@@ -44,10 +38,7 @@ const ResultPayment = () => {
       title="Thanh toán thất bại!"
       //subTitle={`Mã đơn hàng: ${orderId} | Mã lỗi: ${errorCode}`}
       extra={[
-        <Button type="primary" key="retry" onClick={handleRetryPayment}>
-          Thử thanh toán lại
-        </Button>,
-        <Button key="cancel" onClick={() => navigate("/")}>
+        <Button key="cancel" onClick={() => navigate("/booking")}>
           Quay về trang chủ
         </Button>,
       ]}

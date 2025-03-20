@@ -4,6 +4,7 @@ const BASE_URL = "/VaccineInventory";
 
 export const getInventory = async () => {
   const response = await http.get(`${BASE_URL}/stock`);
+  
   return response.data.result;
 };
 
@@ -24,7 +25,6 @@ export const updateInventory = async (id, inventoryData) => {
 };
 
 export const deleteInventory = async (id) => {
-  const response = await http.delete(`${BASE_URL}/delete/${id}`);
-  console.log(response);  
+  const response = await http.delete(`${BASE_URL}/delete/${id}`); 
   return response.data;
 };

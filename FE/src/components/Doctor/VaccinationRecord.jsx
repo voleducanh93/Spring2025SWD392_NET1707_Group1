@@ -29,7 +29,6 @@ const VaccinationRecord = () => {
       ...editedRecords[record.vaccinationRecordId],
       status: "Completed", 
     };
-  console.log(updatedData);
   
     updateRecord.mutate({
       vaccinationRecordId: record.vaccinationRecordId,

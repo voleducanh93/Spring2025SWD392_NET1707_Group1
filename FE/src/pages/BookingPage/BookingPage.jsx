@@ -215,73 +215,81 @@ const BookingPage = () => {
 
       if (Array.isArray(result?.result) && result.result.length > 0) {
         return new Promise((resolve) => {
-          toast(({ closeToast }) => (
-            <div
-              style={{
-                background: "white",
-                padding: "25px",
-                borderRadius: "12px",
-                boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)", // Hiệu ứng nổi đẹp hơn
-                width: "420px", // Độ rộng hợp lý
-                textAlign: "center",
-                zIndex: 9999,
-                fontSize: "18px",
-                fontWeight: "600",
-                color: "#333", // Màu chữ đậm hơn
-              }}
-            >
-              <p style={{ marginBottom: "20px", lineHeight: "1.5" }}>
-                {result.result[0]}
-              </p>
-          
-              <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
-                <button
-                  onClick={() => {
-                    closeToast();
-                    resolve(true); // ✅ Cho phép chọn vaccine
-                  }}
+          toast(
+            ({ closeToast }) => (
+              <div
+                style={{
+                  background: "white",
+                  padding: "25px",
+                  borderRadius: "12px",
+                  boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)", // Hiệu ứng nổi đẹp hơn
+                  width: "420px", // Độ rộng hợp lý
+                  textAlign: "center",
+                  zIndex: 9999,
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  color: "#333", // Màu chữ đậm hơn
+                }}
+              >
+                <p style={{ marginBottom: "20px", lineHeight: "1.5" }}>
+                  {result.result[0]}
+                </p>
+
+                <div
                   style={{
-                    padding: "12px 24px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "none",
-                    background: "#28a745", // Màu xanh đẹp hơn
-                    color: "white",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "0.3s",
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "15px",
                   }}
-                  onMouseOver={(e) => (e.target.style.background = "#218838")}
-                  onMouseOut={(e) => (e.target.style.background = "#28a745")}
                 >
-                  Tôi đã tiêm
-                </button>
-          
-                <button
-                  onClick={() => {
-                    closeToast();
-                    resolve(false); // ❌ Không cho phép chọn vaccine
-                  }}
-                  style={{
-                    padding: "12px 24px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "none",
-                    background: "#dc3545", // Màu đỏ nổi bật
-                    color: "white",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    transition: "0.3s",
-                  }}
-                  onMouseOver={(e) => (e.target.style.background = "#c82333")}
-                  onMouseOut={(e) => (e.target.style.background = "#dc3545")}
-                >
-                  Chưa tiêm
-                </button>
+                  <button
+                    onClick={() => {
+                      closeToast();
+                      resolve(true); // ✅ Cho phép chọn vaccine
+                    }}
+                    style={{
+                      padding: "12px 24px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "none",
+                      background: "#28a745", // Màu xanh đẹp hơn
+                      color: "white",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "0.3s",
+                    }}
+                    onMouseOver={(e) => (e.target.style.background = "#218838")}
+                    onMouseOut={(e) => (e.target.style.background = "#28a745")}
+                  >
+                    Tôi đã tiêm
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      closeToast();
+                      resolve(false); // ❌ Không cho phép chọn vaccine
+                    }}
+                    style={{
+                      padding: "12px 24px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "none",
+                      background: "#dc3545", // Màu đỏ nổi bật
+                      color: "white",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      transition: "0.3s",
+                    }}
+                    onMouseOver={(e) => (e.target.style.background = "#c82333")}
+                    onMouseOut={(e) => (e.target.style.background = "#dc3545")}
+                  >
+                    Chưa tiêm
+                  </button>
+                </div>
               </div>
-            </div>
-          ), { autoClose: false });
-          
+            ),
+            { autoClose: false }
+          );
         });
       } else {
         return true; // Không có cảnh báo thì cho phép chọn luôn
@@ -435,37 +443,14 @@ const BookingPage = () => {
             }))}
           />
         </div>
-        <div className="flex items-center gap-4 w-1/2">
-          {selectedVaccines?.length > 0 && (
-            <div className="flex items-center gap-4">
-              <p className="font-semibold text-xl">Chọn ngày:</p>
-              <Form.Item name="date" className="!pt-5">
-                <DatePicker
-                  style={{ width: 300, height: 45 }}
-                  format="DD/MM/YYYY"
-                  value={
-                    selectedDate ? moment(selectedDate, "DD/MM/YYYY") : null
-                  }
-                  disabledDate={(current) =>
-                    current && current < moment().startOf("day")
-                  } // Chặn ngày trong quá khứ
-                  onChange={(date, dateString) => {
-                    console.log("📅 Ngày đã chọn:", dateString);
-                    setSelectedDate(dateString);
-                  }}
-                />
-              </Form.Item>
-            </div>
-          )}
-        </div>
       </div>
       <AddChildModal
         visible={isModalVisible}
         onClose={handleCloseModal}
         onAddChild={handleAddChild}
       />
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      <div className="flex flex-col md:flex-row !gap-8">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 !gap-10">
           {/* 1. Hiển thị danh sách vaccine đơn */}
           {!isComboSelected && vaccinationSchedule?.length > 0
             ? vaccinationSchedule.map((vaccine) => (
@@ -496,7 +481,7 @@ const BookingPage = () => {
                     </div>
                   </div>
                   <button
-                    className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
+                    className={`cursor-pointer !p-4 text-white rounded-lg w-full font-semibold text-lg ${
                       selectedVaccines.some(
                         (v) => v.vaccineId === vaccine.vaccineId
                       )
@@ -534,65 +519,93 @@ const BookingPage = () => {
           {/* 3. Hiển thị danh sách combo vaccine */}
           {isComboSelected && comboVaccines?.length > 0
             ? comboVaccines.map((combo) => (
-              <div
-              key={combo.comboId}
-              className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg min-h-[480px] max-h-[480px] w-full"
-            >
-              {/* Hiển thị thông tin combo vaccine */}
-              <div className="flex flex-col gap-3 bg-[#E6F0FA] rounded-2xl !p-4 flex-grow">
-                <h3 className="text-[#234060] text-lg font-medium text-center">{combo.comboName}</h3>
-            
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Mô tả:</span> {combo.description}
-                </p>
-            
-                <div className="flex items-center gap-3 text-[#2A388F] mt-4 justify-center">
-                  <SellIcon />
-                  <p className="font-semibold text-2xl">
-                    {combo.totalPrice ? `${combo.totalPrice.toLocaleString("vi-VN")} VNĐ` : "Liên hệ"}
-                  </p>
-                </div>
-            
-                {/* Danh sách các vaccine trong combo */}
-                <div className="mt-4 flex-grow">
-                  <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                    📋 Danh sách vắc-xin:
-                  </h4>
-                  <div className="overflow-hidden rounded-lg border border-gray-300">
-                    <table className="w-full text-sm text-gray-800">
-                      <thead className="bg-blue-600 text-white">
-                        <tr>
-                          <th className="py-3 px-4 text-center border-b">Thứ tự</th>
-                          <th className="py-3 px-4 text-left border-b">Tên vắc-xin</th>
-                          <th className="py-3 px-4 text-center border-b">Khoảng cách (ngày)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white">
-                        {combo.vaccines.sort((a, b) => a.order - b.order).map((vaccine, index) => (
-                          <tr key={index} className="border-b last:border-none hover:bg-gray-100 transition-all">
-                            <td className="py-3 px-4 text-center font-semibold text-gray-900">{vaccine.order}</td>
-                            <td className="py-3 px-4 text-left">{vaccine.vaccine.name}</td>
-                            <td className="py-3 px-4 text-center">{vaccine.intervalDays} ngày</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <div
+                  key={combo.comboId}
+                  className="flex flex-col gap-6 !p-5 rounded-2xl shadow-lg !min-h-[480px] !max-h-[720px] !w-full"
+                >
+                  {/* Hiển thị thông tin combo vaccine */}
+                  <div className="flex flex-col gap-3 bg-[#E6F0FA] rounded-2xl !p-4 flex-grow">
+                    <h3 className="text-[#234060] text-lg font-medium text-center">
+                      {combo.comboName}
+                    </h3>
+
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold">Mô tả:</span>{" "}
+                      {combo.description}
+                    </p>
+
+                    <div className="flex items-center !gap-3 text-[#2A388F] !mt-4 justify-center">
+                      <SellIcon />
+                      <p className="font-semibold text-2xl">
+                        {combo.totalPrice
+                          ? `${combo.totalPrice.toLocaleString("vi-VN")} VNĐ`
+                          : "Liên hệ"}
+                      </p>
+                    </div>
+
+                    {/* Danh sách các vaccine trong combo */}
+                    <div className="!mt-4 flex-grow">
+                      <h4 className="text-sm font-semibold text-gray-800 !mb-2">
+                        📋 Danh sách vắc-xin:
+                      </h4>
+                      <div className="overflow-hidden rounded-lg border border-gray-300">
+                        <table className="w-full text-sm text-gray-800">
+                          <thead className="bg-blue-600 text-white">
+                            <tr>
+                              <th className="!py-3 !px-4 text-center border-b">
+                                Thứ tự
+                              </th>
+                              <th className="!py-3 !px-4 text-left border-b">
+                                Tên vắc-xin
+                              </th>
+                              <th className="!py-3 !px-4 text-center border-b">
+                                Khoảng cách (ngày)
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white">
+                            {combo.vaccines
+                              .sort((a, b) => a.order - b.order)
+                              .map((vaccine, index) => (
+                                <tr
+                                  key={index}
+                                  className="border-b last:border-none hover:bg-gray-100 transition-all"
+                                >
+                                  <td className="!py-3 !px-4 !text-center font-semibold text-gray-900">
+                                    {vaccine.order}
+                                  </td>
+                                  <td className="!py-3 !px-4 !text-left">
+                                    {vaccine.vaccine.name}
+                                  </td>
+                                  <td className="!py-3 !px-4 !text-center">
+                                    {vaccine.intervalDays} ngày
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nút chọn - Luôn ở dưới cùng */}
+                  <div className="!mt-auto">
+                    <button
+                      className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
+                        selectedVaccines.some(
+                          (v) => v.comboId === combo.comboId
+                        )
+                          ? "bg-[#35944A]"
+                          : "bg-[#2A388F]"
+                      }`}
+                      onClick={() => toggleSelection(combo)}
+                    >
+                      {selectedVaccines.some((v) => v.comboId === combo.comboId)
+                        ? "ĐÃ CHỌN"
+                        : "CHỌN"}
+                    </button>
                   </div>
                 </div>
-              </div>
-            
-              {/* Nút chọn - Luôn ở dưới cùng */}
-              <div className="mt-auto">
-                <button
-                  className={`cursor-pointer p-4 text-white rounded-lg w-full font-semibold text-lg ${
-                    selectedVaccines.some((v) => v.comboId === combo.comboId) ? "bg-[#35944A]" : "bg-[#2A388F]"
-                  }`}
-                  onClick={() => toggleSelection(combo)}
-                >
-                  {selectedVaccines.some((v) => v.comboId === combo.comboId) ? "ĐÃ CHỌN" : "CHỌN"}
-                </button>
-              </div>
-            </div>
               ))
             : isComboSelected &&
               comboVaccines.length === 0 && (
@@ -620,6 +633,7 @@ const BookingPage = () => {
               DANH SÁCH VẮC XIN CHỌN MUA
             </h2>
           </div>
+
           <div className="!mt-10">
             {selectedVaccines.length > 0 ? (
               <div>
@@ -645,6 +659,29 @@ const BookingPage = () => {
                     </button>
                   </div>
                 ))}
+
+                {/* Chọn ngày */}
+                <div className="flex items-center gap-4 mt-5">
+                  <p className="font-semibold text-xl">Chọn ngày:</p>
+                  <Form.Item name="date" className="!pt-5">
+                    <DatePicker
+                      style={{ width: 300, height: 45 }}
+                      format="DD/MM/YYYY"
+                      value={
+                        selectedDate ? moment(selectedDate, "DD/MM/YYYY") : null
+                      }
+                      disabledDate={(current) =>
+                        current && current < moment().startOf("day")
+                      } // Chặn ngày trong quá khứ
+                      onChange={(date, dateString) => {
+                        console.log("📅 Ngày đã chọn:", dateString);
+                        setSelectedDate(dateString);
+                      }}
+                    />
+                  </Form.Item>
+                </div>
+
+                {/* Nút thanh toán */}
                 <button
                   className="!mt-5 w-full bg-orange-500 text-white !p-3 rounded-lg"
                   onClick={handleBooking}

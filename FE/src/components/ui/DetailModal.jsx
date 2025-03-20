@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import PropTypes from 'prop-types';
 
 const DetailModal = ({ visible, onClose, data = {}, fields = [] }) => {
-  console.log("Dữ liệu chi tiết:", data); // Kiểm tra dữ liệu trong console
   if (!data || Object.keys(data).length === 0) {
     return (
       <Modal title="Chi Tiết" open={visible} onCancel={onClose} footer={null} width={700}>

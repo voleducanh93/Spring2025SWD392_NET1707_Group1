@@ -92,7 +92,7 @@ export default function Cards() {
                   component="img"
                   alt={vaccine.name}
                   height="200"
-                  image={imgTam} // Hoặc vaccine.image nếu có
+                  image={vaccine.image} // Hoặc vaccine.image nếu có
                   sx={{
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",

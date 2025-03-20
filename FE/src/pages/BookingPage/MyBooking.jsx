@@ -9,8 +9,9 @@ import { useRequestRefund } from "../../hooks/useRefund";
 import { toast } from "react-toastify";
 import { useRequestFeedback } from "../../hooks/useFeedback";
 import { usePayment } from "../../hooks/usePayment";
-import { useBooking } from "../../hooks/useBooking";
+
 import VaccineRecordTable from "../../components/VaccineShow/VaccineRecordTable";
+import { useBooking } from "../../hooks/useBooking";
 
 export default function MyBooking() {
   const [bookings, setBookings] = useState([]);
@@ -31,30 +32,36 @@ export default function MyBooking() {
     setSelectedDetail(detail); // Lưu thông tin chi tiết
     setShowDetails(true); // Hiển thị bảng chi tiết
   };
+  const {userBookings }  = useBooking();
   useEffect(() => {
-    if (!getUser) return;
+    if (userBookings) {
+      setBookings(userBookings);
+    }
+  }, [userBookings]);
+  // useEffect(() => {
+  //   if (!getUser) return;
 
-    const fetchBookingDetails = async () => {
-      try {
-        const response = await fetch(
-          `https://localhost:7134/api/Booking/user/${getUser}`
-        );
+  //   const fetchBookingDetails = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `https://localhost:7134/api/Booking/user/${getUser}`
+  //       );
 
-        const data = await response.json();
+  //       const data = await response.json();
 
-        if (data.isSuccess) {
-          console.log(data.result);
-          setBookings(data.result); // Lưu toàn bộ bookingDetails thay vì booking
-        } else {
-          console.error("Lỗi khi lấy dữ liệu chi tiết đặt lịch");
-        }
-      } catch (error) {
-        console.error("Đã xảy ra lỗi:", error);
-      }
-    };
+  //       if (data.isSuccess) {
+  //         console.log(data.result);
+  //         setBookings(data.result); // Lưu toàn bộ bookingDetails thay vì booking
+  //       } else {
+  //         console.error("Lỗi khi lấy dữ liệu chi tiết đặt lịch");
+  //       }
+  //     } catch (error) {
+  //       console.error("Đã xảy ra lỗi:", error);
+  //     }
+  //   };
 
-    fetchBookingDetails();
-  }, [getUser]);
+  //   fetchBookingDetails();
+  // }, [getUser]);
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
@@ -128,17 +135,19 @@ export default function MyBooking() {
     setShowFeedbackInput(false);
     setFeedback("");
   };
-  const { removeBooking } = useBooking();
+  
   const handlePayment = (bookingId) => {
     fetchPaymentUrl(bookingId);
   };
+  const { removeBooking } = useBooking();
   const handleCancel = (bookingId) => {
     const isConfirmed = window.confirm(
       "Bạn có chắc chắn muốn hủy đơn đặt lịch này không?"
     );
-
+   
     if (isConfirmed) {
-      removeBooking(bookingId);
+      removeBooking.mutate(bookingId);
+      setModalVisible(false)
     }
   };
   const [selectedBookingId, setSelectedBookingId] = useState(null);

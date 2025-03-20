@@ -38,6 +38,7 @@ const DepositModal = ({ isOpen, onClose }) => {
   return (
     <Modal
       title="💰 Nạp tiền vào ví"
+      style={{ top: 200 }}
       open={isOpen}
       onOk={handleDepositSubmit}
       onCancel={onClose}

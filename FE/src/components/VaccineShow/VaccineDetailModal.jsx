@@ -1,16 +1,16 @@
 import { Modal, Button, Tabs } from "antd";
-import { useVaccineScheduleById } from "../../hooks/useVaccineSchedule"; // Import hook để gọi API
-import VaccinationScheduleTable from "./VaccinationScheduleTable";
+
 import VaccineInventoryTable from "./VaccineInventoryTable";
 
 const { TabPane } = Tabs;
 
 import PropTypes from 'prop-types';
+import VaccineSchedule from "./VaccineScheduleDetail";
 
 const VaccineDetailModal = ({ isOpen, handleClose, selectedVaccine }) => {
 
-  const { data: vaccinationSchedule} = useVaccineScheduleById(selectedVaccine?.vaccineId);
-    console.log(vaccinationSchedule);
+  
+   
     
   return (
     <Modal
@@ -39,7 +39,7 @@ const VaccineDetailModal = ({ isOpen, handleClose, selectedVaccine }) => {
                 <p>
                   <strong>Trạng thái:</strong>
                   <span className={`ml-2 px-3 py-1 rounded-md text-white ${selectedVaccine.status ? "bg-green-500" : "bg-red-500"}`}>
-                    {selectedVaccine.status ? "Có sẵn" : "Hết hàng"}
+                    {selectedVaccine.status ? "Hoạt động " : "Bảo trì"}
                   </span>
                 </p>
                 <p><strong>Cần thiết:</strong> {selectedVaccine.isNecessary ? "Có" : "Không"}</p>
@@ -61,7 +61,8 @@ const VaccineDetailModal = ({ isOpen, handleClose, selectedVaccine }) => {
 
           {/* Tab: Lịch Tiêm Chủng */}
           <TabPane tab={<span className="text-blue-600 font-semibold">Lịch Tiêm Chủng</span>} key="2">
-  <VaccinationScheduleTable vaccinationSchedule={vaccinationSchedule} />
+  {/* <VaccinationScheduleTable vaccinationSchedule={vaccinationSchedule} /> */}
+  <VaccineSchedule vaccineId={selectedVaccine?.vaccineId}/>
 </TabPane>
 
 

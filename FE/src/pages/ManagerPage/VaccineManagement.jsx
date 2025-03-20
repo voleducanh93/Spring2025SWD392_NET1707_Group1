@@ -10,6 +10,7 @@ import {
   Col,
   Upload,
   Popconfirm,
+  Select,
 } from "antd";
 import { useVaccine } from "../../hooks/useVaccine"; // Sử dụng hook lấy dữ liệu vaccine
 import { UploadOutlined } from "@mui/icons-material";
@@ -17,6 +18,7 @@ import { toast } from "react-toastify";
 import { uploadFile } from "../../config/firebase";
 import VaccineDetailModal from "../../components/VaccineShow/VaccineDetailModal";
 import { components } from "./ComboManagement";
+import { Option } from "antd/es/mentions";
 const VaccineManagement = () => {
   const { vaccines, isLoading, addVaccine, editVaccine, removeVaccine } =
     useVaccine();
@@ -93,7 +95,7 @@ const VaccineManagement = () => {
         ...form.getFieldsValue(),
         image: url,
         price: parseFloat(form.getFieldValue("price")),
-        status: true,
+        status:  form.getFieldValue("status"),
         isNecessary: true,
       };
 
@@ -148,6 +150,7 @@ const VaccineManagement = () => {
       key: "price",
       render: (text) => `${text.toLocaleString()} VND`,
     },
+   
     {
       title: "Hành Động",
       key: "action",
@@ -287,6 +290,15 @@ const VaccineManagement = () => {
               >
                 <Input type="number" min="1" />
               </Form.Item>
+              <Form.Item name="status" label="Trạng Thái">
+                <Select
+                  className="w-full p-2 border rounded"
+                  defaultValue={true}
+                >
+                  <Option value={true}>Hoạt động</Option>
+                  <Option value={false}>Không hoạt động</Option>
+                </Select>
+              </Form.Item>
             </Col>
 
             {/* Cột 2 */}
@@ -297,7 +309,7 @@ const VaccineManagement = () => {
                 label="Số Mũi Tiêm"
                 rules={[
                   { required: true, message: "⚠️ Vui lòng nhập số mũi tiêm!" },
-                  ({ getFieldValue }) => ({
+                  () => ({
                     validator(_, value) {
                       if (!value || parseInt(value) > 0) {
                         return Promise.resolve();

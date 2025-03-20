@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Form, Input, Select, Button, Checkbox, Card, Row, Col } from "antd";
+import { Form, Input, Select, Button, Checkbox, Card, Row, Col, InputNumber } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
-
-
-const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCancel }) => {
+const VaccineScheduleForm = ({
+  availableVaccines,
+  initialData,
+  onSubmit,
+  onCancel,
+}) => {
   const [form] = Form.useForm();
   const [selectedVaccines, setSelectedVaccines] = useState([]);
   const [injections, setInjections] = useState({});
@@ -18,15 +21,22 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
         ageRangeStart: initialData.ageRangeStart,
         ageRangeEnd: initialData.ageRangeEnd,
         notes: initialData.notes,
-        selectedVaccines: initialData.vaccineScheduleDetails.map((detail) => detail.vaccineId),
+        selectedVaccines: initialData.vaccineScheduleDetails.map(
+          (detail) => detail.vaccineId
+        ),
       });
 
-      setSelectedVaccines(initialData.vaccineScheduleDetails.map((detail) => detail.vaccineId));
+      setSelectedVaccines(
+        initialData.vaccineScheduleDetails.map((detail) => detail.vaccineId)
+      );
 
-      const schedules = initialData.vaccineScheduleDetails.reduce((acc, detail) => {
-        acc[detail.vaccineId] = detail.injectionSchedules;
-        return acc;
-      }, {});
+      const schedules = initialData.vaccineScheduleDetails.reduce(
+        (acc, detail) => {
+          acc[detail.vaccineId] = detail.injectionSchedules;
+          return acc;
+        },
+        {}
+      );
 
       setInjections(schedules);
     }
@@ -69,132 +79,219 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
 
   const handleInjectionChange = (vaccineId, index, field, value) => {
     console.log(vaccineId, index, field, value);
-    
+
     const newInjections = { ...injections };
     newInjections[vaccineId][index][field] = value;
     setInjections(newInjections);
     console.log(newInjections);
-    
   };
 
-  
   const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
-  
+
       if (selectedVaccines.length === 0) {
         alert("Vui lòng chọn ít nhất một vaccine!");
         return;
       }
-  
+
       // ✅ Chuyển đổi dữ liệu về đúng format API yêu cầu
       const vaccineData = selectedVaccines.map((vaccineId) => ({
         vaccineId: Number(vaccineId), // ✅ Chuyển về số
-        injectionSchedules: injections[vaccineId]?.map((injection) => ({
-          injectionNumber: Number(injection.injectionNumber), // ✅ Chuyển về số
-          injectionMonth: Number(injection.injectionMonth), // ✅ Chuyển về số
-          isRequired: Boolean(injection.isRequired), // ✅ Chuyển về boolean
-          notes: injection.notes || "string",
-        })) || [],
+        injectionSchedules:
+          injections[vaccineId]?.map((injection) => ({
+            injectionNumber: Number(injection.injectionNumber), // ✅ Chuyển về số
+            injectionMonth: Number(injection.injectionMonth), // ✅ Chuyển về số
+            isRequired: Boolean(injection.isRequired), // ✅ Chuyển về boolean
+            notes: injection.notes || "string",
+          })) || [],
       }));
-  
+
       const formattedData = {
         ageRangeStart: Number(values.ageRangeStart), // ✅ Chuyển về số
         ageRangeEnd: Number(values.ageRangeEnd), // ✅ Chuyển về số
         notes: values.notes || "string",
         vaccineScheduleDetails: vaccineData,
       };
-  
+
       onSubmit(formattedData);
-      form.resetFields(); // ✅ Gửi dữ liệu đã chuẩn hóa
+      //form.resetFields(); // ✅ Gửi dữ liệu đã chuẩn hóa
     } catch {
       alert("Vui lòng điền đầy đủ thông tin!");
     }
   };
-  
-  
 
   return (
     <Form form={form} layout="vertical" style={{ width: "100%" }}>
-    {/* ✅ Tuổi Bắt Đầu & Tuổi Kết Thúc cùng hàng */}
-    <Row gutter={24}>
-      <Col span={12}>
-        <Form.Item
-          name="ageRangeStart"
-          label="Tuổi Bắt Đầu"
-          rules={[{ required: true, message: "Vui lòng nhập tuổi bắt đầu!" }]}
+      {/* ✅ Tuổi Bắt Đầu & Tuổi Kết Thúc cùng hàng */}
+      <Row gutter={24}>
+        <Col span={12}>
+          <Form.Item
+            name="ageRangeStart"
+            label="Tuổi Bắt Đầu"
+            rules={[{ required: true, message: "Vui lòng nhập tuổi bắt đầu!" }]}
+          >
+            <Input type="number" style={{ width: "100%" }} />
+          </Form.Item>
+        </Col>
+       
+
+<Col span={12}>
+  <Form.Item
+    name="ageRangeEnd"
+    label="Tuổi Kết Thúc"
+    dependencies={["ageRangeStart"]}
+    rules={[
+      { required: true, message: "Vui lòng nhập tuổi kết thúc!" },
+      ({ getFieldValue }) => ({
+        validator(_, value) {
+          const startAge = parseInt(getFieldValue("ageRangeStart"), 10);
+          const endAge = parseInt(value, 10);
+
+          // Chỉ kiểm tra khi người dùng nhập xong (không kiểm tra khi đang nhập)
+          if (!isNaN(startAge) && !isNaN(endAge) && endAge <= startAge) {
+            return Promise.reject("Tuổi kết thúc phải lớn hơn tuổi bắt đầu!");
+          }
+          return Promise.resolve();
+        },
+      }),
+    ]}
+  >
+    <InputNumber
+      style={{ width: "100%" }}
+      min={0}
+      step={1}
+      onBlur={(e) => {
+        // Chỉ kiểm tra sau khi người dùng rời khỏi ô nhập
+        e.target.value = parseInt(e.target.value, 10) || "";
+      }}
+    />
+  </Form.Item>
+</Col>;
+
+      </Row>
+
+      <Form.Item name="notes" label="Ghi Chú">
+        <Input.TextArea style={{ width: "100%" }} />
+      </Form.Item>
+
+      <Form.Item
+        name="selectedVaccines"
+        label="Chọn Vắc-xin"
+        rules={[
+          { required: true, message: "Vui lòng chọn ít nhất một vắc-xin!" },
+        ]}
+      >
+        <Select
+          mode="multiple"
+          placeholder="Chọn vắc-xin"
+          allowClear
+          onChange={handleVaccineSelect}
+          style={{ width: "100%" }}
         >
-          <Input type="number" style={{ width: "100%" }} />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item
-          name="ageRangeEnd"
-          label="Tuổi Kết Thúc"
-          dependencies={["ageRangeStart"]}
-          rules={[
-            { required: true, message: "Vui lòng nhập tuổi kết thúc!" },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (value <= getFieldValue("ageRangeStart")) {
-                  return Promise.reject("Tuổi kết thúc phải lớn hơn tuổi bắt đầu!");
-                }
-                return Promise.resolve();
-              },
-            }),
-          ]}
-        >
-          <Input type="number" style={{ width: "100%" }} />
-        </Form.Item>
-      </Col>
-    </Row>
-
-    <Form.Item name="notes" label="Ghi Chú">
-      <Input.TextArea style={{ width: "100%" }} />
-    </Form.Item>
-
-    <Form.Item name="selectedVaccines" label="Chọn Vắc-xin" rules={[{ required: true, message: "Vui lòng chọn ít nhất một vắc-xin!" }]}>
-      <Select mode="multiple" placeholder="Chọn vắc-xin" allowClear onChange={handleVaccineSelect} style={{ width: "100%" }}>
-        {availableVaccines.map((vaccine) => (
-          <Select.Option key={vaccine.vaccineId} value={vaccine.vaccineId}>
-            {vaccine.name}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-
-    {selectedVaccines.map((vaccineId) => {
-      const vaccine = availableVaccines.find((v) => v.vaccineId === vaccineId);
-
-      return (
-        <Card key={vaccineId} style={{ marginBottom: 15, border: "1px solid #ccc" }}>
-          <h4>Vaccine: {vaccine.name}</h4>
-
-          {injections[vaccineId].map((injection, index) => (
-            <Row key={injection.id} gutter={16} style={{ marginBottom: "10px" }}>
-              <Col span={6}>
-                <Input type="number" placeholder="Số lần tiêm" value={injection.injectionNumber} onChange={(e) => handleInjectionChange(vaccineId, index, "doseNumber", e.target.value)} />
-              </Col>
-              <Col span={6}>
-                <Input type="number" placeholder="Tháng tiêm" value={injection.injectionMonth} onChange={(e) => handleInjectionChange(vaccineId, index, "injectionMonth", e.target.value)} />
-              </Col>
-              <Col span={6}>
-                <Checkbox checked={injection.isRequired} onChange={(e) => handleInjectionChange(vaccineId, index, "isRequired", e.target.checked)}>Bắt buộc</Checkbox>
-              </Col>
-              <Col span={6}>
-                <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleRemoveInjection(vaccineId, index)}>Xóa</Button>
-              </Col>
-            </Row>
+          {availableVaccines.map((vaccine) => (
+            <Select.Option key={vaccine.vaccineId} value={vaccine.vaccineId}>
+              {vaccine.name}
+            </Select.Option>
           ))}
+        </Select>
+      </Form.Item>
 
-          <Button type="dashed" block icon={<PlusOutlined />} onClick={() => handleAddInjection(vaccineId)}>Thêm Mũi Tiêm</Button>
-        </Card>
-      );
-    })}
+      {selectedVaccines.map((vaccineId) => {
+        const vaccine = availableVaccines.find(
+          (v) => v.vaccineId === vaccineId
+        );
 
-    <Button type="primary" onClick={handleFormSubmit}>Lưu</Button>
-    <Button type="default" onClick={onCancel} style={{ marginLeft: 10 }}>Hủy</Button>
-  </Form>
+        return (
+          <Card
+            key={vaccineId}
+            style={{ marginBottom: 15, border: "1px solid #ccc" }}
+          >
+            <h4>Vaccine: {vaccine.name}</h4>
+
+            {injections[vaccineId].map((injection, index) => (
+              <Row
+                key={injection.id}
+                gutter={16}
+                style={{ marginBottom: "10px" }}
+              >
+                <Col span={6}>
+                  <Input
+                    type="number"
+                    placeholder="Số lần tiêm"
+                    value={injection.injectionNumber}
+                    onChange={(e) =>
+                      handleInjectionChange(
+                        vaccineId,
+                        index,
+                        "doseNumber",
+                        e.target.value
+                      )
+                    }
+                  />
+                </Col>
+                <Col span={6}>
+                  <Input
+                    type="number"
+                    placeholder="Tháng tiêm"
+                    value={injection.injectionMonth}
+                    onChange={(e) =>
+                      handleInjectionChange(
+                        vaccineId,
+                        index,
+                        "injectionMonth",
+                        e.target.value
+                      )
+                    }
+                  />
+                </Col>
+                <Col span={6}>
+                  <Checkbox
+                    checked={injection.isRequired}
+                    onChange={(e) =>
+                      handleInjectionChange(
+                        vaccineId,
+                        index,
+                        "isRequired",
+                        e.target.checked
+                      )
+                    }
+                  >
+                    Bắt buộc
+                  </Checkbox>
+                </Col>
+                <Col span={6}>
+                  <Button
+                    type="link"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleRemoveInjection(vaccineId, index)}
+                  >
+                    Xóa
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+
+            <Button
+              type="dashed"
+              block
+              icon={<PlusOutlined />}
+              onClick={() => handleAddInjection(vaccineId)}
+            >
+              Thêm Mũi Tiêm
+            </Button>
+          </Card>
+        );
+      })}
+
+      <Button type="primary" onClick={handleFormSubmit}>
+        Lưu
+      </Button>
+      <Button type="default" onClick={onCancel} style={{ marginLeft: 10 }}>
+        Hủy
+      </Button>
+    </Form>
   );
 };
 VaccineScheduleForm.propTypes = {
@@ -226,6 +323,5 @@ VaccineScheduleForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
-
 
 export default VaccineScheduleForm;

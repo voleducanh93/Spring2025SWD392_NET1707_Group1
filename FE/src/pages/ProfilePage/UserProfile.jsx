@@ -5,7 +5,9 @@ import moment from "moment";
 import { useLocationData } from "../AuthPage/useLocationData"; 
 import { useChangePassword, useGetProfile, useUpdateProfile } from "../../hooks/useAuth";
 import { toast } from "react-toastify";
-
+import { IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -124,14 +126,32 @@ const changePasswordMutation = useChangePassword();
     });
   };
   
-  
+  const navigate = useNavigate();
+
   
 
   return (
     <div className="p-6">
     {/* Bố cục flex để đặt 2 khối cạnh nhau trên màn hình lớn */}
     <div className="flex flex-col md:flex-row gap-6 justify-center">
-      
+    <IconButton
+        onClick={() => navigate(-1)}
+        sx={{
+          position: "absolute",
+          top: 180,
+          left: 180,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          backgroundColor: "#f5f5f5",
+          p: 1,
+          borderRadius: 2,
+          "&:hover": { backgroundColor: "#e0e0e0" },
+        }}
+      >
+        <ArrowBackIcon />
+        <Typography variant="body1">Back</Typography>
+      </IconButton>
       {/* Thông tin cá nhân */}
       <Card className="w-full md:w-1/2">
         <Title level={4} className="text-center">Thông tin cá nhân</Title>
