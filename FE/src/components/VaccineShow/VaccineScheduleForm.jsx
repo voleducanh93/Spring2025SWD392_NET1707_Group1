@@ -11,6 +11,8 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
   const [injections, setInjections] = useState({});
 
   useEffect(() => {
+    form.resetFields();
+    setSelectedVaccines([]);
     if (initialData) {
       form.setFieldsValue({
         ageRangeStart: initialData.ageRangeStart,
@@ -66,11 +68,16 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
   };
 
   const handleInjectionChange = (vaccineId, index, field, value) => {
+    console.log(vaccineId, index, field, value);
+    
     const newInjections = { ...injections };
     newInjections[vaccineId][index][field] = value;
     setInjections(newInjections);
+    console.log(newInjections);
+    
   };
 
+  
   const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -98,7 +105,8 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
         vaccineScheduleDetails: vaccineData,
       };
   
-      onSubmit(formattedData); // ✅ Gửi dữ liệu đã chuẩn hóa
+      onSubmit(formattedData);
+      form.resetFields(); // ✅ Gửi dữ liệu đã chuẩn hóa
     } catch {
       alert("Vui lòng điền đầy đủ thông tin!");
     }
@@ -165,7 +173,7 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
           {injections[vaccineId].map((injection, index) => (
             <Row key={injection.id} gutter={16} style={{ marginBottom: "10px" }}>
               <Col span={6}>
-                <Input type="number" placeholder="Số lần tiêm" value={injection.doseNumber} onChange={(e) => handleInjectionChange(vaccineId, index, "doseNumber", e.target.value)} />
+                <Input type="number" placeholder="Số lần tiêm" value={injection.injectionNumber} onChange={(e) => handleInjectionChange(vaccineId, index, "doseNumber", e.target.value)} />
               </Col>
               <Col span={6}>
                 <Input type="number" placeholder="Tháng tiêm" value={injection.injectionMonth} onChange={(e) => handleInjectionChange(vaccineId, index, "injectionMonth", e.target.value)} />
@@ -206,7 +214,7 @@ VaccineScheduleForm.propTypes = {
         injectionSchedules: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.number.isRequired,
-            doseNumber: PropTypes.number.isRequired,
+            injectionNumber: PropTypes.number.isRequired,
             injectionMonth: PropTypes.string,
             isRequired: PropTypes.bool,
             notes: PropTypes.string,

@@ -215,49 +215,73 @@ const BookingPage = () => {
 
       if (Array.isArray(result?.result) && result.result.length > 0) {
         return new Promise((resolve) => {
-          toast(
-            ({ closeToast }) => (
-              <div>
-                <p>{result.result[0]}</p>
+          toast(({ closeToast }) => (
+            <div
+              style={{
+                background: "white",
+                padding: "25px",
+                borderRadius: "12px",
+                boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)", // Hiệu ứng nổi đẹp hơn
+                width: "420px", // Độ rộng hợp lý
+                textAlign: "center",
+                zIndex: 9999,
+                fontSize: "18px",
+                fontWeight: "600",
+                color: "#333", // Màu chữ đậm hơn
+              }}
+            >
+              <p style={{ marginBottom: "20px", lineHeight: "1.5" }}>
+                {result.result[0]}
+              </p>
+          
+              <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
                 <button
                   onClick={() => {
                     closeToast();
-
-                    resolve(true); // Cho phép chọn vaccine
+                    resolve(true); // ✅ Cho phép chọn vaccine
                   }}
                   style={{
-                    marginRight: "10px",
-                    padding: "5px 10px",
+                    padding: "12px 24px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
                     border: "none",
-                    background: "#4CAF50",
+                    background: "#28a745", // Màu xanh đẹp hơn
                     color: "white",
-                    borderRadius: "5px",
+                    borderRadius: "8px",
                     cursor: "pointer",
+                    transition: "0.3s",
                   }}
+                  onMouseOver={(e) => (e.target.style.background = "#218838")}
+                  onMouseOut={(e) => (e.target.style.background = "#28a745")}
                 >
                   Tôi đã tiêm
                 </button>
+          
                 <button
                   onClick={() => {
                     closeToast();
-
-                    resolve(false); // Không cho phép chọn vaccine
+                    resolve(false); // ❌ Không cho phép chọn vaccine
                   }}
                   style={{
-                    padding: "5px 10px",
+                    padding: "12px 24px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
                     border: "none",
-                    background: "#f44336",
+                    background: "#dc3545", // Màu đỏ nổi bật
                     color: "white",
-                    borderRadius: "5px",
+                    borderRadius: "8px",
                     cursor: "pointer",
+                    transition: "0.3s",
                   }}
+                  onMouseOver={(e) => (e.target.style.background = "#c82333")}
+                  onMouseOut={(e) => (e.target.style.background = "#dc3545")}
                 >
                   Chưa tiêm
                 </button>
               </div>
-            ),
-            { autoClose: false }
-          );
+            </div>
+          ), { autoClose: false });
+          
         });
       } else {
         return true; // Không có cảnh báo thì cho phép chọn luôn

@@ -4,6 +4,7 @@ import { useVaccineSchedule } from "../../hooks/useVaccineSchedule";
 import { useVaccine } from "../../hooks/useVaccine";
 import VaccinationScheduleTable from "../../components/VaccineShow/VaccinationScheduleTable";
 import VaccineScheduleForm from "../../components/VaccineShow/VaccineScheduleForm";
+import { components } from "./ComboManagement";
 
 
 const VaccineByAge = () => {
@@ -99,7 +100,7 @@ const VaccineByAge = () => {
       {isLoadingSchedules ? (
         <p>Đang tải dữ liệu...</p>
       ) : scheduleVaccines.length > 0 ? (
-        <Table columns={columns} dataSource={scheduleVaccines} rowKey="scheduleId" pagination={{ pageSize: 8 }} />
+        <Table columns={columns} dataSource={scheduleVaccines} components={components} rowKey="scheduleId" pagination={{ pageSize: 8 }} />
       ) : (
         <p>Không có lịch tiêm nào.</p>
       )}

@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import { useRequestFeedback } from "../../hooks/useFeedback";
 import { usePayment } from "../../hooks/usePayment";
 import { useBooking } from "../../hooks/useBooking";
-import { useVaccineRecordByBooking } from "../../hooks/useVaccineRecord";
 import VaccineRecordTable from "../../components/VaccineShow/VaccineRecordTable";
 
 export default function MyBooking() {
@@ -23,14 +22,15 @@ export default function MyBooking() {
   const [showReasonInput, setShowReasonInput] = useState(false);
   const [showFeedbackInput, setShowFeedbackInput] = useState(false);
   const [feedback, setFeedback] = useState("");
-const { fetchPaymentUrl } = usePayment();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { fetchPaymentUrl } = usePayment();
   useEffect(() => {
     if (!getUser) return;
 
     const fetchBookingDetails = async () => {
       try {
         const response = await fetch(
-          `https://localhost:7134/api/Booking/user/${getUser}/booking-details`
+          `https://localhost:7134/api/Booking/user/${getUser}`
         );
 
         const data = await response.json();
@@ -59,7 +59,7 @@ const { fetchPaymentUrl } = usePayment();
   };
   const { mutate: requestRefund1 } = useRequestRefund();
   const { mutate: requestFeedback } = useRequestFeedback();
-  
+
   const requestRefund = async (bookingId, reason) => {
     if (!reason.trim()) {
       alert("Vui lòng nhập lý do hoàn tiền.");
@@ -124,7 +124,7 @@ const { fetchPaymentUrl } = usePayment();
   const { removeBooking } = useBooking();
   const handlePayment = (bookingId) => {
     fetchPaymentUrl(bookingId);
-  }
+  };
   const handleCancel = (bookingId) => {
     const isConfirmed = window.confirm(
       "Bạn có chắc chắn muốn hủy đơn đặt lịch này không?"
@@ -133,17 +133,16 @@ const { fetchPaymentUrl } = usePayment();
     if (isConfirmed) {
       removeBooking(bookingId);
     }
-  }
+  };
   const [selectedBookingId, setSelectedBookingId] = useState(null);
 
   // ✅ Gọi `useVaccineRecordByBooking` bên ngoài mọi hàm, và truyền `selectedBookingId`
-  const handleRecord = ({ bookingId }) => {
+  const handleRecord = (bookingId) => {
     setSelectedBookingId(bookingId);
-  }
+    setIsModalVisible(true); // ✅ Mở Modal khi click
+  };
 
   // ✅ Hàm này sẽ thay đổi `bookingId` và React Query tự động fetch lại dữ liệu
- 
-  
 
   const statusMapping = {
     Pending: "Chờ xác nhận",
@@ -199,88 +198,204 @@ const { fetchPaymentUrl } = usePayment();
         onCancel={() => setModalVisible(false)}
         footer={null}
       >
+
+
         {selectedBookings.length > 0 ? (
+          
           <div className="!space-y-4">
+
             {selectedBookings.map((detail) => (
               <div
-                key={detail.bookingDetailId}
-                className="!p-4 !bg-gray-50 !rounded-md !shadow"
+                key={detail.bookingId}
+                className="!p-4 !bg-gray-50 !rounded-md !shadow flex gap-6"
               >
-                <p>
-                  <strong>Mã chi tiết:</strong> {detail.bookingDetailId}
-                </p>
-                <p>
-                  <strong>Loại đặt lịch:</strong>{" "}
-                  {detail.bookingType === "singleVaccine"
-                    ? "Đặt lẻ Vaccine"
-                    : "Gói Vaccine"}
-                </p>
-                <p>
-                  <strong>Vaccine:</strong>{" "}
-                  {detail.vaccineName || detail.comboVaccineName}
-                </p>
-                <p>
-                  <strong>Trạng thái:</strong> {detail.status}
-                </p>
-                <p>
-                  <strong>Giá:</strong> {detail.price.toLocaleString()} VND
-                </p>
+                <div className="w-1/2">
+                  <p>
+                    <strong>Mã đơn:</strong> {detail.bookingId}
+                  </p>
+                  <p>
+                    <strong>Tên trẻ:</strong> {detail.childName}
+                  </p>
+                  <p>
+                    <strong>Loại đặt lịch:</strong>{" "}
+                    {detail.bookingType === "singleVaccine"
+                      ? "Đặt lẻ Vaccine"
+                      : "Gói Vaccine"}
+                  </p>
 
-                {detail.status === "Chưa hoàn thành" && (
-                  <div className="!mt-4 !flex !gap-4">
-                    <button className="!bg-yellow-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-yellow-600"
-                    onClick={() => handlePayment(detail.bookingId)}>
-                    
-                      Thanh Toán
-                    </button>
-                    <button className="!bg-red-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-red-600"
-                    onClick={() => handleCancel(detail.bookingId)}>
-                      Hủy Lịch
-                    </button>
-                  </div>
-                )}
+                  <p>
+                    <strong>Ngày đặt:</strong>{" "}
+                    {new Date(detail.bookingDate).toLocaleDateString("vi-VN")}
+                  </p>
 
-                {detail.status === "Hoàn thành" && (
-                  <div className="flex flex-col gap-2 !mt-6">
-                    {/* Nút nhập Feedback */}
-                    {!showFeedbackInput ? (
+                  <p>
+                    <strong>Tổng tiền:</strong>{" "}
+                    <span style={{ color: "orange", fontWeight: "bold" }}>
+                      {detail.totalPrice.toLocaleString()} VND
+                    </span>
+                  </p>
+
+                  <p>
+                    <strong>Ghi chú:</strong>{" "}
+                    {detail.notes || "Không có ghi chú"}
+                  </p>
+                  <p>
+                    <strong>Trạng thái: </strong>
+                    <span
+                      className={`!text-white !px-2 !py-1 !rounded ${
+                        statusColors[detail.status] || "bg-gray-500"
+                      }`}
+                    >
+                      {statusMapping[detail.status] || "Không xác định"}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Giá:</strong> {detail.totalPrice.toLocaleString()}{" "}
+                    VND
+                  </p>
+
+                  {detail.status === "Pending" && (
+                    <div className="!mt-4 !flex !gap-4">
                       <button
-                        className="w-full bg-blue-700 !text-white !font-semibold !py-2 !px-4 !rounded-lg"
-                        onClick={() => setShowFeedbackInput(true)}
+                        className="!bg-yellow-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-yellow-600"
+                        onClick={() => handlePayment(detail.bookingId)}
                       >
-                        Nhập Feedback
+                        Thanh Toán
                       </button>
-                    ) : (
-                      <div className="!mt-2">
-                        <textarea
-                          className="!w-full !border !rounded !p-2"
-                          placeholder="Nhập feedback của bạn..."
-                          value={feedback}
-                          onChange={(e) => setFeedback(e.target.value)}
-                        ></textarea>
+                      <button
+                        className="!bg-red-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-red-600"
+                        onClick={() => handleCancel(detail.bookingId)}
+                      >
+                        Hủy Lịch
+                      </button>
+                    </div>
+                  )}
+
+                  {detail.status === "Confirmed" && (
+                    <>
+                      {/* Nút kích hoạt ô nhập lý do */}
+                      {!showReasonInput ? (
                         <button
-                          className="!bg-blue-600 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-blue-700 transition"
-                          onClick={() =>
-                            submitFeedback(detail.bookingDetailId, feedback)
-                          }
+                          className="!bg-orange-500 !text-white !px-4 !py-2 !rounded !mt-3 hover:!bg-orange-600 transition"
+                          onClick={() => setShowReasonInput(true)}
                         >
-                          Xác nhận Feedback
+                          Hủy Đơn và Yêu Cầu Hoàn Tiền
                         </button>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="!mt-2">
+                          <textarea
+                            className="!w-full !border !rounded !p-2"
+                            placeholder="Nhập lý do hoàn tiền..."
+                            value={refundReason}
+                            onChange={(e) => setRefundReason(e.target.value)}
+                          ></textarea>
+                          <button
+                            className="!bg-red-500 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-red-600 transition"
+                            onClick={() =>
+                              requestRefund(detail.bookingId, refundReason)
+                            }
+                          >
+                            Xác nhận hoàn tiền
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {detail.status === "Completed" && (
+                    <div className="flex flex-col gap-2 !mt-6">
+                      {/* Nút nhập Feedback */}
+                      {!showFeedbackInput ? (
+                        <button
+                          className="w-full bg-blue-700 !text-white !font-semibold !py-2 !px-4 !rounded-lg"
+                          onClick={() => setShowFeedbackInput(true)}
+                        >
+                          Nhập Feedback
+                        </button>
+                      ) : (
+                        <div className="!mt-2">
+                          <textarea
+                            className="!w-full !border !rounded !p-2"
+                            placeholder="Nhập feedback của bạn..."
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
+                          ></textarea>
+                          <button
+                            className="!bg-blue-600 !text-white !px-4 !py-2 !rounded !mt-2 hover:!bg-blue-700 transition"
+                            onClick={() =>
+                              submitFeedback(detail.bookingDetailId, feedback)
+                            }
+                          >
+                            Xác nhận Feedback
+                          </button>
+                        </div>
+                      )}
 
-                    {/* Nút xem Vaccine Record */}
-                    <button className="w-full bg-green-500 !text-white !font-semibold !py-2 !px-4 !rounded-lg !border-2 !border-blue-300"
-                    onClick={() =>
-                      handleRecord({ bookingId: 2 })
-                    }>
-                       
-
-{selectedBookingId && <VaccineRecordTable bookingId={selectedBookingId} />}
-                      Xem Vaccine Record
-                    </button>
-                  </div>
-                )}
+                      {/* Nút xem Vaccine Record */}
+                      <button
+                        className="w-full bg-green-500 !text-white !font-semibold !py-2 !px-4 !rounded-lg !border-2 !border-blue-300"
+                        onClick={() => handleRecord(detail.bookingId)}
+                      >
+                        Xem Vaccine Record
+                      </button>
+                      {selectedBookingId && (
+                        <VaccineRecordTable
+                          bookingId={selectedBookingId}
+                          isVisible={isModalVisible}
+                          onClose={() => setIsModalVisible(false)}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="w-1/2 bg-white p-4 rounded-lg shadow">
+                  <h2 className="text-xl font-semibold mb-2">
+                    Chi tiết Vaccine
+                  </h2>
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="border border-gray-300 p-2">
+                          Mã Vaccine
+                        </th>
+                        <th className="border border-gray-300 p-2">
+                          Tên Vaccine
+                        </th>
+                        <th className="border border-gray-300 p-2">Giá</th>
+                        <th className="border border-gray-300 p-2">
+                          Trạng thái
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detail.bookingDetails.map((vaccine) => (
+                        <tr key={vaccine.bookingDetailId}>
+                          <td className="border border-gray-300 p-2">
+                            {vaccine.vaccineId}
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {vaccine.vaccineName}
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {vaccine.price.toLocaleString()} VND
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            <span
+                              className={`px-2 py-1 rounded ${
+                                vaccine.status === "Completed"
+                                  ? "bg-green-500 text-white"
+                                  : vaccine.status === "Pending"
+                                  ? "bg-yellow-500 text-white"
+                                  : "bg-gray-500 text-white"
+                              }`}
+                            >
+                              {vaccine.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ))}
           </div>
