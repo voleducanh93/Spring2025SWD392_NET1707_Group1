@@ -66,10 +66,9 @@ namespace ChildVaccineSystem.API.Controllers
             }
             catch (ArgumentException ex)
             {
-                // Trả về lỗi 400 khi dữ liệu không hợp lệ (như feedback đã tồn tại)
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
-                _response.ErrorMessages.Add($"Dữ liệu không hợp lệ: {ex.Message}");
+                _response.ErrorMessages.Add(ex.Message); // Thông báo lỗi đã được xử lý từ Service
                 return BadRequest(_response);
             }
             catch (Exception ex)

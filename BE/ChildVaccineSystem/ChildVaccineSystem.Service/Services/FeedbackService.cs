@@ -36,7 +36,7 @@ namespace ChildVaccineSystem.Service.Services
             var existingFeedback = await _unitOfWork.Feedbacks.GetAsync(f => f.BookingId == feedbackDto.BookingId);
             if (existingFeedback != null)
             {
-                throw new ArgumentException($"Phản hồi cho việc đặt chỗ ID {feedbackDto.BookingId} đã tồn tại.");
+                throw new ArgumentException("Bạn chỉ được phản hồi 1 lần thôi.");
             }
 
             var feedback = new Feedback
