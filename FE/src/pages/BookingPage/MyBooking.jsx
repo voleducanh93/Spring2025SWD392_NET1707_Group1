@@ -24,6 +24,13 @@ export default function MyBooking() {
   const [feedback, setFeedback] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { fetchPaymentUrl } = usePayment();
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedDetail, setSelectedDetail] = useState(null); // Lưu đơn được chọn
+
+  const handleShowDetails = (detail) => {
+    setSelectedDetail(detail); // Lưu thông tin chi tiết
+    setShowDetails(true); // Hiển thị bảng chi tiết
+  };
   useEffect(() => {
     if (!getUser) return;
 
@@ -197,13 +204,11 @@ export default function MyBooking() {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
+        width="80vw" // Chiếm 80% chiều rộng màn hình
+        style={{ top: 50 }} // Đẩy modal xuống một chút
       >
-
-
         {selectedBookings.length > 0 ? (
-          
           <div className="!space-y-4">
-
             {selectedBookings.map((detail) => (
               <div
                 key={detail.bookingId}
@@ -216,12 +221,20 @@ export default function MyBooking() {
                   <p>
                     <strong>Tên trẻ:</strong> {detail.childName}
                   </p>
-                  <p>
-                    <strong>Loại đặt lịch:</strong>{" "}
-                    {detail.bookingType === "singleVaccine"
-                      ? "Đặt lẻ Vaccine"
-                      : "Gói Vaccine"}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p>
+                      <strong>Loại đặt lịch: </strong>{" "}
+                      {detail.bookingType === "singleVaccine"
+                        ? "Đặt lẻ Vaccine"
+                        : "Gói Vaccine"}
+                    </p>
+                    <button
+                      className="!bg-blue-500 !text-white !px-4 !py-2 !rounded-md !shadow-md hover:!bg-blue-600"
+                      onClick={() => setShowDetails(!showDetails)}
+                    >
+                      {showDetails ? "Ẩn Chi Tiết" : "Chi Tiết"}
+                    </button>
+                  </div>
 
                   <p>
                     <strong>Ngày đặt:</strong>{" "}
@@ -347,55 +360,64 @@ export default function MyBooking() {
                     </div>
                   )}
                 </div>
-                <div className="w-1/2 bg-white p-4 rounded-lg shadow">
-                  <h2 className="text-xl font-semibold mb-2">
-                    Chi tiết Vaccine
-                  </h2>
-                  <table className="w-full border-collapse border border-gray-300">
-                    <thead>
-                      <tr className="bg-gray-200">
-                        <th className="border border-gray-300 p-2">
-                          Mã Vaccine
-                        </th>
-                        <th className="border border-gray-300 p-2">
-                          Tên Vaccine
-                        </th>
-                        <th className="border border-gray-300 p-2">Giá</th>
-                        <th className="border border-gray-300 p-2">
-                          Trạng thái
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {detail.bookingDetails.map((vaccine) => (
-                        <tr key={vaccine.bookingDetailId}>
-                          <td className="border border-gray-300 p-2">
-                            {vaccine.vaccineId}
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {vaccine.vaccineName}
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {vaccine.price.toLocaleString()} VND
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            <span
-                              className={`px-2 py-1 rounded ${
-                                vaccine.status === "Completed"
-                                  ? "bg-green-500 text-white"
-                                  : vaccine.status === "Pending"
-                                  ? "bg-yellow-500 text-white"
-                                  : "bg-gray-500 text-white"
-                              }`}
-                            >
-                              {vaccine.status}
-                            </span>
-                          </td>
+                {showDetails && (
+                  <div className="!w-full bg-white !p-4 !rounded-lg shadow">
+                    <h2 className="!text-xl !font-semibold !mb-2">
+                      Chi tiết Vaccine
+                    </h2>
+
+                    <table className="!w-full border-collapse border border-gray-300 text-center table-auto">
+                      <thead>
+                        <tr className="bg-gray-200">
+                          <th className="border border-gray-300 !p-2 !text-center">
+                            Mã Vaccine
+                          </th>
+                          <th className="border border-gray-300 !p-2 !text-center">
+                            Tên Vaccine
+                          </th>
+                          <th className="border border-gray-300 !p-2 !text-center">
+                            Giá
+                          </th>
+                          <th className="border border-gray-300 !p-2 !text-center">
+                            Trạng thái
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+
+                      <tbody>
+                        {detail.bookingDetails.map((vaccine) => (
+                          <tr
+                            key={vaccine.bookingDetailId}
+                            className="!text-center"
+                          >
+                            <td className="border border-gray-300 !p-2 !align-middle">
+                              {vaccine.vaccineId}
+                            </td>
+                            <td className="border border-gray-300 !p-2 !align-middle !whitespace-nowrap">
+                              {vaccine.vaccineName}
+                            </td>
+                            <td className="border border-gray-300 !p-2 !align-middle">
+                              {vaccine.price.toLocaleString()} VND
+                            </td>
+                            <td className="border border-gray-300 !p-2 !align-middle">
+                              <span
+                                className={`!px-2 !py-1 rounded text-white !text-center ${
+                                  vaccine.status === "Completed"
+                                    ? "!bg-green-500"
+                                    : vaccine.status === "Pending"
+                                    ? "!bg-yellow-500"
+                                    : "!bg-gray-500"
+                                }`}
+                              >
+                                {vaccine.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             ))}
           </div>
