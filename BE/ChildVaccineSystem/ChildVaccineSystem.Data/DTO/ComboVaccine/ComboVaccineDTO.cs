@@ -14,8 +14,10 @@ namespace ChildVaccineSystem.Data.DTO.ComboVaccine
         public string Description { get; set; }
         public decimal TotalPrice { get; set; }
         public bool IsActive { get; set; }
+
         public List<ComboDetailDTO> Vaccines { get; set; }
     }
+
     public class ComboDetailDTO
     {
         public int Order { get; set; }
@@ -24,5 +26,6 @@ namespace ChildVaccineSystem.Data.DTO.ComboVaccine
         // Dùng DTO cơ bản để hiển thị chi tiết vaccine
         public VaccineDTO Vaccine { get; set; }
     }
+
 }
 

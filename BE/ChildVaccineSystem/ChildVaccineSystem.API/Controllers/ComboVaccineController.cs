@@ -47,7 +47,7 @@ namespace ChildVaccineSystem.API.Controllers
             {
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.NotFound;
-                _response.ErrorMessages.Add("Không tìm thấy Vắc-xin kết hợp");
+                _response.ErrorMessages.Add("Không tìm thấy vắc xin kết hợp");
                 return NotFound(_response);
             }
 
@@ -76,7 +76,7 @@ namespace ChildVaccineSystem.API.Controllers
             {
                 response.IsSuccess = false;
                 response.StatusCode = HttpStatusCode.BadRequest;
-                response.ErrorMessages.Add("Không tạo được Combo Vaccine. Vui lòng kiểm tra dữ liệu đầu vào và thử lại.");
+                response.ErrorMessages.Add("Không tạo được vắc-xin kết hợp. Vui lòng kiểm tra dữ liệu đầu vào của bạn và thử lại.");
                 return BadRequest(response);
             }
 
@@ -111,7 +111,7 @@ namespace ChildVaccineSystem.API.Controllers
                 {
                     response.IsSuccess = false;
                     response.StatusCode = HttpStatusCode.NotFound;
-                    response.ErrorMessages.Add("Không tìm thấy vắc-xin kết hợp hoặc không có vắc-xin mới nào được thêm vào.");
+                    response.ErrorMessages.Add("Không tìm thấy vắc xin kết hợp hoặc không bổ sung vắc xin mới.");
                     return NotFound(response);
                 }
 
@@ -141,13 +141,13 @@ namespace ChildVaccineSystem.API.Controllers
             {
                 response.IsSuccess = false;
                 response.StatusCode = HttpStatusCode.NotFound;
-                response.ErrorMessages.Add("Không tìm thấy Vắc-xin kết hợp hoặc đã bị xóa.");
+                response.ErrorMessages.Add("Combo Vắc xin không được tìm thấy hoặc đã bị xóa.");
                 return NotFound(response);
             }
 
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.OK;
-            response.Result = "Vắc-xin Combo đã được vô hiệu hóa thành công.";
+            response.Result = "Combo Vắc-xin đã được vô hiệu hóa thành công.";
 
             return Ok(response);
         }
