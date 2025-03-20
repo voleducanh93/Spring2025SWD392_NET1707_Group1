@@ -15,7 +15,7 @@ const VaccineByAge = () => {
     removeVaccine,
   } = useVaccineSchedule();
 
-  const { vaccines: availableVaccines, isLoading: isLoadingVaccines } = useVaccine();
+  const { vaccines: availableVaccines } = useVaccine();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);

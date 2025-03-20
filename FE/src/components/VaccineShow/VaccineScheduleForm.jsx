@@ -83,7 +83,7 @@ const VaccineScheduleForm = ({ availableVaccines, initialData, onSubmit, onCance
       // ✅ Chuyển đổi dữ liệu về đúng format API yêu cầu
       const vaccineData = selectedVaccines.map((vaccineId) => ({
         vaccineId: Number(vaccineId), // ✅ Chuyển về số
-        injectionSchedules: injections[vaccineId]?.map((injection, index) => ({
+        injectionSchedules: injections[vaccineId]?.map((injection) => ({
           injectionNumber: Number(injection.injectionNumber), // ✅ Chuyển về số
           injectionMonth: Number(injection.injectionMonth), // ✅ Chuyển về số
           isRequired: Boolean(injection.isRequired), // ✅ Chuyển về boolean
