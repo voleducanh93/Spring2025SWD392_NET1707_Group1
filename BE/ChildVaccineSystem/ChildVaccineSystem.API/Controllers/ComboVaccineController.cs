@@ -1,6 +1,7 @@
 ﻿using ChildVaccineSystem.Common.Helper;
 using ChildVaccineSystem.Data.DTO.ComboVaccine;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -19,8 +20,8 @@ namespace ChildVaccineSystem.API.Controllers
             _response = response;
         }
 
-        // ✅ Get all combos
-        [HttpGet]
+		// ✅ Get all combos
+		[HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var result = await _comboService.GetAllAsync();
@@ -59,8 +60,10 @@ namespace ChildVaccineSystem.API.Controllers
             return Ok(_response);
         }
 
-        // ✅ Create combo
-        [HttpPost]
+
+		// ✅ Create combo
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager,Admin")]
+		[HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateComboVaccineDTO comboDto)
         {
             if (comboDto.Vaccines.Distinct().Count() != comboDto.Vaccines.Count)
@@ -105,8 +108,9 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
-        // ✅ Update combo
-        [HttpPut("{id}")]
+		// ✅ Update combo
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager,Admin")]
+		[HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateComboVaccineDTO comboDto)
         {
             if (!ModelState.IsValid)
@@ -153,8 +157,9 @@ namespace ChildVaccineSystem.API.Controllers
             }
         }
 
-        // ✅ Delete combo
-        [HttpDelete("{id}")]
+		// ✅ Delete combo
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager,Admin")]
+		[HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using ChildVaccineSystem.Common.Helper;
 using ChildVaccineSystem.Data.DTO.VaccinationSchedule;
 using ChildVaccineSystem.ServiceContract.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -91,6 +92,7 @@ namespace ChildVaccineSystem.API.Controllers
 		/// </summary>
 		/// <param name="scheduleDto"></param>
 		/// <returns></returns>
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Staff,Admin")]
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -162,6 +164,7 @@ namespace ChildVaccineSystem.API.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="scheduleDto"></param>
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Staff,Admin")]
 		[HttpPut("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -229,6 +232,7 @@ namespace ChildVaccineSystem.API.Controllers
 			}
 		}
 
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Staff,Admin")]
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<APIResponse>> Delete(int id)
 		{
