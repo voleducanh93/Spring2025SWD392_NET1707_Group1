@@ -33,7 +33,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
       const values = await form.validateFields();
 
       if (!selectedFile) {
-        toast.error("Please upload an image!");
+        toast.error("Vui lòng chọn ảnh trẻ em!");
         return;
       }
 
@@ -55,7 +55,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
       setFileList([]); // <== Xóa file khỏi giao diện
       onClose();
     } catch {
-      toast.error('Please fill all required fields!');
+      toast.error('Điền đầy đủ thông tin cho trẻ!');
     } finally {
       setIsUploading(false);
     }
@@ -173,6 +173,7 @@ const AddChildModal = ({ visible, onClose, onAddChild }) => {
         {/* Upload File - Sửa lỗi file vẫn còn khi mở lại */}
         <Form.Item
           label="Tải ảnh lên"
+           name="upload"
           rules={[{ required: true, message: "Vui lòng tải lên một ảnh!" }]}
         >
           <Upload

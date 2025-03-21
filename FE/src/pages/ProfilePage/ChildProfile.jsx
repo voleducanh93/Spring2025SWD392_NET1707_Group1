@@ -29,23 +29,23 @@ const ChildProfile = () => {
   const handleAddChild = (newChild) => {
     addChildren.mutateAsync(newChild);
   };
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <CircularProgress />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <CircularProgress />
+  //     </div>
+  //   );
+  // }
 
-  if (isError) {
-    return (
-      <div className="container mx-auto p-6">
-        <Alert severity="error">
-          {error.message || "Lỗi khi tải dữ liệu. Vui lòng thử lại."}
-        </Alert>
-      </div>
-    );
-  }
+  // if (isError) {
+  //   return (
+  //     <div className="container mx-auto p-6">
+  //       <Alert severity="error">
+  //         {error.message || "Lỗi khi tải dữ liệu. Vui lòng thử lại."}
+  //       </Alert>
+  //     </div>
+  //   );
+  // }
 
   const handleDelete = (id) => {
     if (window.confirm("Bạn có chắc muốn xóa hồ sơ này không?")) {
@@ -72,7 +72,7 @@ const ChildProfile = () => {
       </div>
       {/* Child List */}
       <Grid container spacing={4}>
-        {children.map((child) => (
+        {children &&children.map((child) => (
           <Grid item xs={12} sm={6} key={child.id}>
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -128,7 +128,13 @@ const ChildProfile = () => {
               </Card>
             </motion.div>
           </Grid>
-        ))}
+        ))}:
+        
+          <div className="flex items-center justify-center text-red-600 text-lg h-full">
+  Không có trẻ nào tồn tại
+</div>
+
+        
       </Grid>
       <AddChildModal visible={isModalOpen} onClose={() => setIsModalOpen(false)} onAddChild={handleAddChild} />
     </div>
