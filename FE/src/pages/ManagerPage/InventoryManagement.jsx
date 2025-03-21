@@ -2,23 +2,23 @@ import { useEffect, useState } from "react";
 import { Table, Button, Space, Modal, Form, Input, DatePicker } from "antd";
 import { useVaccine } from "../../hooks/useVaccine";
 import VaccineInventoryModal from "../../components/VaccineShow/VaccineInventoryModal";
-import {
-  getInventoryByVaccineId,
-  createInventory,
-} from "../../api/VaccineInventory.api";
+
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { components } from "./ComboManagement";
 
+import { useInventoryByVaccineId, useVaccineSchedule } from "../../hooks/useVaccineSchedule";
+
 const InventoryManagement = () => {
   const { vaccines, isLoading } = useVaccine();
+  const inventoryByVaccineId = useInventoryByVaccineId();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVaccine, setSelectedVaccine] = useState(null);
   const [vaccineStock, setVaccineStock] = useState({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedVaccineForAdd, setSelectedVaccineForAdd] = useState(null);
   const [form] = Form.useForm();
-
+  const { addVaccine } = useVaccineSchedule();
   // 🏷️ Lấy dữ liệu tồn kho cho từng vaccine
   useEffect(() => {
     if (!vaccines) return;
@@ -27,9 +27,8 @@ const InventoryManagement = () => {
       const stockData = await Promise.all(
         vaccines.map(async (vaccine) => {
           try {
-            const inventoryData = await getInventoryByVaccineId(
-              vaccine.vaccineId
-            );
+           
+            const inventoryData  = inventoryByVaccineId(vaccine.vaccineId);
             const totalStock =
               inventoryData?.reduce(
                 (sum, item) => sum + item.quantityInStock,
@@ -115,7 +114,8 @@ const InventoryManagement = () => {
         supplier: values.supplier,
       };
 
-      await createInventory(newInventoryData);
+      //await createInventory(newInventoryData);
+      addVaccine.mutate(newInventoryData);
       toast.success("✅ Thêm lô vaccine thành công!");
 
       // 🔄 Cập nhật số lượng tồn kho ngay
