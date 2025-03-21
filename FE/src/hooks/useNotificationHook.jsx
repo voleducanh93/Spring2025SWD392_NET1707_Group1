@@ -22,9 +22,7 @@ export const useNotificationHook = () => {
     queryKey: ["notifications", getUser],
     queryFn: () => getAllNotifications(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy thông báo:", err);
-    },
+
   });
 
   // Fetch số lượng thông báo chưa đọc
@@ -32,9 +30,7 @@ export const useNotificationHook = () => {
     queryKey: ["unreadCount", getUser],
     queryFn: () => getUnreadCount(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy số lượng thông báo chưa đọc:", err);
-    },
+ 
     select: (data) => data?.unreadCount || 0,
   });
 
