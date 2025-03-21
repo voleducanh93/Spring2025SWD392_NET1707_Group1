@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createInventory, deleteInventory, getInventory, getInventoryByVaccineId, updateInventory } from "../api/VaccineInventory.api";
+import { createInventory, deleteInventory, getInventory, getInventoryByVaccineId, updateInventory } from "../api/vaccineInventory.api";
 import { toast } from "react-toastify";
 
 export const useInventory = () => {
