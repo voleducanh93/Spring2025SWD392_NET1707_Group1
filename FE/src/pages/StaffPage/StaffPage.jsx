@@ -263,6 +263,8 @@ const filteredBookings = bookings.filter((booking) => {
                   {booking.status === "Confirmed" && "Đã Xác Nhận"}
                   {booking.status === "InProgress" && "Đang Thực Hiện"}
                   {booking.status === "Cancelled" && "Đã Hủy"}
+                  {booking.status === "Completed" && "Đã Hoàn Thành"}
+                  {booking.status === "RequestRefund" && "Đã Hủy Yêu Cầu"}
                 </td>
                 <td className="!px-6 !py-4 text-center">
                   {booking.status === "Pending" ? (
@@ -284,9 +286,9 @@ const filteredBookings = bookings.filter((booking) => {
                         </option>
                       ))}
                     </select>
-                  ) : booking.status === "InProgress" ? (
+                  ) : booking.status === "InProgress" || booking.status === "Completed" ? (
                     <span className="text-blue-500">Đã chọn bác sĩ</span>
-                  ) : null}
+                  ): null}
                 </td>
 
                 <td className="!px-6 !py-4 text-center">
