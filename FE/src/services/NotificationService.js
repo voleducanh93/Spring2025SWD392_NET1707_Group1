@@ -14,7 +14,7 @@ class NotificationService {
     }
 
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl("https://localhost:7134/notificationHub", {
+      .withUrl("https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/notificationHub", {
         accessTokenFactory: () => localStorage.getItem("token") || "",
       })
       .withAutomaticReconnect()
@@ -22,7 +22,7 @@ class NotificationService {
       .build();
 
     this.connection.on("ReceiveNotification", (notification) => {
-      console.log("📩 Received notification:", notification);
+      //console.log("📩 Received notification:", notification);
       this.notifyListeners(notification);
     });
 
