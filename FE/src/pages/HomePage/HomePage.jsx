@@ -8,9 +8,9 @@ export default function HomePage() {
     <div>
       <HomeCarousel />
       <Cards />
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      {/* <CarouselComponent /> */}
-    </div>
+      {/* <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <CarouselComponent />
+    </div> */}
     </div>
   );
 }
