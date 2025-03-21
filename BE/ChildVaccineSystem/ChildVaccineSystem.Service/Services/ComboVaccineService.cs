@@ -35,10 +35,27 @@ namespace ChildVaccineSystem.Service.Services
             return _mapper.Map<ComboVaccineDTO>(combo);
         }
 
+        // ✅ Create với kiểm tra trùng lặp và VaccineId tồn tại
         public async Task<ComboVaccineDTO> CreateAsync(CreateComboVaccineDTO comboDto)
         {
+            // Kiểm tra trùng lặp tên combo
+            var existingCombo = await _unitOfWork.ComboVaccines.GetAsync(c => c.ComboName == comboDto.ComboName);
+            if (existingCombo != null)
+                throw new Exception($"Combo với tên '{comboDto.ComboName}' đã tồn tại.");
+
             var combo = _mapper.Map<ComboVaccine>(comboDto);
 
+            // ✅ Kiểm tra VaccineId có tồn tại không trước khi thêm vào combo
+            foreach (var vaccine in comboDto.Vaccines)
+            {
+                var existingVaccine = await _unitOfWork.Vaccines.GetByIdAsync(vaccine.VaccineId);
+                if (existingVaccine == null)
+                {
+                    throw new Exception($"Vaccine với ID {vaccine.VaccineId} không tồn tại.");
+                }
+            }
+
+            // ✅ Tạo combo detail
             combo.ComboDetails = comboDto.Vaccines
                 .Select(vaccine => new ComboDetail
                 {
@@ -48,20 +65,43 @@ namespace ChildVaccineSystem.Service.Services
                     IntervalDays = vaccine.IntervalDays
                 }).ToList();
 
-            var createdCombo = await _unitOfWork.ComboVaccines.AddAsync(combo);
-            await _unitOfWork.CompleteAsync();
+            try
+            {
+                var createdCombo = await _unitOfWork.ComboVaccines.AddAsync(combo);
+                await _unitOfWork.CompleteAsync();
 
-            var fullCombo = await _unitOfWork.ComboVaccines.GetById(createdCombo.ComboId);
-            return _mapper.Map<ComboVaccineDTO>(fullCombo);
+                var fullCombo = await _unitOfWork.ComboVaccines.GetById(createdCombo.ComboId);
+                return _mapper.Map<ComboVaccineDTO>(fullCombo);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi thêm Combo: {ex.Message}");
+            }
         }
 
-
-
+        // ✅ Update với kiểm tra trùng lặp và VaccineId tồn tại
         public async Task<ComboVaccineDTO> UpdateAsync(int id, UpdateComboVaccineDTO comboDto)
         {
             var existingCombo = await _unitOfWork.ComboVaccines.GetById(id);
-            if (existingCombo == null) return null;
+            if (existingCombo == null)
+                throw new Exception($"Không tìm thấy Combo với ID {id}");
 
+            // ✅ Kiểm tra trùng lặp tên combo (trừ chính nó)
+            var duplicateCombo = await _unitOfWork.ComboVaccines.GetAsync(c => c.ComboName == comboDto.ComboName && c.ComboId != id);
+            if (duplicateCombo != null)
+                throw new Exception($"Combo với tên '{comboDto.ComboName}' đã tồn tại.");
+
+            // ✅ Kiểm tra VaccineId có tồn tại không trước khi thêm vào combo
+            foreach (var vaccine in comboDto.Vaccines)
+            {
+                var existingVaccine = await _unitOfWork.Vaccines.GetByIdAsync(vaccine.VaccineId);
+                if (existingVaccine == null)
+                {
+                    throw new Exception($"Vaccine với ID {vaccine.VaccineId} không tồn tại.");
+                }
+            }
+
+            // ✅ Xóa các chi tiết cũ trước khi cập nhật
             _unitOfWork.ComboDetails.RemoveRange(existingCombo.ComboDetails);
 
             existingCombo.ComboDetails = comboDto.Vaccines
@@ -75,24 +115,48 @@ namespace ChildVaccineSystem.Service.Services
 
             _mapper.Map(comboDto, existingCombo);
 
-            await _unitOfWork.ComboVaccines.UpdateAsync(existingCombo);
-            await _unitOfWork.CompleteAsync();
+            try
+            {
+                await _unitOfWork.ComboVaccines.UpdateAsync(existingCombo);
+                await _unitOfWork.CompleteAsync();
 
-            var fullCombo = await _unitOfWork.ComboVaccines.GetById(id);
-            return _mapper.Map<ComboVaccineDTO>(fullCombo);
+                var fullCombo = await _unitOfWork.ComboVaccines.GetById(id);
+                return _mapper.Map<ComboVaccineDTO>(fullCombo);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi cập nhật Combo: {ex.Message}");
+            }
         }
 
+        // ✅ Xóa combo với kiểm tra khóa ngoại và lỗi logic
         public async Task<bool> DeleteAsync(int id)
         {
             var combo = await _unitOfWork.ComboVaccines.GetById(id);
-            if (combo == null) return false;
+            if (combo == null)
+                throw new Exception($"Không tìm thấy Combo với ID {id}");
+
+            // ✅ Kiểm tra nếu combo đã được sử dụng trong các lịch đặt
+            var bookingDetails = await _unitOfWork.BookingDetails
+                .GetAllAsync(bd => bd.ComboVaccineId == id);
+
+            if (bookingDetails.Any())
+            {
+                throw new Exception($"Không thể xóa Combo vì đã được sử dụng trong các lịch đặt.");
+            }
 
             combo.IsActive = false;
-            await _unitOfWork.ComboVaccines.UpdateAsync(combo);
-            await _unitOfWork.CompleteAsync();
 
-            return true;
+            try
+            {
+                await _unitOfWork.ComboVaccines.UpdateAsync(combo);
+                await _unitOfWork.CompleteAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi xóa Combo: {ex.Message}");
+            }
         }
-
     }
 }
