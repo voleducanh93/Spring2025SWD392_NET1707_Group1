@@ -7,11 +7,12 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { components } from "./ComboManagement";
 
-import { useInventoryByVaccineId, useVaccineSchedule } from "../../hooks/useVaccineSchedule";
-
+import {  useVaccineSchedule } from "../../hooks/useVaccineSchedule";
+import {useVaccineinvetoryById} from "../../hooks/useInventory";
 const InventoryManagement = () => {
   const { vaccines, isLoading } = useVaccine();
-  const inventoryByVaccineId = useInventoryByVaccineId();
+  const getVaccineInventoryById = useVaccineinvetoryById;
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVaccine, setSelectedVaccine] = useState(null);
   const [vaccineStock, setVaccineStock] = useState({});
@@ -27,8 +28,8 @@ const InventoryManagement = () => {
       const stockData = await Promise.all(
         vaccines.map(async (vaccine) => {
           try {
+            const inventoryData  = getVaccineInventoryById(vaccine.vaccineId);
            
-            const inventoryData  = inventoryByVaccineId(vaccine.vaccineId);
             const totalStock =
               inventoryData?.reduce(
                 (sum, item) => sum + item.quantityInStock,
