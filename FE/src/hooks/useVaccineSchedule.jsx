@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getVaccines, createVaccine, updateVaccine, deleteVaccine, VaccineById } from "../api/vaccineSchedule.api";
+import { getVaccines, createVaccine, updateVaccine, deleteVaccine, VaccineById,getInventoryByVaccineId } from "../api/vaccineSchedule.api";
 import { toast } from 'react-toastify'; // Import toast
 import { handleApiError } from "../utils/utils";
-import { getInventoryByVaccineId } from "../api/VaccineInventory.api";
+
 
 
 export const useVaccineSchedule = () => {
