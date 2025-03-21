@@ -14,6 +14,7 @@ import { AppContext } from "../../contexts/app.context";
 import { useProcessWalletPayment } from "../../hooks/useWallet";
 import DepositModal from "../../components/Composit/DepositModal";
 import { useBooking } from "../../hooks/useBooking";
+import { checkParentVaccine } from "../../api/booking.api";
 
 const BookingPage = () => {
   const [selectedVaccines, setSelectedVaccines] = useState([]);
@@ -195,22 +196,11 @@ const BookingPage = () => {
   const handleCheckVaccine = async (item) => {
     if (!item.vaccineId) return false;
 
-    console.log("📡 Kiểm tra vaccine với ID:", item.vaccineId);
+    
     const formData = new FormData();
     formData.append("VaccineIds", item.vaccineId);
     try {
-      const response = await fetch(
-        "https://localhost:7134/api/Booking/check-parent-vaccine",
-        {
-          method: "POST",
-          headers: {
-            Accept: "*/*",
-          },
-          body: formData,
-        }
-      );
-
-      const result = await response.json();
+      const result = await checkParentVaccine([item.vaccineId]);
       console.log("✅ Kết quả kiểm tra vaccine:", result);
 
       if (Array.isArray(result?.result) && result.result.length > 0) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Button, Form, Modal, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/Auth/AuthForm.module.css";
@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 
 import { getUserRoleFromToken } from "../../utils/decode";
-import { AppContext } from "../../contexts/app.context";
+
 
 function AuthPage() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
@@ -21,7 +21,7 @@ function AuthPage() {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] =
     useState(false);
   const [resetPasswordEmail] = useState("");
- const {setUserRole}= useContext(AppContext);
+
   const navigate = useNavigate();
   const [form] = Form.useForm();
 

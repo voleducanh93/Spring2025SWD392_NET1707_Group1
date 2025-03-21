@@ -37,12 +37,17 @@ export const createBooking = async ( id, bookingData) => {
     const response = await http.get(`${BASE_URL}/doctor/${id}/booking-details`)
     return response.data;
   }
-  export const checkParentVaccine = async (vaccineIds) => {
-    const response = await http.post(`${BASE_URL}/check-parent-vaccine`, {
-      vaccineIds,
+  export const checkParentVaccine = async (vaccineId) => {
+    console.log(vaccineId);
+    
+    const formData = new FormData();
+    formData.append("VaccineIds", vaccineId);
+    const response = await http.post(`${BASE_URL}/check-parent-vaccine`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   };
+  
   export const DeleteBoooking = async (bookingId ,id) => {
     const response = await http.delete(`${BASE_URL}/${bookingId}/cancel?userId=${id}`)
     return response.data.result;

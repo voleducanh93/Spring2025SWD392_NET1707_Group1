@@ -34,11 +34,7 @@ const SignInForm = ({ onFinish, isLoading, handleSubmitForgot }) => {
         rules={[
           {
             required: true,
-            message: "Vui lòng nhập email của bạn!",
-          },
-          {
-            type: "email",
-            message: "Email không hợp lệ!",
+            message: "Vui lòng nhập email hoặc tên đăng nhập  của bạn!",
           },
         ]}
       >
@@ -58,7 +54,7 @@ const SignInForm = ({ onFinish, isLoading, handleSubmitForgot }) => {
         <Input.Password
           placeholder="Mật khẩu"
           prefix={<i className="fas fa-lock"></i>}
-          pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+         
         />
       </Form.Item>
 
