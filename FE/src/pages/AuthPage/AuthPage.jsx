@@ -129,9 +129,9 @@ function AuthPage() {
   
             navigate(redirectPath);
           },
-          onError: (error) => {
-            console.error("Lỗi đăng nhập:", error);
-            toast.error("Đăng nhập thất bại!");
+          onError: () => {
+            setIsLoading(false);
+            
           },
         }
       );
