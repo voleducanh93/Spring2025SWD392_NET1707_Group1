@@ -55,10 +55,8 @@ const SidebarAdmin = () => {
         return <Dashboard />;
       case "2":
         return <UserManage />;
-      case "3":
-        return <RefundManage />;
       default:
-        return <VaccineManagement />;
+        return <Dashboard />;
     }
   };
 
@@ -113,11 +111,7 @@ const SidebarAdmin = () => {
               icon: <AppstoreOutlined />,
               label: "Quản lý người dùng",
             },
-            {
-              key: "3",
-              icon: <AppstoreOutlined />,
-              label: "Quản lý hoàn tiền",
-            },
+            
           ]}
         />
       </Sider>

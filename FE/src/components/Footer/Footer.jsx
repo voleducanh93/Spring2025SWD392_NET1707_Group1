@@ -114,7 +114,7 @@ export default function Footer() {
           {" "}
           {/* Set copyright text to white */}
           <Typography variant="body2" color="inherit">
-            © 2025 VNVC. All rights reserved.
+            © 2025 VNVC.
           </Typography>
         </div>
       </Container>

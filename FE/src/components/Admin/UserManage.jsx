@@ -57,7 +57,7 @@ const UserManage = () => {
     { name: "address", label: "Địa chỉ", rules: [{ required: true, message: "Vui lòng nhập địa chỉ!" }] },
     { name: "dateOfBirth", label: "Ngày sinh", type: "date", rules: [{ required: true, message: "Vui lòng chọn ngày sinh!" }] },
     { name: "password", label: "Mật khẩu", type: "password", rules: [{ required: !editingUser, message: "Vui lòng nhập mật khẩu!" }] },
-    { name: "role", label: "Vai trò", type: "select", options: ["Admin", "Doctor", "Customer", "Staff"], rules: [{ required: true, message: "Vui lòng chọn vai trò!" }] },
+    { name: "role", label: "Vai trò", type: "select", options: ["Admin", "Doctor", "Customer", "Staff", "Manager"], rules: [{ required: true, message: "Vui lòng chọn vai trò!" }] },
     {
         name: "isActive",
         label: "Trạng thái",
