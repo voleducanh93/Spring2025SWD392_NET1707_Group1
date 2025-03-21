@@ -7,6 +7,7 @@ using ChildVaccineSystem.Data.DTO;
 using ChildVaccineSystem.Common.Helper;
 using System.Net;
 using ChildVaccineSystem.Data.DTO.Vaccine;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChildVaccineSystem.API.Controllers
 {
@@ -60,7 +61,8 @@ namespace ChildVaccineSystem.API.Controllers
             return Ok(_response);
         }
 
-        [HttpPost]
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager")]
+		[HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateVaccineDTO vaccineDto)
         {
             var result = await _vaccineService.CreateVaccineAsync(vaccineDto);
@@ -80,7 +82,8 @@ namespace ChildVaccineSystem.API.Controllers
             return Ok(_response);
         }
 
-        [HttpPut("{id}")]
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager")]
+		[HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateVaccineDTO vaccineDto)
         {
             if (!ModelState.IsValid)
@@ -109,7 +112,8 @@ namespace ChildVaccineSystem.API.Controllers
             return Ok(_response);
         }
 
-        [HttpDelete("{id}")]
+		[Authorize(AuthenticationSchemes = "Bearer", Roles = "Manager")]
+		[HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var isDeleted = await _vaccineService.DeleteVaccineAsync(id);
