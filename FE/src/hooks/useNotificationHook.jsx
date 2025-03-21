@@ -13,9 +13,9 @@ export const useNotificationHook = () => {
   const queryClient = useQueryClient();
   const { getUser } = useContext(AppContext);
 
-  if (!getUser) {
-    toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại.");
-  }
+  // if (!getUser) {
+  //   toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại.");
+  // }
 
   // Fetch danh sách thông báo
   const { data: notifications = [], isLoading, isError, error } = useQuery({
