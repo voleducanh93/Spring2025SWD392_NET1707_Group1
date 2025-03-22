@@ -20,7 +20,7 @@ import { clearLS } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../contexts/app.context";
 import { toast } from "react-toastify";
-import RefundManage from "../Admin/RefundManage";
+
 
 const { Header, Sider, Content } = Layout;
 
@@ -61,8 +61,8 @@ const SidebarManager = () => {
         return <ComboManagement />;
       case "4":
         return <VaccineByAge />;
-      case "5":
-        return <RefundManage />;
+
+
       default:
         return <VaccineManagement />;
     }
@@ -134,11 +134,11 @@ const SidebarManager = () => {
               icon: <AppstoreOutlined />, // Biểu tượng cho Quản lý Combo Vaccine
               label: "Quản lý lịch tiêm cho Vaccine",
             },
-            {
-              key: "5",
-              icon: <AppstoreOutlined />,
-              label: "Quản lý yêu cầu hoàn tiền",
-            },
+
+
+
+
+
           ]}
         />
       </Sider>

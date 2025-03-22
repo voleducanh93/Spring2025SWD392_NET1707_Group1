@@ -21,7 +21,7 @@ const { Header, Sider, Content } = Layout;
 const SidebarAdmin = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate(); // Hook điều hướng
- const  {setIsAuthenticated} = useContext(AppContext);
+  const { setIsAuthenticated } = useContext(AppContext);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -38,13 +38,11 @@ const SidebarAdmin = () => {
     } else if (key === "3") {
       navigate("/mywallet"); // Chuyển hướng đến trang Ví tiền
     } else if (key === "4") {
-          toast.success("Đăng xuất thành công!");
-          
-          clearLS();
-          setIsAuthenticated(false);
-          navigate("/auth");
-        
-     
+      toast.success("Đăng xuất thành công!");
+
+      clearLS();
+      setIsAuthenticated(false);
+      navigate("/auth");
     }
   };
 
@@ -55,8 +53,10 @@ const SidebarAdmin = () => {
         return <Dashboard />;
       case "2":
         return <UserManage />;
+      case "3":
+        return <RefundManage />;
       default:
-        return <Dashboard />;
+        return <VaccineManagement />;
     }
   };
 
@@ -83,18 +83,23 @@ const SidebarAdmin = () => {
 
   return (
     <Layout className="h-screen">
-    <Sider trigger={null} collapsible collapsed={collapsed} width={250} style={{ backgroundColor: "#2A388F" }}>
-    <div className="demo-logo-vertical flex items-center justify-center h-20">
-  <img
-    src="src/assets/logo.webp"
-    alt="VNVC Logo"
-    className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
-  />
-</div>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        width={250}
+        style={{ backgroundColor: "#2A388F" }}
+      >
+        <div className="demo-logo-vertical flex items-center justify-center h-20">
+          <img
+            src="src/assets/logo.webp"
+            alt="VNVC Logo"
+            className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
+          />
+        </div>
 
-
-      <Menu
-        className="custom-menu"
+        <Menu
+          className="custom-menu"
           mode="inline"
           defaultSelectedKeys={["1"]}
           style={{ marginTop: "40px", backgroundColor: "#2A388F" }}
@@ -111,7 +116,11 @@ const SidebarAdmin = () => {
               icon: <AppstoreOutlined />,
               label: "Quản lý người dùng",
             },
-            
+            {
+              key: "3",
+              icon: <AppstoreOutlined />,
+              label: "Quản lý hoàn tiền",
+            },
           ]}
         />
       </Sider>
@@ -144,7 +153,10 @@ const SidebarAdmin = () => {
             <Dropdown menu={{ items, onClick: handleDropdownClick }}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                  <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />
+                  <Avatar
+                    style={{ backgroundColor: "#87d068" }}
+                    icon={<UserOutlined />}
+                  />
                 </Space>
               </a>
             </Dropdown>
