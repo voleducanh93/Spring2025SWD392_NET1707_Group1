@@ -25,6 +25,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { EventNote } from "@mui/icons-material";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import { LogOutIcon } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 export default function Topbar() {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const userRole = localStorage.getItem("role");
             onClick={() => navigate("/")}
           >
             <img
-              src="src/assets/logo.png"
+              src={logo}
               alt="VNVC Logo"
               className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
             />
