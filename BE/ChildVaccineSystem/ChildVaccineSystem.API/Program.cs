@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using ChildVaccineSystem.API.Jobs;
 using Quartz;
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,9 @@ builder.Services.AddQuartz(q =>
 		.WithIdentity("AppointmentReminderTrigger")
 		.WithCronSchedule("00 08 22 * * ?"));  // Daily at 8:00 AM
 });
+
+//builder.Services.AddDbContext<ChildVaccineSystemDBContext>(option =>
+//    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
@@ -118,12 +122,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // URL FontEnd
+        policy.WithOrigins("https://spring2025-swd-392-net-1707-group1-4txb.vercel.app", "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowCredentials(); // Cho phép credentials
     });
 });
+
 
 //child
 builder.Services
@@ -132,6 +137,7 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
 
 var app = builder.Build();
 
@@ -177,16 +183,16 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+//}
+//else
+//{
+//    app.UseExceptionHandler("/Home/Error");
+//    app.UseHsts();
+//}
 
 app.UseCors("AllowFrontend"); // Enable CORS Policy
 
