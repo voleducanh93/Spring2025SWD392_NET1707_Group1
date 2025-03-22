@@ -16,5 +16,7 @@ namespace ChildVaccineSystem.Data.DTO.Auth
         public DateTime DateOfBirth { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
-    }
+		public string? CertificateImageUrl { get; set; }
+
+	}
 }

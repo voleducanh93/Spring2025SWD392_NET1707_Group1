@@ -1,4 +1,5 @@
-﻿using ChildVaccineSystem.Data.DTO.User;
+﻿using ChildVaccineSystem.Data.DTO.Auth;
+using ChildVaccineSystem.Data.DTO.User;
 using ChildVaccineSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,7 @@ namespace ChildVaccineSystem.ServiceContract.Interfaces
         Task<UserProfileDTO> GetProfileAsync(string userId);
         Task<bool> UpdateProfileAsync(UserProfileDTO userDTO);
         Task<bool> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
-    }
+        Task<(bool Success, string? Message, List<string>? Errors)> CreateUserAsync(RegisterAccountDTO model);
+
+	}
 }
