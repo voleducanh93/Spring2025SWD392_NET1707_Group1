@@ -69,7 +69,7 @@ const userRole = localStorage.getItem("role");
             onClick={() => navigate("/")}
           >
             <img
-              src="src/assets/logo.webp"
+              src="src/assets/logo.png"
               alt="VNVC Logo"
               className="h-12 rounded-md shadow-md transition-all duration-300 hover:shadow-xl"
             />
