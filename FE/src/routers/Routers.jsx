@@ -27,6 +27,18 @@ import UserProfile from "../pages/ProfilePage/UserProfile";
 import DoctorPage from "../pages/DoctorPage/Doctor";
 import DoctorRecord from "../pages/DoctorPage/DoctorRecord";
 import { NoAuthRoute, PrivateRoute } from "./PrivateRoute";
+import GioithieuPage from "../pages/ChuyengiaPage/GioithieuPage";
+import CamnangPage from "../pages/ChuyengiaPage/CamnangPage";
+import BenhHocPage from "../pages/ChuyengiaPage/BenhhocPage";
+import CoTheTrePage from "../pages/ChuyengiaPage/CoTheTrePage";
+import Covid19Page from "../pages/ChuyengiaPage/Covid19Page";
+import DiUngPage from "../pages/ChuyengiaPage/DiUngPage";
+import HoHapPage from "../pages/ChuyengiaPage/HoHapPage";
+import TongQuatPage from "../pages/ChuyengiaPage/TongQuatPage";
+import VaccinePagene from "../pages/ChuyengiaPage/VaccinenePage";
+import TruyenNhiemPage from "../pages/ChuyengiaPage/TruyennhiemPage";
+import NhiKhoaPage from "../pages/ChuyengiaPage/NhiKhoaPage";
+import TieuHoaPage from "../pages/ChuyengiaPage/TieuHoaPage";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +105,18 @@ export const router = createBrowserRouter([
       },
 
       { path: PATH_NAME.CHUYEN_GIA, element: <ChuyengiaPage /> },
+      { path: PATH_NAME.CAM_NANG, element: <CamnangPage /> },
+      { path: PATH_NAME.BENH_HOC, element: <BenhHocPage /> },
+      { path: PATH_NAME.CO_THE_TRE, element: <CoTheTrePage /> },
+      { path: PATH_NAME.COVID19, element: <Covid19Page /> },
+      { path: PATH_NAME.DI_UNG, element: <DiUngPage /> },
+      { path: PATH_NAME.HO_HAP, element: <HoHapPage /> },
+      { path: PATH_NAME.TONG_QUAT, element: <TongQuatPage /> },
+      { path: PATH_NAME.VACCINE_PAGEE, element: <VaccinePagene /> },
+      { path: PATH_NAME.NHI, element: <NhiKhoaPage /> },
+      { path: PATH_NAME.TRUYEN_NHIEM, element: <TruyenNhiemPage /> },
+      { path: PATH_NAME.TIEU_HOA, element: <TieuHoaPage /> },
+      { path: PATH_NAME.GIOI_THIEU, element: <GioithieuPage /> },
       { path: PATH_NAME.CONFIRM_EMAIL, element: <ConfirmEmailPage /> },
 
       {
