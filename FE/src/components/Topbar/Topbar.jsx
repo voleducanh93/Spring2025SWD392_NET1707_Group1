@@ -25,7 +25,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { EventNote } from "@mui/icons-material";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import { LogOutIcon } from "lucide-react";
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
 
 export default function Topbar() {
   const navigate = useNavigate();
