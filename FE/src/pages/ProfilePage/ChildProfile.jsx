@@ -128,11 +128,11 @@ const ChildProfile = () => {
               </Card>
             </motion.div>
           </Grid>
-        ))}:
+        ))}
         
-          <div className="flex items-center justify-center text-red-600 text-lg h-full">
-  Không có trẻ nào tồn tại
-</div>
+          {/* <div className="flex items-center justify-center text-red-600 text-lg h-full">
+            Không có trẻ nào tồn tại
+          </div> */}
 
         
       </Grid>

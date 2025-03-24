@@ -13,18 +13,16 @@ export const useNotificationHook = () => {
   const queryClient = useQueryClient();
   const { getUser } = useContext(AppContext);
 
-  if (!getUser) {
-    toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại.");
-  }
+  // if (!getUser) {
+  //   toast.warn("⚠ Không tìm thấy thông tin người dùng! Vui lòng đăng nhập lại.");
+  // }
 
   // Fetch danh sách thông báo
   const { data: notifications = [], isLoading, isError, error } = useQuery({
     queryKey: ["notifications", getUser],
     queryFn: () => getAllNotifications(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy thông báo:", err);
-    },
+
   });
 
   // Fetch số lượng thông báo chưa đọc
@@ -32,9 +30,7 @@ export const useNotificationHook = () => {
     queryKey: ["unreadCount", getUser],
     queryFn: () => getUnreadCount(getUser),
     refetchOnWindowFocus: false,
-    onError: (err) => {
-      console.error("❌ Lỗi khi lấy số lượng thông báo chưa đọc:", err);
-    },
+ 
     select: (data) => data?.unreadCount || 0,
   });
 

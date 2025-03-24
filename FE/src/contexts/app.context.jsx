@@ -38,7 +38,7 @@ export const AppProvider = ({ children }) => {
       const token = getAccessTokenFromLS();
       if (token) {
         const role = getUserRoleFromToken(token)?.toLowerCase(); 
-        console.log("AppContext - Vai trò lấy từ token:", role);
+       
         if (role) setUserRole(role);
       }
     }

@@ -83,7 +83,6 @@ export default function Navbar() {
               { name: "TRANG CHỦ", link: "/" },
               { name: "GIỚI THIỆU", link: "/gioi-thieu" },
               { name: "VẮC XIN TRẺ EM", link: "/vacxin-tre-em" },
-              { name: "VẮC XIN NGƯỜI LỚN", link: "/vacxin-nguoi-lon" },
               { name: "GÓI VẮC XIN", link: "/goi-vacxin" },
               { name: "CẨM NANG", link: "/cam-nang" },
               { name: "BẢNG GIÁ", link: "/bang-gia" },
