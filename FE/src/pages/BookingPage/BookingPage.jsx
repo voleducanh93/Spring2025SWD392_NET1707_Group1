@@ -67,7 +67,9 @@ const BookingPage = () => {
       toast.error("Vui lòng chọn ít nhất một vaccine hoặc combo vaccine.");
       return null;
     }
-
+    
+    const isValid = handleValidationDate();
+  if (!isValid) return null;
     if (!selectedDate && isComboSelected) {
       toast.error("Vui lòng chọn ngày đặt lịch.");
       return null;
@@ -129,6 +131,25 @@ const BookingPage = () => {
   };
   const processWalletPayment = useProcessWalletPayment();
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const handleValidationDate = () => {
+    const invalidIndexes = [];
+  
+    selectedVaccines.forEach((vaccine, index) => {
+      if (!vaccine.injectionDate) {
+        invalidIndexes.push(index + 1); // +1 để người dùng thấy là số thứ tự
+      }
+    });
+  
+    if (invalidIndexes.length > 0) {
+      const positions = invalidIndexes.join(", ");
+      toast.error(`Vui lòng nhập ngày tiêm cho vaccine ở vị trí số: ${positions}`);
+      return false;
+    }
+  
+    return true;
+  };
+  
+  
 
   // Mở modal nhập số tiền nạp
   const handleOpenDepositModal = () => {
@@ -186,6 +207,7 @@ const BookingPage = () => {
       },
     });
   };
+
   const handleCheckVaccine = async (item) => {
     if (!item.vaccineId) return false;
 

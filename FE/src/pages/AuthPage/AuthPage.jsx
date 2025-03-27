@@ -79,7 +79,7 @@ function AuthPage() {
         role: "Customer",
       });
   
-      toast.success("Đăng ký thành công!");
+      //toast.success("Đăng ký thành công!");
     } else {
       loginMutate(
         {
