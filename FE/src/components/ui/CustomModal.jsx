@@ -12,6 +12,7 @@ import {
 import { UploadOutlined } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import { useWatch } from "antd/es/form/Form";
+import { useState } from "react";
 
 const CustomModal = ({
   visible,
@@ -22,6 +23,7 @@ const CustomModal = ({
   setSelectedFile,
 }) => {
   const role = useWatch("role", form); // Theo dõi giá trị vai trò
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Xử lý chọn file upload
   const handleFileChange = ({ file }) => {
@@ -32,11 +34,20 @@ const CustomModal = ({
   const handleOk = async () => {
     try {
       await form.validateFields();
-      onSubmit(form.getFieldsValue());
-      form.resetFields();
-      onClose();
+      setIsSubmitting(true);
+
+      const success = await onSubmit(form.getFieldsValue());
+
+      if (success) {
+        form.resetFields();
+        onClose(); // ✅ CHỈ đóng nếu submit API thành công
+      }
+      // ❌ Nếu không thành công thì KHÔNG làm gì, giữ modal mở
     } catch (error) {
-      console.error("Lỗi khi submit form:", error);
+      console.error("❌ Validate lỗi hoặc onSubmit lỗi:", error);
+      // Modal vẫn giữ nguyên
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -44,13 +55,40 @@ const CustomModal = ({
     <Modal
       title="Thông tin"
       open={visible}
-      onCancel={onClose}
       width={800}
+      maskClosable={false} // ❌ Không cho click bên ngoài để đóng
+      keyboard={false} // ❌ Không cho ESC đóng
+      confirmLoading={isSubmitting}
+      onCancel={() => {
+        // ✅ Kiểm tra nếu form có lỗi thì không đóng
+        const hasErrors = form
+          .getFieldsError()
+          .some((field) => field.errors.length > 0);
+        if (hasErrors) return;
+
+        onClose(); // ✅ Chỉ cho đóng nếu không lỗi
+      }}
       footer={[
-        <Button key="close" onClick={onClose}>
+        <Button
+          key="close"
+          onClick={() => {
+            const hasErrors = form
+              .getFieldsError()
+              .some((field) => field.errors.length > 0);
+            if (hasErrors) return;
+            onClose();
+          }}
+          disabled={isSubmitting} // Không cho click Close khi đang submit
+        >
           Close
         </Button>,
-        <Button key="ok" type="primary" onClick={handleOk}>
+        <Button
+          key="ok"
+          type="primary"
+          loading={isSubmitting}
+          onClick={handleOk}
+        >
+          {" "}
           OK
         </Button>,
       ]}
@@ -71,7 +109,11 @@ const CustomModal = ({
                   {field.type === "password" ? (
                     <Input.Password />
                   ) : field.type === "date" ? (
-                    <DatePicker style={{ width: "100%" }} />
+                    <DatePicker
+                      style={{ width: "100%" }}
+                      disabledDate={field.disabledDate}
+                      inputReadOnly
+                    />
                   ) : field.type === "select" ? (
                     <Select placeholder={`Chọn ${field.label}`}>
                       {field.options.map((option) => (
@@ -131,6 +173,7 @@ CustomModal.propTypes = {
     validateFields: PropTypes.func.isRequired,
     getFieldsValue: PropTypes.func.isRequired,
     resetFields: PropTypes.func.isRequired,
+    getFieldsError: PropTypes.func.isRequired,
   }).isRequired,
   setSelectedFile: PropTypes.func.isRequired,
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Space, Form, Avatar, Popconfirm } from "antd";
+import { Button, Space, Form, Avatar, Popconfirm, Tag } from "antd";
 import CustomTable from "../ui/tableCustom";
 import CustomModal from "../ui/CustomModal";
 import DetailModal from "../ui/DetailModal";
@@ -56,21 +56,27 @@ const UserManage = () => {
     },
   ];
 
-  // **Cấu hình modal chi tiết**
-  const userDetailFields = [
+  
+  
+   const userDetailFields = [
     { name: "fullName", label: "Họ & Tên" },
+  
     {
       name: "isActive",
       label: "Trạng Thái",
       render: (isActive) => (isActive ? "✅ Hoạt động" : "⛔ Bị khóa"),
     },
+  
     { name: "email", label: "Email" },
+  
     {
       name: "imageUrl",
       label: "Ảnh",
       render: (url) => (url ? <Avatar src={url} size={64} /> : "Không có ảnh"),
     },
+  
     { name: "address", label: "Địa Chỉ" },
+  
     {
       name: "dateOfBirth",
       label: "Ngày Sinh",
@@ -79,13 +85,51 @@ const UserManage = () => {
           ? dayjs(date).format("DD/MM/YYYY")
           : "Chưa có ngày sinh",
     },
+  
     { name: "phoneNumber", label: "Số điện thoại" },
+  
     {
       name: "emailConfirmed",
       label: "Xác nhận Email",
       render: (emailConfirmed) =>
         emailConfirmed ? "✅ Đã xác nhận" : "❌ Chưa xác nhận",
     },
+  
+    {
+      name: "certificate",
+      label: "Chứng chỉ hành nghề",
+      render: (_, record) =>
+        record.roles?.includes("Doctor")
+          ? record.certificate || "Chưa có chứng chỉ"
+          : null,
+    },
+  
+    {
+      name: "roles",
+      label: "Vai trò",
+      render: (roles) => {
+        console.log("🧪 Vai trò:", roles);
+        if (!roles || roles.length === 0) return "Không có vai trò";
+    
+        return roles.map((role) => {
+          const color =
+            role === "Admin"
+              ? "red"
+              : role === "Doctor"
+              ? "blue"
+              : role === "Staff"
+              ? "orange"
+              : "green";
+    
+          return (
+            <Tag color={color} key={role}>
+              {role}
+            </Tag>
+          );
+        });
+      },
+    }
+    
   ];
 
   // **Cấu hình fields cho modal Create & Update**
@@ -124,26 +168,15 @@ const UserManage = () => {
           required: true,
           message: "Vui lòng chọn ngày sinh!",
         },
-        {
-          validator: (_, value) => {
-            if (!value) return Promise.resolve();
-    
-            const today = dayjs();
-            const age = today.diff(value, "year");
-    
-            if (value.isAfter(today, "day")) {
-              return Promise.reject("Không được chọn ngày trong tương lai!");
-            }
-    
-            if (age < 25) {
-              return Promise.reject("Người dùng phải từ 25 tuổi trở lên!");
-            }
-    
-            return Promise.resolve();
-          },
-        },
       ],
-    },
+      disabledDate: (current) => {
+        if (!current) return false;
+        const today = dayjs().endOf("day");
+        return current.isAfter(today); // ❌ Chặn các ngày sau hôm nay
+      }
+      
+    }
+    ,
     {
       name: "password",
       label: "Mật khẩu",
@@ -208,21 +241,26 @@ const UserManage = () => {
   const handleSubmit = async (values) => {
     const formattedValues = {
       ...values,
-      id: editingUser ? editingUser.id : undefined, // Thêm id nếu đang chỉnh sửa
-      dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null, // Định dạng ngày sinh về ISO
-      certificateImageUrl: selectedFile, // Thêm file ảnh
+      id: editingUser ? editingUser.id : undefined,
+      dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null,
+      certificateImageUrl: selectedFile,
     };
-    console.log(formattedValues);
-    
-
-    if (editingUser) {
-      editUser.mutate({ id: editingUser.id, data: formattedValues }); // Gọi API cập nhật
-    } else {
-      addUser.mutate(formattedValues); // Gọi API thêm mới
+  
+    try {
+      if (editingUser) {
+        await editUser.mutateAsync({ id: editingUser.id, data: formattedValues });
+      } else {
+        await addUser.mutateAsync(formattedValues);
+      }
+  
+      return true; // ✅ Xử lý thành công → cho phép modal đóng
+    } catch (error) {
+      console.error("❌ Submit lỗi:", error);
+      return false; // ❌ Không đóng modal
     }
-
-    setIsModalOpen(false);
   };
+  
+  
   const handleDelete = (id) => {
     removeUser.mutate(id);
   };

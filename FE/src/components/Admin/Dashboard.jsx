@@ -2,16 +2,18 @@ import  { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
+
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar  ,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
 import axios from "axios";
+import config from "../../constants/config";
 
 export default function Dashboard() {
   const [revenueData, setRevenueData] = useState([]);
@@ -26,17 +28,20 @@ export default function Dashboard() {
   useEffect(() => {
     // Doanh thu 10 ngày gần nhất
     axios
-      .get("https://localhost:7134/api/Dashboard/revenue/last-10-days")
+      .get(`${config.baseUrl}Dashboard/revenue/last-10-days`)
+    
       .then((response) => {
         if (response.data.isSuccess) {
           setRevenueData(response.data.result);
+          console.log(response.data.result);
+          
         }
       })
       .catch((error) => console.error("Lỗi lấy dữ liệu doanh thu:", error));
 
     // Tổng doanh thu
     axios
-      .get("https://localhost:7134/api/Dashboard/total-revenue")
+      .get(`${config.baseUrl}Dashboard/total-revenue`)
       .then((response) => {
         if (response.data.isSuccess) {
           setTotalRevenue(response.data.result);
@@ -46,7 +51,7 @@ export default function Dashboard() {
 
     // Vaccine được sử dụng nhiều nhất
     axios
-      .get("https://localhost:7134/api/Dashboard/top-used-vaccines")
+      .get(`${config.baseUrl}Dashboard/top-used-vaccines`)
       .then((response) => {
         if (response.data.isSuccess) {
           setTopVaccines(response.data.result);
@@ -62,7 +67,7 @@ export default function Dashboard() {
   // Hàm lấy doanh thu theo ngày
   const fetchRevenueByDate = (date) => {
     axios
-      .get(`https://localhost:7134/api/Dashboard/revenue/${date}`)
+      .get(`${config.baseUrl}Dashboard/revenue/${date}`)
       .then((response) => {
         if (response.data.isSuccess) {
           if (date === new Date().toISOString().split("T")[0]) {
