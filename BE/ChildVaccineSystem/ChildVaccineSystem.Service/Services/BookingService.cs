@@ -618,6 +618,7 @@ namespace ChildVaccineSystem.Service.Services
                     // 👉 Vaccine lẻ
                     result.Add(new BookingDetailDTO
                     {
+                        BookingId = detail.Booking.BookingId, // ✅ Thêm dòng này
                         BookingDetailId = detail.BookingDetailId, // ✅ Dùng BookingDetailId thay vì BookingId
                         VaccineId = detail.VaccineId,
                         VaccineName = detail.Vaccine?.Name ?? "Không xác định",
@@ -625,6 +626,7 @@ namespace ChildVaccineSystem.Service.Services
                             ? "Hoàn thành"
                             : "Chưa hoàn thành",
                         BookingDate = detail.BookingDate,
+                        InjectionDate = detail.InjectionDate, // ✅ Thêm dòng này
                         Price = detail.Price
                     });
                 }
@@ -643,6 +645,7 @@ namespace ChildVaccineSystem.Service.Services
                         {
                             result.Add(new BookingDetailDTO
                             {
+                                BookingId = detail.Booking.BookingId, // ✅ Thêm dòng này
                                 BookingDetailId = detail.BookingDetailId, // ✅ Dùng BookingDetailId thay vì BookingId
                                 VaccineId = vaccine.VaccineId,
                                 VaccineName = vaccine.Name,
@@ -650,6 +653,7 @@ namespace ChildVaccineSystem.Service.Services
                                     ? "Hoàn thành"
                                     : "Chưa hoàn thành",
                                 BookingDate = detail.BookingDate,
+                                InjectionDate = detail.InjectionDate, // ✅ Thêm dòng này
                                 Price = vaccine.Price,
                                 ComboVaccineId = detail.ComboVaccineId,
                                 ComboVaccineName = detail.ComboVaccine?.ComboName ?? ""
@@ -765,6 +769,7 @@ namespace ChildVaccineSystem.Service.Services
                         VaccineId = detail.VaccineId,
                         VaccineName = detail.Vaccine?.Name ?? "Không xác định",
                         BookingDate = detail.BookingDate,
+                        InjectionDate = detail.InjectionDate, // ✅ Thêm dòng này
                         Price = detail.Price,
                         Status = detail.Status == BookingDetailStatus.Completed ? "Hoàn thành" : "Chưa hoàn thành",
                         ComboVaccineId = detail.ComboVaccineId,
