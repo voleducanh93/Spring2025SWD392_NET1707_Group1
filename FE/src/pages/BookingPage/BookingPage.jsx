@@ -387,7 +387,7 @@ const BookingPage = () => {
     );
   };
 
-  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/a282136c-8f74-4296-a4ed-4c1af37c5ab9";
+  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/5e571e9d-8d32-4ae5-8e3e-09347e591a3d";
   
   async function checkVaccinationSchedule() {
       try {
@@ -395,6 +395,8 @@ const BookingPage = () => {
           const data = await response.json();
         
           if (!data.isSuccess) {
+            console.log("ggg");
+            
               return true;
           }
           console.log(data.result[0].childId);
@@ -405,7 +407,7 @@ const BookingPage = () => {
           
           if (filteredBookings.length === 0) {
               console.log("Không có lịch tiêm nào cho trẻ có ID:", selectedChild);
-              return;
+              return true;
           }
   
           // Lấy danh sách injectionDate từ các booking đã lọc
