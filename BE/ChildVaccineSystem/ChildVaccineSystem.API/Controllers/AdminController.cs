@@ -82,6 +82,7 @@ namespace ChildVaccineSystem.API.Controllers
                     user.DateOfBirth,
                     user.IsActive,
                     user.PhoneNumber,
+                    user.CertificateImageUrl,
                     Roles = roles
                 });
             }
