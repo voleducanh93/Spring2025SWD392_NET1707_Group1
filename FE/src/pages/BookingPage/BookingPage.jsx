@@ -27,7 +27,8 @@ const BookingPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isComboSelected, setIsComboSelected] = useState(false);
   const [comboVaccines, setComboVaccines] = useState([]);
-  const { walletBalance, refreshWalletBalance } = useContext(AppContext);
+  const { walletBalance, refreshWalletBalance, getUser } =
+    useContext(AppContext);
 
   const openAddChildModal = () => {
     setIsModalVisible(true);
@@ -62,52 +63,77 @@ const BookingPage = () => {
     }
   };
 
-  const createBookingData = () => {
+  const createBookingData = async() => {
     if (!selectedVaccines || selectedVaccines.length === 0) {
       toast.error("Vui lòng chọn ít nhất một vaccine hoặc combo vaccine.");
       return null;
     }
 
-    if (!selectedDate) {
+    const isValid = handleValidationDate();
+    if (!isValid) return null;
+    if (!isValidSchedule){
+      toast.error("ngu vl");
+      return null;
+    }
+    const isVaccinationScheduleValid = await checkVaccinationSchedule(); // Chờ kết quả từ checkVaccinationSchedule()
+    if (!isVaccinationScheduleValid) {
+        toast.error("Ngu vc.");
+        return null;
+    }
+    if (!selectedDate && isComboSelected) {
       toast.error("Vui lòng chọn ngày đặt lịch.");
       return null;
     }
-
     const bookingDetails = [];
-
+    console.log("test");
+    
     selectedVaccines.forEach((item) => {
       if (isComboSelected && item.comboId) {
-        bookingDetails.push({ comboVaccineId: item.comboId });
+        bookingDetails.push({
+          comboVaccineId: item.comboId,
+          injectionDate: moment(
+            selectedDate,
+            "DD/MM/YYYY",
+            true
+          ).bookingDate.format("YYYY-MM-DD"),
+        });
       } else if (item.vaccineId) {
-        bookingDetails.push({ vaccineId: item.vaccineId });
+        bookingDetails.push({
+          vaccineId: item.vaccineId,
+          injectionDate: item.injectionDate,
+        });
       }
     });
-
-    const bookingDate = moment(selectedDate, "DD/MM/YYYY", true);
-    if (!bookingDate.isValid()) {
-      console.error("❌ Ngày không hợp lệ!");
-      toast.error("⚠️ Ngày không hợp lệ, vui lòng chọn lại.");
-      return null;
-    }
-
-    const formattedDate = bookingDate.format("YYYY-MM-DD");
-
     return {
       childId: selectedChild,
-      bookingDate: formattedDate,
+      bookingDate: bookingDetails[0].injectionDate,
       notes: "Đặt lịch tiêm chủng",
       bookingDetails: bookingDetails,
     };
   };
 
-  const handleBooking = () => {
-    const bookingData = createBookingData();
-    if (!bookingData) return;
+  const isValidSchedule = selectedVaccines.every((vaccineA, index, array) => {
+    return array.every(vaccineB => {
+        if (vaccineA !== vaccineB) {
+            const dateA = new Date(vaccineA.injectionDate);
+            const dateB = new Date(vaccineB.injectionDate);
+            const diffMonths = Math.abs(dateA - dateB) / (1000 * 60 * 60 * 24 * 30); // Chuyển đổi sang tháng
+            return diffMonths >= 2;
+        }
+        return true;
+    });
+});
+
+
+
+  const handleBooking = async() => {
+    const bookingData =  await createBookingData();
+    console.log(bookingData);
+    
+    if (bookingData == null) return;
 
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
-        console.log("✅ Booking Created:", response);
-
         if (!response?.result?.bookingId) {
           toast.error("⚠️ Lỗi hệ thống. Vui lòng thử lại!");
           return;
@@ -123,8 +149,6 @@ const BookingPage = () => {
         fetchPaymentUrl(bookingId);
       },
       onError: (error) => {
-        console.error("❌ Lỗi khi tạo booking:", error);
-
         const errorMessage =
           error?.response?.data?.errorMessages?.[0] ||
           "⚠️ Đặt lịch thất bại! Vui lòng thử lại.";
@@ -134,6 +158,25 @@ const BookingPage = () => {
   };
   const processWalletPayment = useProcessWalletPayment();
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const handleValidationDate = () => {
+    const invalidIndexes = [];
+
+    selectedVaccines.forEach((vaccine, index) => {
+      if (!vaccine.injectionDate) {
+        invalidIndexes.push(index + 1); // +1 để người dùng thấy là số thứ tự
+      }
+    });
+
+    if (invalidIndexes.length > 0) {
+      const positions = invalidIndexes.join(", ");
+      toast.error(
+        `Vui lòng nhập ngày tiêm cho vaccine ở vị trí số: ${positions}`
+      );
+      return false;
+    }
+
+    return true;
+  };
 
   // Mở modal nhập số tiền nạp
   const handleOpenDepositModal = () => {
@@ -158,8 +201,6 @@ const BookingPage = () => {
     if (!bookingData) return;
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
-        console.log("✅ Booking Created:", response);
-
         if (!response?.result?.bookingId) {
           console.error("❌ Lỗi: Không lấy được bookingId!");
           toast.error("⚠️ Lỗi hệ thống. Vui lòng thử lại!");
@@ -193,15 +234,14 @@ const BookingPage = () => {
       },
     });
   };
+
   const handleCheckVaccine = async (item) => {
     if (!item.vaccineId) return false;
 
-    
     const formData = new FormData();
     formData.append("VaccineIds", item.vaccineId);
     try {
       const result = await checkParentVaccine([item.vaccineId]);
-      console.log("✅ Kết quả kiểm tra vaccine:", result);
 
       if (Array.isArray(result?.result) && result.result.length > 0) {
         return new Promise((resolve) => {
@@ -335,6 +375,70 @@ const BookingPage = () => {
     console.log(selectedVaccines);
     console.log(isComboSelected);
   };
+  const handleChangeDate = (vaccineId, newDate) => {
+    if (!newDate) return;
+
+    const formattedDate = newDate.format("YYYY-MM-DD");
+
+    setSelectedVaccines((prev) =>
+      prev.map((v) =>
+        v.vaccineId === vaccineId ? { ...v, injectionDate: formattedDate } : v
+      )
+    );
+  };
+
+  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/5e571e9d-8d32-4ae5-8e3e-09347e591a3d";
+  
+  async function checkVaccinationSchedule() {
+      try {
+          const response = await fetch(API_URL);
+          const data = await response.json();
+        
+          if (!data.isSuccess) {
+            console.log("ggg");
+            
+              return true;
+          }
+          console.log(data.result[0].childId);
+          console.log(selectedChild);
+          
+          // Lọc booking theo selectedChild
+          const filteredBookings = data.result.filter(booking => booking.childId == selectedChild);
+          
+          if (filteredBookings.length === 0) {
+              console.log("Không có lịch tiêm nào cho trẻ có ID:", selectedChild);
+              return true;
+          }
+  
+          // Lấy danh sách injectionDate từ các booking đã lọc
+          const injectionDates = filteredBookings.flatMap(booking => 
+              booking.bookingDetails.map(detail => new Date(detail.injectionDate))
+          );
+  
+          if (injectionDates.length === 0) {
+              console.log("Không có ngày tiêm hợp lệ.");
+              return;
+          }
+  
+          // Sắp xếp ngày tiêm theo thứ tự tăng dần
+          injectionDates.sort((a, b) => a - b);
+          const closestDate = injectionDates[0]; // Ngày gần nhất
+  
+          // Kiểm tra khoảng cách 2 tháng
+          const isValid = injectionDates.every(date => {
+              const diffMonths = Math.abs(date - closestDate) / (1000 * 60 * 60 * 24 * 30);
+              return diffMonths >= 2;
+          });
+  
+          console.log("Ngày tiêm gần nhất:", closestDate.toISOString().split("T")[0]);
+          console.log(isValid ? "Lịch hợp lệ" : "Lịch không hợp lệ");
+  
+      } catch (error) {
+          console.error("Lỗi khi gọi API:", error);
+      }
+  }
+  
+  
 
   return (
     <div className="flex flex-col md:px-20 sm:px-8 !px-4 !py-6 gap-6">
@@ -483,7 +587,7 @@ const BookingPage = () => {
                         selectedVaccines.some(
                           (v) => v.vaccineId === vaccine.vaccineId
                         )
-                          ? toggleSelection(vaccine, true) // 🛑 Bỏ chọn không kiểm tra API
+                          ? toggleSelection(vaccine, true)
                           : toggleSelection(vaccine) // ✅ Chọn cần kiểm tra API trước
                     }
                   >
@@ -633,14 +737,43 @@ const BookingPage = () => {
                     className="!mt-3 !p-5 rounded-lg !mb-3 shadow-xl flex flex-col gap-3"
                   >
                     <h4 className="font-semibold">{vaccine.vaccineName}</h4>
+
                     <p className="text-sm">
                       Tên: {vaccine.name ?? vaccine.comboName}
                     </p>
+
                     <p className="font-semibold text-blue-600">
                       {vaccine.price?.toLocaleString() ??
                         vaccine.totalPrice?.toLocaleString()}{" "}
                       VNĐ
                     </p>
+
+                    {/* 💥 Thêm DatePicker ở đây */}
+                    {!vaccine.comboId && (
+                      <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          Ngày tiêm
+                        </label>
+                        <Form.Item name="date">
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            value={
+                              vaccine.injectionDate
+                                ? moment(vaccine.injectionDate, "YYYY-MM-DD")
+                                : null
+                            }
+                            onChange={(date) =>
+                              handleChangeDate(vaccine.vaccineId, date)
+                            }
+                            disabledDate={(current) =>
+                              current && current < moment().startOf("day")
+                            }
+                            style={{ width: "100%" }}
+                          />
+                        </Form.Item>
+                      </div>
+                    )}
+
                     <button
                       className="bg-red-500 text-white px-3 py-2 rounded-lg"
                       onClick={() => toggleSelection(vaccine, true)}
@@ -651,25 +784,31 @@ const BookingPage = () => {
                 ))}
 
                 {/* Chọn ngày */}
-                <div className="flex items-center gap-4 mt-5">
-                  <p className="font-semibold text-xl">Chọn ngày:</p>
-                  <Form.Item name="date" className="!pt-5">
-                    <DatePicker
-                      style={{ width: 300, height: 45 }}
-                      format="DD/MM/YYYY"
-                      value={
-                        selectedDate ? moment(selectedDate, "DD/MM/YYYY") : null
-                      }
-                      disabledDate={(current) =>
-                        current && current < moment().startOf("day")
-                      } // Chặn ngày trong quá khứ
-                      onChange={(date, dateString) => {
-                        console.log("📅 Ngày đã chọn:", dateString);
-                        setSelectedDate(dateString);
-                      }}
-                    />
-                  </Form.Item>
-                </div>
+                {isComboSelected && (
+                  <div className="flex items-center gap-4 mt-5">
+                    <p className="font-semibold text-xl">Chọn ngày:</p>
+                    <Form>
+                      <Form.Item name="date" className="!pt-5">
+                        <DatePicker
+                          style={{ width: 300, height: 45 }}
+                          format="DD/MM/YYYY"
+                          value={
+                            selectedDate
+                              ? moment(selectedDate, "DD/MM/YYYY")
+                              : null
+                          }
+                          disabledDate={(current) =>
+                            current && current < moment().startOf("day")
+                          } // Chặn ngày trong quá khứ
+                          onChange={(date, dateString) => {
+                            console.log("📅 Ngày đã chọn:", dateString);
+                            setSelectedDate(dateString);
+                          }}
+                        />
+                      </Form.Item>
+                    </Form>
+                  </div>
+                )}
 
                 {/* Nút thanh toán */}
                 <button
