@@ -387,16 +387,15 @@ const BookingPage = () => {
     );
   };
 
-  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/1b827975-4ef9-4f0c-981d-29954be450a7";
+  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/a282136c-8f74-4296-a4ed-4c1af37c5ab9";
   
   async function checkVaccinationSchedule() {
       try {
           const response = await fetch(API_URL);
           const data = await response.json();
-  
+        
           if (!data.isSuccess) {
-              console.error("API response error:", data.errorMessages);
-              return;
+              return true;
           }
           console.log(data.result[0].childId);
           console.log(selectedChild);
