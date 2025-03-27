@@ -353,7 +353,7 @@ namespace ChildVaccineSystem.Service.Services
 
         private async Task ValidateBooking(string userId, CreateBookingDTO bookingDto)
         {
-            // ✅ Kiểm tra ngày đặt lịch chính (nếu không được cung cấp thì lấy ngày đầu tiên từ danh sách chi tiết)
+            // ✅ Gán BookingDate nếu không truyền vào
             if (bookingDto.BookingDate == default(DateTime))
             {
                 bookingDto.BookingDate = bookingDto.BookingDetails.Min(bd => bd.InjectionDate.Date);
@@ -364,7 +364,7 @@ namespace ChildVaccineSystem.Service.Services
                 throw new ArgumentException("Ngày đặt lịch không thể là ngày trong quá khứ.");
             }
 
-            // ✅ Kiểm tra trùng lặp booking trong cùng ngày cho cùng một đứa trẻ
+            // ✅ Kiểm tra trùng lịch cùng ngày
             var existingBooking = await _unitOfWork.Bookings.GetAsync(
                 b => b.UserId == userId &&
                      b.BookingDate.Date == bookingDto.BookingDate.Date &&
@@ -376,37 +376,32 @@ namespace ChildVaccineSystem.Service.Services
                 throw new ArgumentException("Trẻ này đã có lịch tiêm trong cùng ngày.");
             }
 
-            // ✅ Kiểm tra nếu đứa trẻ thuộc về người dùng hiện tại
+            // ✅ Kiểm tra quyền sở hữu trẻ
             var child = await _unitOfWork.Children.GetAsync(c => c.ChildId == bookingDto.ChildId);
             if (child == null || child.UserId != userId)
             {
                 throw new ArgumentException("Không tìm thấy đứa trẻ hoặc đứa trẻ không thuộc về người dùng.");
             }
 
-            // ✅ Kiểm tra danh sách chi tiết mũi tiêm (không được rỗng)
+            // ✅ Danh sách chi tiết không được rỗng
             if (bookingDto.BookingDetails == null || !bookingDto.BookingDetails.Any())
             {
                 throw new ArgumentException("Phải có ít nhất một loại vaccine hoặc vaccine combo trong lịch tiêm.");
             }
 
-            // ✅ Kiểm tra tính hợp lệ giữa vaccine lẻ và combo trong cùng booking
+            // ✅ Không mix vaccine lẻ và combo
             bool hasVaccine = bookingDto.BookingDetails.Any(bd => bd.VaccineId.HasValue);
             bool hasComboVaccine = bookingDto.BookingDetails.Any(bd => bd.ComboVaccineId.HasValue);
 
             if (hasVaccine && hasComboVaccine)
-            {
                 throw new ArgumentException("Không thể kết hợp vaccine lẻ và vaccine combo trong cùng một lần đặt lịch.");
-            }
 
             if (!hasVaccine && !hasComboVaccine)
-            {
                 throw new ArgumentException("Việc đặt chỗ phải nêu rõ vaccine hoặc vaccine combo.");
-            }
 
-            // ✅ Kiểm tra ngày tiêm cho từng mũi
+            // ✅ Validate từng mũi tiêm
             foreach (var detail in bookingDto.BookingDetails)
             {
-                // ✅ Kiểm tra nếu InjectionDate < BookingDate
                 if (detail.InjectionDate.Date < bookingDto.BookingDate.Date)
                 {
                     throw new ArgumentException(
@@ -414,7 +409,6 @@ namespace ChildVaccineSystem.Service.Services
                     );
                 }
 
-                // ✅ Kiểm tra nếu ngày tiêm trong quá khứ
                 if (detail.InjectionDate.Date < DateTime.Now.Date)
                 {
                     throw new ArgumentException(
@@ -424,29 +418,24 @@ namespace ChildVaccineSystem.Service.Services
 
                 if (detail.VaccineId.HasValue)
                 {
-                    // 👉 Xử lý vaccine lẻ
                     var vaccine = await _unitOfWork.Vaccines.GetAsync(v => v.VaccineId == detail.VaccineId);
                     if (vaccine == null)
-                    {
                         throw new ArgumentException($"Không tìm thấy vaccine với ID {detail.VaccineId}");
-                    }
 
                     var vaccineInventory = await _unitOfWork.VaccineInventories.GetAsync(vi => vi.VaccineId == detail.VaccineId);
                     if (vaccineInventory == null)
-                    {
                         throw new ArgumentException($"Không tìm thấy hàng tồn kho cho vaccine ID {detail.VaccineId}");
-                    }
 
-                    // ✅ Lấy thông tin từ InjectionSchedule (khoảng cách và số lượng mũi)
+                    // ✅ Lấy lịch tiêm chuẩn
                     var injectionSchedule = await _unitOfWork.InjectionSchedules
                         .GetAllAsync(isd => isd.VaccineScheduleDetail.VaccineId == detail.VaccineId);
 
                     if (injectionSchedule.Any())
                     {
-                        var maxInjectionNumber = injectionSchedule.Max(i => i.InjectionNumber); // Tổng số mũi
-                        var minInjectionInterval = injectionSchedule.Min(i => i.InjectionMonth) * 30; // Đổi từ tháng sang ngày
+                        var maxInjectionNumber = injectionSchedule.Max(i => i.InjectionNumber);
+                        var minInjectionInterval = injectionSchedule.Min(i => i.InjectionMonth) * 30;
 
-                        // ✅ Kiểm tra số lượng mũi đã tiêm (Đếm cả Pending + Completed)
+                        // ✅ Kiểm tra số lần đã tiêm từ DB
                         var completedInjectionCount = await _unitOfWork.BookingDetails
                             .CountAsync(bd => bd.Booking.ChildId == bookingDto.ChildId &&
                                               bd.VaccineId == detail.VaccineId &&
@@ -454,12 +443,10 @@ namespace ChildVaccineSystem.Service.Services
 
                         if (completedInjectionCount >= maxInjectionNumber)
                         {
-                            throw new ArgumentException(
-                                $"Trẻ này đã hoàn thành đủ {maxInjectionNumber} mũi cho vaccine {vaccine.Name}."
-                            );
+                            throw new ArgumentException($"Trẻ này đã hoàn thành đủ {maxInjectionNumber} mũi cho vaccine {vaccine.Name}.");
                         }
 
-                        // ✅ Kiểm tra khoảng cách giữa các mũi tiêm
+                        // ✅ Kiểm tra khoảng cách với mũi gần nhất trong DB
                         var lastInjection = await _unitOfWork.BookingDetails
                             .GetAllAsync(bd => bd.Booking.ChildId == bookingDto.ChildId &&
                                                bd.VaccineId == detail.VaccineId &&
@@ -478,20 +465,32 @@ namespace ChildVaccineSystem.Service.Services
                                 );
                             }
                         }
+
+                        // ✅ Kiểm tra khoảng cách giữa các mũi trong request
+                        var sameVaccineInRequest = bookingDto.BookingDetails
+                            .Where(bd => bd.VaccineId == detail.VaccineId)
+                            .OrderBy(bd => bd.InjectionDate)
+                            .ToList();
+
+                        for (int i = 1; i < sameVaccineInRequest.Count; i++)
+                        {
+                            var prev = sameVaccineInRequest[i - 1];
+                            var curr = sameVaccineInRequest[i];
+
+                            if ((curr.InjectionDate - prev.InjectionDate).TotalDays < minInjectionInterval)
+                            {
+                                throw new ArgumentException(
+                                    $"Trong cùng lịch hẹn, khoảng cách giữa mũi tiêm {vaccine.Name} cần tối thiểu {minInjectionInterval / 30} tháng."
+                                );
+                            }
+                        }
                     }
                 }
             }
 
-            // ✅ Kiểm tra trùng lặp ngày tiêm trong cùng ngày
-            var allDates = bookingDto.BookingDetails
-                .Select(bd => bd.InjectionDate.Date)
-                .ToList();
-
-            var duplicateDates = allDates
-                .GroupBy(d => d)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
+            // ✅ Kiểm tra duplicate ngày tiêm
+            var allDates = bookingDto.BookingDetails.Select(bd => bd.InjectionDate.Date).ToList();
+            var duplicateDates = allDates.GroupBy(d => d).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
 
             if (duplicateDates.Any())
             {
@@ -500,7 +499,7 @@ namespace ChildVaccineSystem.Service.Services
                 );
             }
 
-            // ✅ Kiểm tra vaccine trong combo và vaccine lẻ không được trùng
+            // ✅ Kiểm tra vaccine bị trùng giữa lẻ và combo
             var comboVaccineIds = bookingDto.BookingDetails
                 .Where(bd => bd.ComboVaccineId.HasValue)
                 .Select(bd => bd.ComboVaccineId.Value)
