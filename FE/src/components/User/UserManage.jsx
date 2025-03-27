@@ -13,7 +13,7 @@ const UserManage = () => {
   const [editingUser, setEditingUser] = useState(null); // Lưu trữ user đang chỉnh sửa
   const [selectedUser, setSelectedUser] = useState(null);
   const [form] = Form.useForm();
-
+  const [selectedFile, setSelectedFile] = useState(null);
   // **Cấu hình bảng hiển thị**
   const columns = [
     {
@@ -119,7 +119,30 @@ const UserManage = () => {
       name: "dateOfBirth",
       label: "Ngày sinh",
       type: "date",
-      rules: [{ required: true, message: "Vui lòng chọn ngày sinh!" }],
+      rules: [
+        {
+          required: true,
+          message: "Vui lòng chọn ngày sinh!",
+        },
+        {
+          validator: (_, value) => {
+            if (!value) return Promise.resolve();
+    
+            const today = dayjs();
+            const age = today.diff(value, "year");
+    
+            if (value.isAfter(today, "day")) {
+              return Promise.reject("Không được chọn ngày trong tương lai!");
+            }
+    
+            if (age < 25) {
+              return Promise.reject("Người dùng phải từ 25 tuổi trở lên!");
+            }
+    
+            return Promise.resolve();
+          },
+        },
+      ],
     },
     {
       name: "password",
@@ -141,6 +164,17 @@ const UserManage = () => {
       options: [true, false], // ✅ Chỉ truyền giá trị true/false
       rules: [{ required: true, message: "Vui lòng chọn trạng thái!" }],
     },
+    {
+      name: "imageUpload",
+      label: "Ảnh bác sĩ",
+      type: "file",
+      rules: [
+        {
+          required: true,
+          message: "Vui lòng tải ảnh lên!",
+        },
+      ],
+    }
   ];
 
   // **Hiển thị modal chi tiết**
@@ -176,6 +210,7 @@ const UserManage = () => {
       ...values,
       id: editingUser ? editingUser.id : undefined, // Thêm id nếu đang chỉnh sửa
       dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null, // Định dạng ngày sinh về ISO
+      certificateImageUrl: selectedFile, // Thêm file ảnh
     };
     console.log(formattedValues);
     
@@ -222,6 +257,7 @@ const UserManage = () => {
         onSubmit={handleSubmit}
         formFields={userFields}
         form={form}
+        setSelectedFile={setSelectedFile}
       />
 
       {/* Modal Chi tiết */}
