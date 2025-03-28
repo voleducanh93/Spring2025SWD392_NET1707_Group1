@@ -24,7 +24,8 @@ export const useUsers = () => {
       throw error;
     },
   });
-
+    console.log(users);
+    
   // Thêm người dùng
   const addUser = useMutation({
     mutationFn: createUser,

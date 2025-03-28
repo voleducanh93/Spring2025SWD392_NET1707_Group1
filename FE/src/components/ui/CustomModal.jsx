@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import { useWatch } from "antd/es/form/Form";
 import { useState } from "react";
 import dayjs from "dayjs";
-
+import { uploadFile } from "../../config/firebase"; 
 
 const CustomModal = ({
   visible,
@@ -22,15 +22,16 @@ const CustomModal = ({
   onSubmit,
   formFields,
   form,
-  setSelectedFile,
 }) => {
   const role = useWatch("role", form); // Theo dõi giá trị vai trò
   const [isSubmitting, setIsSubmitting] = useState(false);
   console.log("🔍 field:",   formFields);
 
   // Xử lý chọn file upload
-  const handleFileChange = ({ file }) => {
-    setSelectedFile(file);
+  const handleFileChange = async({ file }) => {
+    
+    const url = await uploadFile(file);
+    form.setFieldsValue({ certificateImageUrl: url }); 
   };
 
   // Xử lý khi nhấn OK
@@ -38,7 +39,7 @@ const CustomModal = ({
     try {
       await form.validateFields();
       setIsSubmitting(true);
-  
+      
       const success = await onSubmit(form.getFieldsValue());
       console.log(success); // ✅ giờ sẽ là true/false đúng
   
@@ -143,28 +144,34 @@ const CustomModal = ({
 
           {/* ✅ Trường Upload chỉ hiển thị nếu role là Doctor */}
           {role === "Doctor" && (
-            <Col span={12} style={{ marginBottom: "16px" }}>
-              <Form.Item
-                name="imageUpload"
-                label="Ảnh bác sĩ"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng tải ảnh lên!",
-                  },
-                ]}
-              >
-                <Upload
-                  beforeUpload={() => false}
-                  onChange={handleFileChange}
-                  maxCount={1}
-                  showUploadList={true}
-                >
-                  <Button icon={<UploadOutlined />}>Chọn File</Button>
-                </Upload>
-              </Form.Item>
-            </Col>
-          )}
+  <Col span={12} style={{ marginBottom: "16px" }}>
+    <Form.Item
+      name="imageUpload"
+      label="Ảnh bác sĩ"
+      rules={[
+        {
+          required: true,
+          message: "Vui lòng tải ảnh lên!",
+        },
+      ]}
+    >
+      <Upload
+        beforeUpload={() => false}
+        onChange={handleFileChange}
+        maxCount={1}
+        showUploadList={true}
+      >
+        <Button icon={<UploadOutlined />}>Chọn File</Button>
+      </Upload>
+    </Form.Item>
+
+    {/* ✅ Thêm field ẩn để lưu URL đã upload */}
+    <Form.Item name="certificateImageUrl" noStyle>
+      <Input type="hidden" />
+    </Form.Item>
+  </Col>
+)}
+
         </Row>
       </Form>
     </Modal>
@@ -181,6 +188,7 @@ CustomModal.propTypes = {
     getFieldsValue: PropTypes.func.isRequired,
     resetFields: PropTypes.func.isRequired,
     getFieldsError: PropTypes.func.isRequired,
+    setFieldsValue: PropTypes.func.isRequired,
   }).isRequired,
   setSelectedFile: PropTypes.func.isRequired,
 };

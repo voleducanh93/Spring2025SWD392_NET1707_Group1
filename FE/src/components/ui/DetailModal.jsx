@@ -15,7 +15,6 @@ const DetailModal = ({ visible, onClose, data = {}, fields = [] }) => {
       </Modal>
     );
   }
-console.log(data);
 
   return (
     <Modal
@@ -25,15 +24,24 @@ console.log(data);
       footer={null}
       width={700}
     >
-      <Descriptions bordered column={1}>
-        {fields.map((field, index) => (
-          <Descriptions.Item key={index} label={field.label}>
-            {field.render
-              ? field.render(data[field.name], data) // ✅ truyền cả data làm record
-              : data[field.name] || "Không có dữ liệu"}
-          </Descriptions.Item>
-        ))}
-      </Descriptions>
+     <Descriptions bordered column={1}>
+  {fields.map((field, index) => {
+    const value = data[field.name];
+    const renderedValue = field.render
+      ? field.render(value, data)
+      : value || "Không có dữ liệu";
+
+    // ⚠️ Nếu là null hoặc undefined thì KHÔNG render dòng đó
+    if (renderedValue === null || renderedValue === undefined) return null;
+
+    return (
+      <Descriptions.Item key={index} label={field.label}>
+        {renderedValue}
+      </Descriptions.Item>
+    );
+  })}
+</Descriptions>
+
     </Modal>
   );
 };
@@ -46,6 +54,7 @@ DetailModal.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
+      render: PropTypes.func,
     })
   ),
 };

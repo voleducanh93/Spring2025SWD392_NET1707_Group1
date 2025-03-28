@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Button, Space, Form, Popconfirm } from "antd";
+import { Button, Space, Form, Popconfirm, Descriptions, Modal } from "antd";
 import CustomTable from "../ui/tableCustom";
 import CustomModal from "../ui/CustomModal";
-import DetailModal from "../ui/DetailModal";
 import dayjs from "dayjs";
 import { useUsers } from "../../hooks/useUsser";
 
@@ -14,6 +13,9 @@ const UserManage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [form] = Form.useForm();
   const [selectedFile, setSelectedFile] = useState(null);
+  console.log(users);
+  
+  
   // **Cấu hình bảng hiển thị**
   const columns = [
     {
@@ -64,19 +66,25 @@ const UserManage = () => {
     {
       name: "certificateImageUrl",
       label: "Ảnh",
-      render: (imageUrl, record) =>
-        record.roles?.includes("Doctor")
-          ? imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="Ảnh bác sĩ"
-                style={{ width: 64, height: 64, borderRadius: "8px", objectFit: "cover" }}
-              />
-            ) : (
-              "Không có ảnh"
-            )
-          : null, // ⛔ Nếu không phải Doctor thì không hiển thị dòng này
-    },
+      render: (value, record) => {
+        if (!record.roles?.includes("Doctor")) return null;
+        return value ? (
+          <img
+            src={value}
+            alt="Ảnh bác sĩ"
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 8,
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          "Không có ảnh"
+        );
+      },
+    }
+    ,
   
     { name: "address", label: "Địa Chỉ" },
   
@@ -97,22 +105,19 @@ const UserManage = () => {
       render: (emailConfirmed) =>
         emailConfirmed ? "✅ Đã xác nhận" : "❌ Chưa xác nhận",
     },
-  
-    {
-      name: "certificate",
-      label: "Chứng chỉ hành nghề",
-      render: (_, record) =>
-        record.roles?.includes("Doctor")
-          ? record.certificate || "Chưa có chứng chỉ"
-          : null,
-    },
-  
     {
       name: "roles",
       label: "Vai trò",
-      render: (roles) => {
-        if (!roles || roles.length === 0) return "Không có vai trò";
-  
+      render: (value) => {
+        // ✅ Normalize về mảng an toàn
+        const roles = Array.isArray(value)
+          ? value
+          : typeof value === "string"
+          ? [value]
+          : [];
+    
+        if (roles.length === 0) return "Không có vai trò";
+    
         return roles.map((role) => {
           const color =
             role === "Admin"
@@ -122,7 +127,7 @@ const UserManage = () => {
               : role === "Staff"
               ? "orange"
               : "green";
-  
+    
           return (
             <span
               key={role}
@@ -141,7 +146,7 @@ const UserManage = () => {
           );
         });
       },
-    },
+    }
   ];
   
 
@@ -247,7 +252,9 @@ const UserManage = () => {
 
   // **Hiển thị modal chi tiết**
   const showDetailModal = (record) => {
+    console.log("📌 Chi tiết user:", record); 
     setSelectedUser(record);
+    
     setIsDetailModalOpen(true);
   };
 
@@ -324,6 +331,7 @@ const UserManage = () => {
       />
 
       {/* Modal Create & Update */}
+      {isModalOpen && (
       <CustomModal
         visible={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -331,15 +339,101 @@ const UserManage = () => {
         formFields={userFields}
         form={form}
         setSelectedFile={setSelectedFile}
-      />
+      />)}
 
       {/* Modal Chi tiết */}
-      <DetailModal
-        visible={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        data={selectedUser}
-        fields={userDetailFields}
-      />
+      <Modal
+  title="Chi Tiết"
+  open={isDetailModalOpen}
+  onCancel={() => setIsDetailModalOpen(false)}
+  footer={null}
+  width={700}
+>
+{console.log("🐞 selectedUser >>>", selectedUser)}
+
+  {console.log(selectedUser)
+  }
+  {selectedUser ? (
+    <Descriptions bordered column={1}>
+      <Descriptions.Item label="Họ & Tên">{selectedUser.fullName || "Không có dữ liệu"}</Descriptions.Item>
+      <Descriptions.Item label="Trạng Thái">{selectedUser.isActive ? "✅ Hoạt động" : "⛔ Bị khóa"}</Descriptions.Item>
+      <Descriptions.Item label="Email">{selectedUser.email || "Không có dữ liệu"}</Descriptions.Item>
+    {console.log("🐞 selectedUser >>>", selectedUser)}
+
+      {/* Ảnh chỉ hiện khi role là Doctor */}
+      {Array.isArray(selectedUser.roles) && selectedUser.roles.includes("Doctor") && (
+        <Descriptions.Item label="Ảnh">
+          {selectedUser.certificateImageUrl ? (
+            <img
+              src={selectedUser.certificateImageUrl}
+              alt="Ảnh bác sĩ"
+              style={{ width: 64, height: 64, borderRadius: 8, objectFit: "cover" }}
+            />
+          ) : (
+            "Không có ảnh"
+          )}
+        </Descriptions.Item>
+      )}
+
+      <Descriptions.Item label="Địa Chỉ">{selectedUser.address || "Không có dữ liệu"}</Descriptions.Item>
+      <Descriptions.Item label="Ngày Sinh">
+        {selectedUser.dateOfBirth && selectedUser.dateOfBirth !== "0001-01-01T00:00:00"
+          ? dayjs(selectedUser.dateOfBirth).format("DD/MM/YYYY")
+          : "Chưa có ngày sinh"}
+      </Descriptions.Item>
+      <Descriptions.Item label="Số điện thoại">{selectedUser.phoneNumber || "Không có dữ liệu"}</Descriptions.Item>
+      <Descriptions.Item label="Xác nhận Email">
+        {selectedUser.emailConfirmed ? "✅ Đã xác nhận" : "❌ Chưa xác nhận"}
+      </Descriptions.Item>
+
+      {/* Vai trò */}
+      {console.log(selectedUser.roles)
+      }
+      <Descriptions.Item label="Vai trò">
+  {(() => {
+    const roles = Array.isArray(selectedUser.roles)
+      ? selectedUser.roles
+      : selectedUser.role
+      ? [selectedUser.role]
+      : [];
+
+    if (!roles.length) return "Không có vai trò";
+    console.log(roles);
+    
+    return roles.map((role) => {
+      const color =
+        role === "Admin" ? "red" :
+        role === "Doctor" ? "blue" :
+        role === "Staff" ? "orange" : "green";
+
+      return (
+        <span
+          key={role}
+          style={{
+            backgroundColor: color,
+            color: "white",
+            padding: "2px 8px",
+            borderRadius: "4px",
+            marginRight: 4,
+            fontSize: "12px",
+            display: "inline-block",
+          }}
+        >
+          {role}
+        </span>
+      );
+    });
+  })()}
+</Descriptions.Item>
+
+
+    </Descriptions>
+  ) : (
+    <p>Không có dữ liệu</p>
+  )}
+</Modal>
+
+
     </div>
   );
 };

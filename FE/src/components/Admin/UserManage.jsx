@@ -20,7 +20,7 @@ const UserManage = () => {
     { title: "Họ & Tên", dataIndex: "fullName", key: "fullName", render: (text) => text || "Chưa có tên" },
     { title: "Trạng Thái", dataIndex: "isActive", key: "isActive", render: (isActive) => (isActive ? "✅ Hoạt động" : "⛔ Bị khóa") },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Ảnh", dataIndex: "imageUrl", key: "imageUrl", render: (imageUrl) => (imageUrl ? <Avatar src={imageUrl} /> : <Avatar>👤</Avatar>) },
+   // { title: "Ảnh", dataIndex: "imageUrl", key: "imageUrl", render: (imageUrl) => (imageUrl ? <Avatar src={imageUrl} /> : <Avatar>👤</Avatar>) },
     {
       title: "Hành Động",
       key: "action",
@@ -46,6 +46,44 @@ const UserManage = () => {
     { name: "dateOfBirth", label: "Ngày Sinh", render: (date) => (date && date !== "0001-01-01T00:00:00" ? dayjs(date).format("DD/MM/YYYY") : "Chưa có ngày sinh") },
     { name: "phoneNumber", label: "Số điện thoại" },
     { name: "emailConfirmed", label: "Xác nhận Email", render: (emailConfirmed) => (emailConfirmed ? "✅ Đã xác nhận" : "❌ Chưa xác nhận") },
+    { 
+      name: "roles", 
+      label: "Vai trò", 
+      render: (roles) => {
+        const roleList = Array.isArray(roles) ? roles : (roles ? [roles] : []);
+        if (!roleList.length) return "Không có vai trò";
+        return roleList.map(role => {
+          const color = role === "Admin" ? "red" : role === "Doctor" ? "blue" : "green";
+          return (
+            <span key={role} style={{
+              backgroundColor: color,
+              color: "white",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              marginRight: 4,
+              fontSize: "12px",
+              display: "inline-block"
+            }}>
+              {role}
+            </span>
+          );
+        });
+      }
+    },
+    { 
+      name: "certificateImageUrl", 
+      label: "Giấy Chứng Nhận", 
+      render: (url, record) => {
+        const roles = Array.isArray(record.roles) ? record.roles : (record.role ? [record.role] : []);
+        if (!roles.includes("Doctor")) return null;
+        return url ? (
+          <img src={url} alt="Certificate" style={{
+            width: 80, height: 80, borderRadius: 6, objectFit: "cover"
+          }} />
+        ) : "Không có giấy chứng nhận";
+      }
+    }
+    
   ];
 
   // **Cấu hình fields cho modal Create & Update**
