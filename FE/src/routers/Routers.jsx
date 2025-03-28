@@ -39,7 +39,8 @@ import VaccinePagene from "../pages/ChuyengiaPage/VaccinenePage";
 
 import NhiKhoaPage from "../pages/ChuyengiaPage/NhiKhoaPage";
 import TieuHoaPage from "../pages/ChuyengiaPage/TieuHoaPage";
-import TruyenNhiemPage from "../pages/ChuyengiaPage/TruyennhiemPage";
+import PageTruyenNhiem from "../pages/ChuyengiaPage/PageTruyenNhiem";
+
 
 export const router = createBrowserRouter([
   {
@@ -115,7 +116,7 @@ export const router = createBrowserRouter([
       { path: PATH_NAME.TONG_QUAT, element: <TongQuatPage /> },
       { path: PATH_NAME.VACCINE_PAGEE, element: <VaccinePagene /> },
       { path: PATH_NAME.NHI, element: <NhiKhoaPage /> },
-      { path: PATH_NAME.TRUYEN_NHIEM, element: <TruyenNhiemPage /> },
+      { path: PATH_NAME.TRUYEN_NHIEM, element: <PageTruyenNhiem /> },
       { path: PATH_NAME.TIEU_HOA, element: <TieuHoaPage /> },
       { path: PATH_NAME.GIOI_THIEU, element: <GioithieuPage /> },
       { path: PATH_NAME.CONFIRM_EMAIL, element: <ConfirmEmailPage /> },
