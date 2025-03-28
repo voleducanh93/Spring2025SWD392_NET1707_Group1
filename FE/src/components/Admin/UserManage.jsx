@@ -70,6 +70,7 @@ const UserManage = () => {
         });
       }
     },
+    
     { 
       name: "certificateImageUrl", 
       label: "Giấy Chứng Nhận", 
@@ -138,18 +139,24 @@ const showEditModal = (record) => {
   const handleSubmit = async (values) => {
     const formattedValues = {
       ...values,
-      id: editingUser ? editingUser.id : undefined, // Thêm id nếu đang chỉnh sửa
-      dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null, // Định dạng ngày sinh về ISO
+      id: editingUser ? editingUser.id : undefined,
+      dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toISOString() : null,
     };
-
+  
+    const onSuccess = () => {
+      setIsModalOpen(false);
+    };
+  
     if (editingUser) {
-      editUser.mutate({ id: editingUser.id, data: formattedValues }); // Gọi API cập nhật
+      editUser.mutate(
+        { id: editingUser.id, data: formattedValues },
+        { onSuccess }
+      );
     } else {
-      addUser.mutate(formattedValues); // Gọi API thêm mới
+      addUser.mutate(formattedValues, { onSuccess });
     }
-
-    setIsModalOpen(false);
   };
+  
   const handleDelete = (id) => {
     removeUser.mutate(id
       );

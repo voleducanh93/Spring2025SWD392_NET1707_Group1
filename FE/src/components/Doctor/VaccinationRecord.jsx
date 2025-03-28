@@ -164,7 +164,7 @@ const VaccinationRecord = () => {
                         value="Completed"
                         disabled
                       >
-                        <span value="Completed" className="text-green-500">Completed</span>
+                        <span value="Completed" className="text-green-500">Hoàn thành</span>
                       </div>
                     </td>
 

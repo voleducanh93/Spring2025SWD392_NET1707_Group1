@@ -72,7 +72,7 @@ const BookingPage = () => {
     const isValid = handleValidationDate();
     if (!isValid) return null;
     if (!isValidSchedule){
-      toast.error("ngu vl");
+      toast.error("Bạn không được chọn 2 vaccine trong");
       return null;
     }
     const isVaccinationScheduleValid = await checkVaccinationSchedule(); // Chờ kết quả từ checkVaccinationSchedule()
@@ -85,7 +85,7 @@ const BookingPage = () => {
       return null;
     }
     const bookingDetails = [];
-    console.log("test");
+    
     
     selectedVaccines.forEach((item) => {
       if (isComboSelected && item.comboId) {
@@ -104,6 +104,8 @@ const BookingPage = () => {
         });
       }
     });
+    console.log(bookingDetails);
+    
     return {
       childId: selectedChild,
       bookingDate: bookingDetails[0].injectionDate,
@@ -131,7 +133,8 @@ const BookingPage = () => {
     console.log(bookingData);
     
     if (bookingData == null) return;
-
+    console.log(bookingData);
+    
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
         if (!response?.result?.bookingId) {
@@ -195,9 +198,11 @@ const BookingPage = () => {
     return true;
   };
 
-  const handleWallet = () => {
+  const handleWallet = async() => {
     if (!checkWalletBalance()) return;
-    const bookingData = createBookingData();
+    const bookingData =  await createBookingData();
+    console.log(bookingData);
+    
     if (!bookingData) return;
     addBooking.mutate(bookingData, {
       onSuccess: (response) => {
