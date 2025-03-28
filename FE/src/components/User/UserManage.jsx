@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Space, Form, Avatar, Popconfirm, Tag } from "antd";
+import { Button, Space, Form, Popconfirm } from "antd";
 import CustomTable from "../ui/tableCustom";
 import CustomModal from "../ui/CustomModal";
 import DetailModal from "../ui/DetailModal";
@@ -30,13 +30,6 @@ const UserManage = () => {
     },
     { title: "Email", dataIndex: "email", key: "email" },
     {
-      title: "Ảnh",
-      dataIndex: "imageUrl",
-      key: "imageUrl",
-      render: (imageUrl) =>
-        imageUrl ? <Avatar src={imageUrl} /> : <Avatar>👤</Avatar>,
-    },
-    {
       title: "Hành Động",
       key: "action",
       render: (_, record) => (
@@ -58,21 +51,31 @@ const UserManage = () => {
 
   
   
-   const userDetailFields = [
+  const userDetailFields = [
     { name: "fullName", label: "Họ & Tên" },
-  
     {
       name: "isActive",
       label: "Trạng Thái",
       render: (isActive) => (isActive ? "✅ Hoạt động" : "⛔ Bị khóa"),
     },
-  
     { name: "email", label: "Email" },
   
+    // ✅ Ảnh bác sĩ (chỉ hiện khi có role Doctor)
     {
-      name: "imageUrl",
+      name: "certificateImageUrl",
       label: "Ảnh",
-      render: (url) => (url ? <Avatar src={url} size={64} /> : "Không có ảnh"),
+      render: (imageUrl, record) =>
+        record.roles?.includes("Doctor")
+          ? imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Ảnh bác sĩ"
+                style={{ width: 64, height: 64, borderRadius: "8px", objectFit: "cover" }}
+              />
+            ) : (
+              "Không có ảnh"
+            )
+          : null, // ⛔ Nếu không phải Doctor thì không hiển thị dòng này
     },
   
     { name: "address", label: "Địa Chỉ" },
@@ -108,9 +111,8 @@ const UserManage = () => {
       name: "roles",
       label: "Vai trò",
       render: (roles) => {
-        console.log("🧪 Vai trò:", roles);
         if (!roles || roles.length === 0) return "Không có vai trò";
-    
+  
         return roles.map((role) => {
           const color =
             role === "Admin"
@@ -120,17 +122,28 @@ const UserManage = () => {
               : role === "Staff"
               ? "orange"
               : "green";
-    
+  
           return (
-            <Tag color={color} key={role}>
+            <span
+              key={role}
+              style={{
+                backgroundColor: color,
+                color: "white",
+                padding: "2px 8px",
+                borderRadius: "4px",
+                marginRight: 4,
+                fontSize: "12px",
+                display: "inline-block",
+              }}
+            >
               {role}
-            </Tag>
+            </span>
           );
         });
       },
-    }
-    
+    },
   ];
+  
 
   // **Cấu hình fields cho modal Create & Update**
   const userFields = [
@@ -168,20 +181,42 @@ const UserManage = () => {
           required: true,
           message: "Vui lòng chọn ngày sinh!",
         },
+        () => ({
+          validator(_, value) {
+            if (!value) return Promise.resolve();
+            if (dayjs(value).isAfter(dayjs())) {
+              return Promise.reject(
+                new Error("⚠️ Ngày sinh không được lớn hơn ngày hiện tại!")
+              );
+            }
+            return Promise.resolve();
+          },
+        }),
       ],
       disabledDate: (current) => {
-        if (!current) return false;
-        const today = dayjs().endOf("day");
-        return current.isAfter(today); // ❌ Chặn các ngày sau hôm nay
+        return current && current > dayjs().endOf("day"); // ✅ chặn click ngày tương lai
       }
-      
     }
+    
     ,
     {
       name: "password",
       label: "Mật khẩu",
       type: "password",
-      rules: [{ required: !editingUser, message: "Vui lòng nhập mật khẩu!" }],
+      rules: editingUser
+        ? [
+            {
+              validator: (_, value) => {
+                if (!value) return Promise.resolve(); // Không cần nhập
+                if (value.length < 6) return Promise.reject("Mật khẩu tối thiểu 6 ký tự!");
+                return Promise.resolve();
+              },
+            },
+          ]
+        : [
+            { required: true, message: "Vui lòng nhập mật khẩu!" },
+            { min: 6, message: "Mật khẩu tối thiểu 6 ký tự!" },
+          ],
     },
     {
       name: "role",

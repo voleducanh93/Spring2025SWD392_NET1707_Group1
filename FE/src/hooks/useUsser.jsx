@@ -21,6 +21,7 @@ export const useUsers = () => {
     refetchOnWindowFocus: false,
     onError: (error) => {
       handleApiError(error);
+      throw error;
     },
   });
 
@@ -34,6 +35,7 @@ export const useUsers = () => {
     onError: (error) => {
       console.error("❌ Lỗi khi thêm người dùng:", error);
       handleApiError(error);
+      throw error;
     },
   });
 
@@ -47,6 +49,7 @@ export const useUsers = () => {
     onError: (error) => {
       console.error("❌ Lỗi khi cập nhật người dùng:", error);
       handleApiError(error);
+      throw error;
     },
   });
 
@@ -67,6 +70,7 @@ export const useUsers = () => {
     onError: (error) => {
      
       handleApiError(error);
+      throw error;
     },
   });
 

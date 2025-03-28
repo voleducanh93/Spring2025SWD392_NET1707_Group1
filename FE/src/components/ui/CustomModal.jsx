@@ -13,6 +13,8 @@ import { UploadOutlined } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import { useWatch } from "antd/es/form/Form";
 import { useState } from "react";
+import dayjs from "dayjs";
+
 
 const CustomModal = ({
   visible,
@@ -24,6 +26,7 @@ const CustomModal = ({
 }) => {
   const role = useWatch("role", form); // Theo dõi giá trị vai trò
   const [isSubmitting, setIsSubmitting] = useState(false);
+  console.log("🔍 field:",   formFields);
 
   // Xử lý chọn file upload
   const handleFileChange = ({ file }) => {
@@ -35,21 +38,24 @@ const CustomModal = ({
     try {
       await form.validateFields();
       setIsSubmitting(true);
-
+  
       const success = await onSubmit(form.getFieldsValue());
-
+      console.log(success); // ✅ giờ sẽ là true/false đúng
+  
       if (success) {
         form.resetFields();
-        onClose(); // ✅ CHỈ đóng nếu submit API thành công
+        onClose();
       }
-      // ❌ Nếu không thành công thì KHÔNG làm gì, giữ modal mở
+  
+      return success; // ✅ TRẢ VỀ GIÁ TRỊ
     } catch (error) {
       console.error("❌ Validate lỗi hoặc onSubmit lỗi:", error);
-      // Modal vẫn giữ nguyên
+      return false; // ✅ TRẢ VỀ FALSE KHI LỖI
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <Modal
@@ -105,13 +111,14 @@ const CustomModal = ({
                   name={field.name}
                   label={field.label}
                   rules={field.rules}
+                  key={field.name}
                 >
                   {field.type === "password" ? (
                     <Input.Password />
                   ) : field.type === "date" ? (
                     <DatePicker
                       style={{ width: "100%" }}
-                      disabledDate={field.disabledDate}
+                      disabledDate={(current) => current && current > dayjs().endOf("day")}
                       inputReadOnly
                     />
                   ) : field.type === "select" ? (

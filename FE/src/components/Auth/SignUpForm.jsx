@@ -1,5 +1,6 @@
 import { Form, Input, Button, Select } from "antd";
 import styles from "../../components/Auth/AuthForm.module.css"; 
+import PropTypes from 'prop-types';
 
 const { Option } = Select;
 
@@ -173,5 +174,24 @@ const SignUpForm = ({
     </Form>
   );
 };
+SignUpForm.propTypes = {
+  form: PropTypes.object.isRequired,
+  onFinish: PropTypes.func.isRequired,
+  onValuesChange: PropTypes.func.isRequired,
+  formValues: PropTypes.object.isRequired,
+  provinceList: PropTypes.array.isRequired,
+  districtList: PropTypes.array.isRequired,
+  wardList: PropTypes.array.isRequired,
+  selectedProvince: PropTypes.string,
+  selectedDistrict: PropTypes.string,
+  selectedWard: PropTypes.string,
+  specificAddress: PropTypes.string,
+  setSelectedProvince: PropTypes.func.isRequired,
+  setSelectedDistrict: PropTypes.func.isRequired,
+  setSelectedWard: PropTypes.func.isRequired,
+  setSpecificAddress: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+};
+
 
 export default SignUpForm;
