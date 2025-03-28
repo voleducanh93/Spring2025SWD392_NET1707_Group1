@@ -44,6 +44,10 @@ export const AppProvider = ({ children }) => {
     }
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    refreshWalletBalance();
+  }, [userRole]);
+  
  
   const { data: walletData } = useGetWallet({
     enabled: isAuthenticated && (userRole === "customer" || userRole === "admin"),
