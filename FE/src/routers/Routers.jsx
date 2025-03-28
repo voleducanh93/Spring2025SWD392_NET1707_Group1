@@ -36,9 +36,10 @@ import DiUngPage from "../pages/ChuyengiaPage/DiUngPage";
 import HoHapPage from "../pages/ChuyengiaPage/HoHapPage";
 import TongQuatPage from "../pages/ChuyengiaPage/TongQuatPage";
 import VaccinePagene from "../pages/ChuyengiaPage/VaccinenePage";
-import TruyenNhiemPage from "../pages/ChuyengiaPage/TruyennhiemPage";
+
 import NhiKhoaPage from "../pages/ChuyengiaPage/NhiKhoaPage";
 import TieuHoaPage from "../pages/ChuyengiaPage/TieuHoaPage";
+import TruyenNhiemPage from "../pages/ChuyengiaPage/TruyennhiemPage";
 
 export const router = createBrowserRouter([
   {
