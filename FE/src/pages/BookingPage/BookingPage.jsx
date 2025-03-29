@@ -392,7 +392,7 @@ const BookingPage = () => {
     );
   };
 
-  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/5e571e9d-8d32-4ae5-8e3e-09347e591a3d";
+  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/${getUser}";
   
   async function checkVaccinationSchedule() {
       try {
