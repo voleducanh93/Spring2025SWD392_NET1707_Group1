@@ -20,6 +20,7 @@ const InventoryManagement = () => {
   const [selectedVaccineForAdd, setSelectedVaccineForAdd] = useState(null);
   const [form] = Form.useForm();
   const { addVaccine } = useVaccineSchedule();
+  //const [total, setTotal] = useState(0);
   // 🏷️ Lấy dữ liệu tồn kho cho từng vaccine
   useEffect(() => {
     if (!vaccines) return;
@@ -35,6 +36,8 @@ const InventoryManagement = () => {
                 (sum, item) => sum + item.quantityInStock,
                 0
               ) || 0;
+            
+            
             return { vaccineId: vaccine.vaccineId, totalStock };
           } catch (error) {
             console.error(
@@ -52,6 +55,8 @@ const InventoryManagement = () => {
       }, {});
 
       setVaccineStock(stockMap);
+      
+      
     };
 
     fetchStockData();
@@ -139,14 +144,7 @@ const InventoryManagement = () => {
   const columns = [
     { title: "Tên Vaccine", dataIndex: "name", key: "name" },
     { title: "Nhà Sản Xuất", dataIndex: "manufacturer", key: "manufacturer" },
-    {
-      title: "Còn hàng",
-      key: "stock",
-      render: (_, record) =>
-        vaccineStock[record.vaccineId] > 0
-          ? `${vaccineStock[record.vaccineId]} liều`
-          : "Hết hàng",
-    },
+
     {
       title: "Thao tác",
       key: "action",
