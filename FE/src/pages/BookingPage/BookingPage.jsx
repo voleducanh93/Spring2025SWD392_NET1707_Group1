@@ -394,56 +394,61 @@ const BookingPage = () => {
     );
   };
 
-  const API_URL = "https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/${getUser}";
+  const API_URL = 'https://childvaccineapi-hwafapgbemhnaba7.southeastasia-01.azurewebsites.net/api/Booking/user/${getUser}';
   
   async function checkVaccinationSchedule() {
-      try {
-          const response = await fetch(API_URL);
-          const data = await response.json();
+    try {
+        const response = await fetch(API_URL);
         
-          if (!data.isSuccess) {
-            console.log("ggg");
-            
-              return true;
-          }
-          
-          // Lọc booking theo selectedChild
-          const filteredBookings = data.result.filter(booking => booking.childId == selectedChild);
-          
-          if (filteredBookings.length === 0) {
-              console.log("Không có lịch tiêm nào cho trẻ có ID:", selectedChild);
-              return true;
-          }
-  
-          // Lấy danh sách injectionDate từ các booking đã lọc
-          const injectionDates = filteredBookings.flatMap(booking => 
-              booking.bookingDetails.map(detail => new Date(detail.injectionDate))
-          );
-  
-          if (injectionDates.length === 0) {
-            console.log("Không có ngày tiêm hợp lệ.");
+        if (!response.ok) {
+            throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.isSuccess) {
+            console.log("API trả về dữ liệu không thành công.");
+            return { isValid: false, closestDate: null };
+        }
+
+        // Lọc danh sách booking theo childId
+        const filteredBookings = data.result.filter(booking => String(booking.childId) === String(selectedChild));
+
+        // Nếu không có booking nào thì bỏ qua kiểm tra -> hợp lệ
+        if (filteredBookings.length === 0) {
+            console.log("Không có lịch tiêm nào, đặt lịch hợp lệ.");
             return { isValid: true, closestDate: null };
         }
-  
-          // Sắp xếp ngày tiêm theo thứ tự tăng dần
-          injectionDates.sort((a, b) => a - b);
-          const closestDate = injectionDates[0]; // Ngày gần nhất
-  
-          // Kiểm tra khoảng cách 2 tháng
-          const isValid = injectionDates.every(date => {
-              const diffMonths = Math.abs(date - closestDate) / (1000 * 60 * 60 * 24 * 30);
-              return diffMonths >= 2;
-          });
-  
-          console.log("Ngày tiêm gần nhất:", closestDate.toISOString().split("T")[0]);
-          console.log(isValid ? "Lịch hợp lệ" : "Lịch không hợp lệ");
-          return { isValid, closestDate };
-  
-      } catch (error) {
+
+        // Lấy danh sách ngày tiêm từ bookingDetails
+        const injectionDates = filteredBookings.flatMap(booking =>
+            booking.bookingDetails.map(detail => new Date(detail.injectionDate))
+        ).sort((a, b) => a - b); // Sắp xếp theo thời gian tăng dần
+
+        if (injectionDates.length === 0) {
+            console.log("Không có ngày tiêm hợp lệ, đặt lịch hợp lệ.");
+            return { isValid: true, closestDate: null };
+        }
+
+        // Ngày tiêm gần nhất
+        const closestDate = injectionDates[0];
+        console.log("Ngày tiêm gần nhất:", closestDate.toISOString().split("T")[0]);
+
+        // Kiểm tra khoảng cách giữa các ngày tiêm (ít nhất 2 tháng)
+        const isValid = injectionDates.every(date => {
+            const diffMonths = (date.getFullYear() - closestDate.getFullYear()) * 12 + (date.getMonth() - closestDate.getMonth());
+            return diffMonths >= 2;
+        });
+
+        console.log(isValid ? "Lịch hợp lệ" : "Lịch không hợp lệ");
+
+        return { isValid, closestDate };
+    } catch (error) {
         console.error("Lỗi khi gọi API:", error);
         return { isValid: false, closestDate: null };
-      }
-  }
+    }
+}
+
   
   
 
