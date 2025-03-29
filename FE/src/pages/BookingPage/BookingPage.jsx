@@ -72,12 +72,14 @@ const BookingPage = () => {
     const isValid = handleValidationDate();
     if (!isValid) return null;
     if (!isValidSchedule){
-      toast.error("Bạn không được chọn 2 vaccine trong");
+      toast.error("Bạn không được đặt lịch hẹn 2 vắc xin mà khoảng cách của chúng nhỏ hơn 2 tháng");
       return null;
     }
-    const isVaccinationScheduleValid = await checkVaccinationSchedule(); // Chờ kết quả từ checkVaccinationSchedule()
+    const { isValid: isVaccinationScheduleValid, closestDate } = await checkVaccinationSchedule();
+
     if (!isVaccinationScheduleValid) {
-        toast.error("Ngu vc.");
+        const formattedDate = closestDate ? closestDate.toISOString().split("T")[0] : "không xác định";
+        toast.error(`Đặt lịch không thành công vì lịch hẹn gần nhất phải cách lịch hẹn hiện tại ít nhất 2 tháng. (Lịch hẹn gần nhất là ${formattedDate})`);
         return null;
     }
     if (!selectedDate && isComboSelected) {
@@ -404,8 +406,6 @@ const BookingPage = () => {
             
               return true;
           }
-          console.log(data.result[0].childId);
-          console.log(selectedChild);
           
           // Lọc booking theo selectedChild
           const filteredBookings = data.result.filter(booking => booking.childId == selectedChild);
@@ -421,9 +421,9 @@ const BookingPage = () => {
           );
   
           if (injectionDates.length === 0) {
-              console.log("Không có ngày tiêm hợp lệ.");
-              return;
-          }
+            console.log("Không có ngày tiêm hợp lệ.");
+            return { isValid: true, closestDate: null };
+        }
   
           // Sắp xếp ngày tiêm theo thứ tự tăng dần
           injectionDates.sort((a, b) => a - b);
@@ -437,9 +437,11 @@ const BookingPage = () => {
   
           console.log("Ngày tiêm gần nhất:", closestDate.toISOString().split("T")[0]);
           console.log(isValid ? "Lịch hợp lệ" : "Lịch không hợp lệ");
+          return { isValid, closestDate };
   
       } catch (error) {
-          console.error("Lỗi khi gọi API:", error);
+        console.error("Lỗi khi gọi API:", error);
+        return { isValid: false, closestDate: null };
       }
   }
   
